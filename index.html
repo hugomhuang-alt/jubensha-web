@@ -574,6 +574,11 @@ html.lite body { background: var(--bg); }
 /* 输入框：不做过渡动画，避免键盘弹出时重绘 */
 input, textarea { transition: none !important; }
 html.lite #snow { will-change: auto; }
+/* 手机：场景图不做缓慢缩放动画（大 SVG 反复重绘会闪烁/卡顿），文字阴影减轻 */
+html.lite .scene, html.lite .ov .bgscene .scene, html.lite .intro .slide .bgscene .scene { animation: none !important; transform: none !important; }
+html.lite .intro .slide { transition: opacity .6s; }
+html.lite .intro .textbox .tt, html.lite .locname { text-shadow: 0 1px 4px #000; }
+html.lite .intro .next { animation: none !important; }
 
 
 :root { color-scheme: dark; }
@@ -4502,7 +4507,8 @@ function showIntro() {
     slidesEl.appendChild(d);
     requestAnimationFrame(() => d.classList.add('on'));
     const old = slidesEl.querySelectorAll('.slide');
-    if (old.length > 1) { const o = old[0]; o.classList.remove('on'); setTimeout(() => o.remove(), 1000); }
+    // 旧画面保持不透明，等新画面完全淡入后再移除，避免两张图交叉淡入时中间变暗（一闪）
+    if (old.length > 1) { const o = old[0]; setTimeout(() => o.remove(), 1000); }
     el.querySelectorAll('.dots i').forEach((x, k) => x.classList.toggle('on', k <= idx));
     title.hidden = !sl.title;
     tt.textContent = '';
