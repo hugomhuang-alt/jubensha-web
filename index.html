@@ -657,6 +657,21 @@ html.lite .searchov .darkmask { transition: opacity .3s; }
 
 html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count: 1 !important; }
 
+/* ===== 返回键 / 声音开关 / 离开确认 ===== */
+.home { position: relative; }
+.home-tools { position: absolute; top: max(12px, env(safe-area-inset-top)); right: 14px; z-index: 3; min-width: 40px; font-size: 16px; line-height: 1; }
+.back-btn { flex: none; margin-right: 8px; white-space: nowrap; }
+.topbar { gap: 4px; }
+.tb-left { flex: 1; min-width: 0; }
+.tb-right { display: flex; align-items: center; gap: 8px; }
+.tb-right .sfx-toggle { min-width: 38px; font-size: 16px; line-height: 1; padding: 4px 8px; }
+.di-back { position: absolute; top: max(14px, env(safe-area-inset-top)); left: 14px; z-index: 3; background: rgba(8,12,22,.55); opacity: 0; animation: diUp .6s ease-out .4s both; }
+.leave-ov { position: fixed; inset: 0; z-index: 90; background: rgba(4,6,12,.8); display: flex; align-items: center; justify-content: center; padding: 24px; animation: diFade .25s ease-out both; }
+.leave-card { width: min(360px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px; }
+.leave-card h3 { margin: 0 0 8px; font-family: var(--serif); letter-spacing: .08em; }
+.leave-card p { margin: 0 0 16px; line-height: 1.7; font-size: 14.5px; }
+.leave-card .actions { display: flex; gap: 10px; justify-content: flex-end; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -672,6 +687,7 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 <canvas id="snow"></canvas>
 
 <main id="home" class="home" hidden>
+  <button class="btn small ghost sfx-toggle home-tools" aria-label="声音开关">🔊</button>
   <div class="home-card">
     <div class="hero" id="hero">
       <div class="hero-title">
@@ -701,11 +717,12 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 
 <main id="room" class="room" hidden>
   <header class="topbar">
+    <button id="backBtn" class="btn small ghost back-btn" aria-label="返回">‹ 返回</button>
     <div class="tb-left">
       <div class="room-code" id="roomCode" title="点击复制房间码"></div>
       <div class="phase-name" id="phaseName"></div>
     </div>
-    <div class="timer" id="timer"></div>
+    <div class="tb-right"><div class="timer" id="timer"></div><button class="btn small ghost sfx-toggle" aria-label="声音开关">🔊</button></div>
   </header>
 
   <section id="players" class="players"></section>
@@ -2724,6 +2741,23 @@ function onMessage(ws, raw) {
       resetToLobby(room);
       break;
     }
+    case 'leave': {
+      // 主动离开房间：大厅里直接退出；游戏中视同掉线（不再回来），不会卡住其他人
+      ws.ctx = null;
+      if (room.voice.delete(me.id)) broadcast(room, { type: 'voice-left', id: me.id }, me.id);
+      if (room.phase === 'lobby') {
+        const i = room.players.indexOf(me); if (i >= 0) room.players.splice(i, 1);
+        if (!room.players.some((x) => !x.isBot)) { clearTimeout(room.timer); rooms.delete(room.code); send(ws, { type: 'left' }); return; }
+        broadcast(room, { type: 'sys', text: `${me.name} 离开了房间` });
+      } else {
+        me.connected = false; me.ws = null;
+        broadcast(room, { type: 'sys', text: `${me.name} 离开了游戏` });
+      }
+      ensureHost(room); broadcastState(room);
+      if (room.phase !== 'lobby' && room.phase !== 'reveal') checkEarlyAdvance(room);
+      send(ws, { type: 'left' });
+      break;
+    }
     // ----- 语音信令 -----
     case 'voice-join': {
       const existing = [...room.voice].filter((id) => id !== me.id);
@@ -3939,7 +3973,7 @@ const FX = (() => {
     el.textContent = '';
     const finish = () => { if (finished) return; finished = true; clearInterval(timer); el.textContent = text; done && done(); };
     if (reduce()) { finish(); return { skip: finish, done: () => finished }; }
-    timer = setInterval(() => { i++; el.textContent = text.slice(0, i); if (i >= text.length) finish(); }, speed || 34);
+    timer = setInterval(() => { i++; el.textContent = text.slice(0, i); if (i % 3 === 0 && window.SFX) { try { SFX.type(); } catch (e) {} } if (i >= text.length) finish(); }, speed || 34);
     return { skip: finish, done: () => finished };
   }
 
@@ -4108,6 +4142,17 @@ const SFX = (() => {
     stamp: (t) => { tone(65, t, 0.5, { to: 35, gain: 0.7 }); noise(t, 0.12, { f: 700, to: 200, gain: 0.45 }); },
     swell: (t) => { tone(55, t, 3.2, { type: 'sawtooth', gain: 0.16, attack: 2.2, lp: 400 }); tone(82.5, t, 3.2, { type: 'sawtooth', gain: 0.1, attack: 2.2, lp: 500 }); noise(t, 3, { f: 300, to: 2400, gain: 0.08, attack: 2.4 }); },
     drum: (t) => { for (let i = 0; i < 26; i++) { const tt = t + i * 0.075 + (i * i) * 0.0009; noise(tt, 0.07, { f: 220, q: 0.5, gain: 0.05 + i * 0.006 }); tone(110, tt, 0.07, { to: 80, gain: 0.04 + i * 0.006 }); } },
+    splash: (t) => { noise(t, 0.7, { f: 300, to: 2600, gain: 0.12, attack: 0.35 }); tone(110, t + 0.4, 1.5, { to: 88, gain: 0.3, lp: 600 }); tone(220, t + 0.4, 1.2, { type: 'triangle', gain: 0.07 }); [660, 990].forEach((f, i) => tone(f, t + 0.55 + i * 0.09, 1, { gain: 0.05 })); },
+    type: (t) => tone(1400 + Math.random() * 400, t, 0.03, { type: 'square', gain: 0.012, lp: 2400 }),
+    turn: (t) => [784, 1047, 1319].forEach((f, i) => tone(f, t + i * 0.1, 0.55, { type: 'triangle', gain: 0.12 })),
+    warn: (t) => tone(880, t, 0.12, { type: 'square', gain: 0.045, lp: 1800 }),
+    join: (t) => { tone(523, t, 0.22, { type: 'triangle', gain: 0.1 }); tone(784, t + 0.1, 0.32, { type: 'triangle', gain: 0.1 }); },
+    leave: (t) => { tone(659, t, 0.22, { type: 'triangle', gain: 0.08 }); tone(440, t + 0.1, 0.32, { type: 'triangle', gain: 0.08 }); },
+    chat: (t) => { tone(1320, t, 0.1, { gain: 0.07 }); tone(1760, t + 0.06, 0.14, { gain: 0.05 }); },
+    vote: (t) => { tone(150, t, 0.35, { to: 80, gain: 0.35 }); noise(t, 0.1, { f: 600, gain: 0.12 }); },
+    lit: (t) => tone(300 + Math.random() * 90, t, 0.2, { type: 'triangle', gain: 0.1 }),
+    whoosh: (t) => noise(t, 0.4, { f: 400, to: 3000, gain: 0.1, attack: 0.12 }),
+    start: (t) => { tone(110, t, 1.4, { type: 'sawtooth', gain: 0.1, attack: 0.6, lp: 500 }); [392, 523, 659, 784].forEach((f, i) => tone(f, t + 0.2 + i * 0.12, 0.8, { type: 'triangle', gain: 0.1 })); },
     gasp: (t) => noise(t, 0.35, { f: 500, to: 2600, q: 1.1, gain: 0.14 }),
     growl: (t) => { tone(70, t, 0.45, { type: 'sawtooth', to: 55, gain: 0.16, lp: 300 }); noise(t, 0.3, { f: 200, gain: 0.07 }); },
     sob: (t) => { tone(330, t, 0.5, { to: 262, gain: 0.07, attack: 0.15 }); tone(310, t + 0.5, 0.5, { to: 247, gain: 0.06, attack: 0.15 }); },
@@ -4121,12 +4166,17 @@ const SFX = (() => {
       tone(98, t, 3.4, { type: 'sawtooth', gain: 0.1, attack: 0.3, lp: 300 });
     }
   };
+  const syncBtns = () => { try { document.querySelectorAll('.sfx-toggle').forEach((b) => { b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', muted ? '声音已关闭' : '声音已开启'); }); } catch (e) {} };
+  // 所有带 .sfx-toggle 的按钮都是同一个静音开关
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.sfx-toggle'); if (!b) return; e.stopPropagation(); api.toggle(); }, true);
   const api = {
     muted: () => muted,
+    sync: syncBtns,
     toggle() {
       muted = !muted; try { localStorage.setItem(KEY, muted ? '1' : '0'); } catch (e) {}
       if (ac && master) master.gain.setTargetAtTime(muted ? 0 : 0.9, ac.currentTime, 0.05);
       if (!muted) { wake(); if (mode) start(); }
+      syncBtns();
       return muted;
     },
     wake
@@ -4190,7 +4240,7 @@ const SFX = (() => {
   api.stop = () => { mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
   return api;
 })();
-if (typeof window !== 'undefined') window.SFX = SFX;
+if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener('DOMContentLoaded', () => SFX.sync()); setTimeout(() => SFX.sync(), 0); }
 
 </script>
 <script>
@@ -4212,7 +4262,7 @@ if (typeof window !== 'undefined') window.SFX = SFX;
   let timers = [];
   const later = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
   const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
-  const muteBtn = () => `<button class="btn small ghost det-mute" data-act="mute" aria-label="音效开关">${window.SFX && SFX.muted() ? '🔇' : '🔊'}</button>`;
+  const muteBtn = () => `<button class="btn small ghost det-mute sfx-toggle" aria-label="音效开关">${window.SFX && SFX.muted() ? '🔇' : '🔊'}</button>`;
 
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
@@ -4339,6 +4389,7 @@ if (typeof window !== 'undefined') window.SFX = SFX;
     root().innerHTML = `<div class="det-intro" data-act="skipintro" role="button" aria-label="点击开始调查">
       <div class="di-bg">${ART.sceneFor(C.id, 'cover', C.cover, { title: C.title, text: C.title + C.tagline })}</div>
       <div class="di-shade"></div>
+      <button class="btn small ghost di-back" data-act="introback" aria-label="返回案件列表">‹ 返回</button>
       <div class="di-c">
         <p class="di-no">CASE FILE · No.${String(idx).padStart(2, '0')} · 难度 ${'★'.repeat(C.difficulty)}</p>
         <h2 class="di-t">${chars}</h2>
@@ -4360,7 +4411,7 @@ if (typeof window !== 'undefined') window.SFX = SFX;
     const body = { brief: viewBrief, search: viewSearch, ask: viewAsk, notes: viewNotes, accuse: viewAccuse }[tab]();
     root().innerHTML = `
       <div class="det-wrap">
-        <div class="det-top"><button class="btn small ghost" data-act="list">‹ 案件</button><div class="det-title">${esc(C.title)}</div>
+        <div class="det-top"><button class="btn small ghost" data-act="list">‹ 返回</button><div class="det-title">${esc(C.title)}</div>
           <div class="det-tr">${muteBtn()}<div class="det-meter" title="剩余搜证 / 提问次数"><b>${searchLeft()}</b> 搜 · <b>${askLeft()}</b> 问</div></div></div>
         <nav class="tabs det-tabs">${TABS.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}${k === 'notes' && G.found.length ? `<em>${G.found.length}</em>` : ''}</button>`).join('')}</nav>
         <div class="det-body">${body}</div>
@@ -4555,11 +4606,11 @@ if (typeof window !== 'undefined') window.SFX = SFX;
   // ---------- 事件 ----------
   document.addEventListener('click', (e) => {
     const r = root(); if (!r || r.hidden || !r.contains(e.target)) return;
+    if (e.target.closest('[data-act="introback"]')) return back();
     const ov = e.target.closest('[data-act="skipintro"],[data-act="skipreveal"]');
     if (ov) return ov.dataset.act === 'skipintro' ? endIntro() : endReveal();
     const t = e.target.closest('button'); if (!t) return;
     const d = t.dataset;
-    if (d.act === 'mute') { const m = SFX.toggle(); r.querySelectorAll('.det-mute').forEach((b) => { b.textContent = m ? '🔇' : '🔊'; }); return; }
     if (d.case) { sfx('click'); return start(d.case); }
     if (d.act === 'home') { sfx('click'); return close(); }
     if (d.act === 'list') { sfx('click'); clearTimers(); C = null; delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
@@ -4588,7 +4639,18 @@ if (typeof window !== 'undefined') window.SFX = SFX;
     if (d.act === 'again') { const id = C.id; store.set(key(id), null); start(id); }
   });
 
-  window.DET = { open, close, available: () => cases().length > 0 };
+  // 返回键：reveal → 跳过；案件内 → 案件列表；案件列表 → 首页（多人模式入口）
+  function back() {
+    if (root().hidden) return false;
+    if ($('.det-reveal')) { endReveal(); return true; }
+    if (C) {
+      clearTimers(); C = null; delete document.body.dataset.tone;
+      try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
+      renderList(); window.scrollTo(0, 0); return true;
+    }
+    close(); return true;
+  }
+  window.DET = { open, close, back, available: () => cases().length > 0 };
 })();
 
 </script>
@@ -4611,6 +4673,8 @@ let reconnectTimer = null;
 const chatLog = [];
 let roleOpened = false, introShown = false, pendingLoc = null, lastTabKey = null, modal = null, revealShown = false;
 const freshClues = new Set(), seenClues = new Set();
+const snd = (n) => { try { if (window.SFX && SFX[n]) SFX[n](); } catch (e) {} };
+let prevIds = null, prevCode = null, lastSpeaker = null, lastWarn = -1;
 const NUM = ['零', '一', '二', '三', '四', '五', '六', '七', '八'];
 const isSearchPhase = (p) => /^search\d$/.test(p);
 function phaseOrder() {
@@ -4697,7 +4761,7 @@ function onMsg(m) {
       break;
     case 'chat':
       chatLog.push(m.msg);
-      renderChat();
+      renderChat(); snd('chat');
       if (tab !== 'chat') { unread++; updateDot(); }
       break;
     case 'sys':
@@ -4739,8 +4803,9 @@ function phaseInfo(phase) {
   return PHASE[phase];
 }
 function showHome() {
-  S = null;
+  S = null; prevIds = null; prevCode = null; lastPhase = null; lastSpeaker = null;
   delete document.body.dataset.tone;
+  try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
   if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#createBtn'), 6, { min: 5, max: 7 }); }
   if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80 });
   $('#home').hidden = false;
@@ -4755,10 +4820,29 @@ function fmt(sec) {
 function playerName(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : '?'; }
 
 // ================= 状态变化 =================
+function stateSounds() {
+  try {
+    const ids = S.players.map((p) => p.id + ':' + (p.connected ? 1 : 0));
+    if (prevCode === S.code && prevIds) {
+      const a = new Set(prevIds.map((x) => x.split(':')[0])), b = new Set(S.players.map((p) => p.id));
+      if (S.players.some((p) => !a.has(p.id))) snd('join');
+      else if ([...a].some((x) => !b.has(x))) snd('leave');
+    }
+    prevIds = ids; prevCode = S.code;
+    const tone = S.script.tone;
+    if (S.phase === 'lobby') SFX.music('menu', 'lobby:' + S.scriptId, tone);
+    else SFX.music('case', S.scriptId || S.script.id || 'game', tone);
+    const last = (S.script.rounds || 3);
+    SFX.tension(S.phase === 'vote' || S.phase === 'discuss' + last);
+    if (S.phase === 'turns' && S.speakerId !== lastSpeaker) { lastSpeaker = S.speakerId; if (S.speakerId === myId) snd('turn'); else snd('lit'); }
+    if (S.phase !== 'turns') lastSpeaker = null;
+  } catch (e) {}
+}
 function onState() {
   document.body.dataset.tone = S.script.tone || 'none';
   $('#home').hidden = true;
   $('#room').hidden = false;
+  stateSounds();
   if (S.phase !== lastPhase) {
     // 新阶段时回到合适的页签
     if (S.phase === 'reading') tab = 'role';
@@ -4853,16 +4937,16 @@ function renderPhaseCard() {
 
   const on = (sel, ev, fn) => { const x = el.querySelector(sel); if (x) x.addEventListener(ev, fn); };
   el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) send({ type: 'setscript', id: b.dataset.script }); }));
-  on('#startBtn', 'click', () => send({ type: 'start' }));
+  on('#startBtn', 'click', () => { snd('start'); send({ type: 'start' }); });
   on('#addBotBtn', 'click', () => send({ type: 'addbot' }));
   on('#rmBotBtn', 'click', () => send({ type: 'removebot' }));
-  on('#readyBtn', 'click', () => send({ type: 'ready' }));
+  on('#readyBtn', 'click', () => { snd('clue'); send({ type: 'ready' }); });
   on('#doneBtn', 'click', () => send({ type: 'speakdone' }));
   on('#skipBtn', 'click', () => send({ type: 'next' }));
-  el.querySelectorAll('[data-loc]').forEach((b) => b.addEventListener('click', () => { pendingLoc = b.dataset.loc; send({ type: 'search', loc: b.dataset.loc }); }));
-  el.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', () => send({ type: 'vote', target: b.dataset.vote })));
+  el.querySelectorAll('[data-loc]').forEach((b) => b.addEventListener('click', () => { snd('pick'); pendingLoc = b.dataset.loc; send({ type: 'search', loc: b.dataset.loc }); }));
+  el.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', () => { snd('vote'); send({ type: 'vote', target: b.dataset.vote }); }));
   const rs = el.querySelector('#restartBtn');
-  if (rs) rs.addEventListener('click', () => send({ type: 'restart' }));
+  if (rs) rs.addEventListener('click', () => { snd('whoosh'); send({ type: 'restart' }); });
 }
 
 function revealCard() {
@@ -4993,6 +5077,7 @@ function onPhaseEnter(phase, prev) {
 }
 
 function showSplash(phase) {
+  snd('splash');
   const i = phaseOrder().indexOf(phase) + 1;
   const el = document.createElement('div');
   el.className = 'splash';
@@ -5008,7 +5093,7 @@ function showIntro() {
   const el = mountOverlay('intro', `<div class="slides"></div><div class="shade"></div><canvas class="ovsnow"></canvas>
     <button class="skip">跳过 ▸▸</button><div class="titlecard" hidden><h1>${esc(sc.title)}</h1><p>${esc(sc.subtitle)}</p></div>
     <div class="textbox"><div class="tt"></div><div class="hint"><div class="dots">${slides.map(() => '<i></i>').join('')}</div><span class="next">点击继续 ▸</span></div></div>`);
-  setModal(el);
+  setModal(el); snd('swell');
   el._stop = FX.snow(el.querySelector('canvas'), { count: 90, speed: 1.2 });
   FX.sparkle(el.querySelector('.titlecard'), 16, { min: 8, max: 14 });
   let idx = -1, tw = null;
@@ -5017,6 +5102,7 @@ function showIntro() {
     idx++;
     if (idx >= slides.length) return closeModal(el);
     const sl = slides[idx];
+    if (idx > 0) snd('whoosh');
     const d = document.createElement('div');
     d.className = 'slide';
     d.innerHTML = `<div class="bgscene">${ART.scene(sl.scene)}</div>`;
@@ -5048,7 +5134,7 @@ function showSearch(locName, clue) {
   pendingLoc = null;
   const el = mountOverlay('searchov', `<div class="bgscene">${ART.scene(loc.scene || loc.id)}</div><div class="shade" style="opacity:.55"></div>
     <div class="darkmask"></div><div class="lens"></div><div class="locname">${esc(loc.name)}</div><div class="result"><div></div></div>`);
-  setModal(el);
+  setModal(el); snd('search');
   const W = () => el.clientWidth, H = () => el.clientHeight;
   const path = [[.2, .7], [.78, .35], [.35, .45], [.62, .68], [.5, .5]];
   const T = 2300, t0 = performance.now();
@@ -5063,7 +5149,7 @@ function showSearch(locName, clue) {
     res.innerHTML = clue
       ? `<div class="clue-reveal"><span class="new">新线索</span><h3>${esc(clue.title)}</h3><p>${esc(clue.text)}</p><button class="btn primary">收入线索</button></div>`
       : `<div class="clue-reveal empty"><h3 style="color:var(--text)">什么也没有</h3><p>你翻遍了这里，没有新的发现。</p><button class="btn primary">继续</button></div>`;
-    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); }
+    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('clue'); } else snd('nothing');
     res.querySelector('.btn').addEventListener('click', () => closeModal(el, () => { if (clue) { tab = 'clues'; if (S) renderTabs(); } }));
   };
   const tick = (now) => {
@@ -5098,7 +5184,7 @@ function showReveal() {
     <div class="suspects">${r.cast.map((c) => `<div class="suspect" data-pid="${c.playerId}"><div class="pic">${portraitOf(c, { crop: 'face' })}</div><span>${esc(c.charName)}</span></div>`).join('')}</div>
     <div class="verdict ${caught ? 'good' : 'bad'}"><b>${caught ? '凶手落网' : '凶手逃脱'}</b><p>真凶是 ${esc(culprit.charName)}（${esc(culprit.playerName)}）</p><button class="btn primary cta" id="seeTruth">查看完整真相</button></div>
     <div class="flash"></div>`);
-  setModal(el);
+  setModal(el); snd('drum');
   el._stop = FX.snow(el.querySelector('canvas'), { count: 50, alpha: 0.5 });
   const pick = (pid) => el.querySelector(`.suspect[data-pid="${pid}"]`);
   const later = (fn, ms) => { const t = setTimeout(fn, ms); el._timers.push(t); };
@@ -5110,6 +5196,7 @@ function showReveal() {
     el.querySelectorAll('.suspect').forEach((x) => { if (x.dataset.pid !== culprit.playerId) x.classList.add('dim'); });
     pick(culprit.playerId).classList.add('culprit');
     el.querySelector('.flash').classList.add('go');
+    snd('crack'); later(() => snd(caught ? 'win' : 'lose'), 1100);
     el._burst = FX.burst(el, caught ? 'gold' : 'fog');
     FX.sparkle(pick(culprit.playerId), 10, { min: 8, max: 12 });
     later(() => el.querySelector('.verdict').classList.add('on'), 700);
@@ -5117,7 +5204,7 @@ function showReveal() {
   const STEP = 520, START = 1300;
   order.forEach((c, k) => {
     if (k === order.length - 1) return;
-    later(() => { el.querySelectorAll('.suspect.lit').forEach((x) => x.classList.remove('lit')); pick(c.playerId).classList.add('lit'); }, START + k * STEP);
+    later(() => { snd('lit'); el.querySelectorAll('.suspect.lit').forEach((x) => x.classList.remove('lit')); pick(c.playerId).classList.add('lit'); }, START + k * STEP);
   });
   later(verdict, START + (order.length - 1) * STEP + 500);
   el.querySelector('.skip').addEventListener('click', () => { verdict(); el.querySelector('.skip').remove(); });
@@ -5141,6 +5228,8 @@ function updateTimer() {
   const left = (S.phaseEnd - (Date.now() + clockOffset)) / 1000;
   t.textContent = fmt(left);
   t.classList.toggle('low', left < 30);
+  const sec = Math.ceil(left);
+  if (left > 0 && sec <= 10 && sec !== lastWarn && !$('#room').hidden) { lastWarn = sec; snd('warn'); } else if (sec > 10) lastWarn = -1;
 }
 setInterval(() => { if (S) updateTimer(); }, 500);
 
@@ -5343,6 +5432,57 @@ $('#chatForm').addEventListener('submit', (e) => {
   if (text) send({ type: 'chat', text });
   i.value = '';
 });
+
+// ================= 返回键 / 离开房间 =================
+// 通用按钮点击音（单人侦探模式自己管理音效，这里跳过）
+document.addEventListener('click', (e) => {
+  const b = e.target.closest && e.target.closest('button');
+  if (!b || b.closest('#det') || b.classList.contains('sfx-toggle') || b.closest('.ov') || b.closest('.splash')) return;
+  snd('click');
+}, true);
+
+function closeAllOverlays() {
+  document.querySelectorAll('.ov, .splash, .leave-ov').forEach((x) => { x._stop && x._stop(); x._timers && x._timers.forEach(clearTimeout); x.remove(); });
+  modal = null;
+}
+function doLeave() {
+  send({ type: 'leave' }); clearSession();
+  try { if (voice.on) voiceOff(); } catch (e) {}
+  closeAllOverlays();
+  S = null; lastPhase = null; roleOpened = false; introShown = false; revealShown = false; lastTabKey = null; $('#tabBody')._h = null; $('#phaseCard')._h = null; $('#players')._h = null;
+  chatLog.length = 0; unread = 0; updateDot();
+  showHome();
+}
+function askLeave() {
+  if ($('#leaveOv')) return;
+  const inGame = S && S.phase !== 'lobby' && S.phase !== 'reveal';
+  const el = document.createElement('div');
+  el.id = 'leaveOv'; el.className = 'leave-ov';
+  el.innerHTML = `<div class="leave-card"><h3>离开房间？</h3><p>${inGame ? '游戏正在进行。离开后你不能再回到这一局，其他人会继续玩。' : '你会回到首页，之后可以重新创建或加入房间，也可以去玩单人侦探。'}</p>
+    <div class="actions"><button class="btn" data-x="stay">留下</button><button class="btn primary" data-x="leave" style="width:auto">离开</button></div></div>`;
+  document.body.appendChild(el);
+  el.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) { if (e.target === el) el.remove(); return; }
+    el.remove(); if (b.dataset.x === 'leave') doLeave();
+  });
+}
+// 返回上一页：返回 true 表示已处理（安卓手机的系统返回键也调用它）
+function goBack() {
+  const lv = $('#leaveOv'); if (lv) { lv.remove(); return true; }
+  if (modal) {
+    if (modal.classList.contains('searchov')) { const b = modal.querySelector('.result .btn'); if (b) b.click(); else modal.click(); return true; }
+    if (modal.classList.contains('revealov')) { const sk = modal.querySelector('.skip'); if (sk) sk.click(); else { const t = modal.querySelector('#seeTruth'); if (t) t.click(); } return true; }
+    closeModal(modal); return true;
+  }
+  if (!$('#det').hidden) return !!(window.DET && DET.back && DET.back());
+  if (!$('#room').hidden) { askLeave(); return true; }
+  return false;
+}
+window.__back = () => goBack();
+$('#backBtn').addEventListener('click', () => { snd('click'); goBack(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') goBack(); });
+
 
 connect();
 
