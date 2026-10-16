@@ -588,6 +588,75 @@ html.lite .slide, html.lite .splash, html.lite .searchov { will-change: opacity;
 html.lite .searchov .lens { box-shadow: none; }
 html.lite .searchov .darkmask { transition: opacity .3s; }
 
+/* ===== 侦探模式 v2：开场动画 / 表情 / 审问分层 / 揭晓 =====
+   所有动画都只改 opacity 与 transform，且只播放一次，播完静止，不会拖慢手机 */
+.det-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.det-tr { display: flex; align-items: center; gap: 6px; }
+.det-mute { min-width: 40px; padding: 4px 8px; font-size: 16px; line-height: 1; }
+
+.det-intro { position: fixed; inset: 0; z-index: 60; background: #05070d; cursor: pointer; overflow: hidden; animation: diFade .5s ease-out both; -webkit-tap-highlight-color: transparent; }
+.di-bg { position: absolute; inset: 0; will-change: transform; animation: diKen 16s cubic-bezier(.2, .6, .3, 1) both; transform-origin: 60% 45%; }
+.di-bg svg, .di-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.di-shade { position: absolute; inset: 0; background: linear-gradient(rgba(5,7,13,.55), rgba(5,7,13,.25) 38%, rgba(5,7,13,.92)); }
+.di-c { position: absolute; left: 0; right: 0; bottom: max(8vh, env(safe-area-inset-bottom, 0px)); padding: 0 26px; text-align: center; }
+.di-no { margin: 0 0 12px; letter-spacing: .32em; font-size: 12px; color: var(--accent); opacity: 0; animation: diUp .7s ease-out .25s both; }
+.di-t { margin: 0; font-family: var(--serif); font-size: clamp(40px, 13vw, 64px); letter-spacing: .12em; line-height: 1.15; font-weight: 700; }
+.di-t span { display: inline-block; opacity: 0; transform: translateY(14px) scale(1.12); animation: diChar .6s cubic-bezier(.2, .8, .3, 1) both; }
+.di-tag { margin: 16px auto 0; max-width: 22em; font-size: 15px; line-height: 1.7; color: #d4dbea; opacity: 0; animation: diUp .8s ease-out 1.5s both; }
+.di-stamp { display: inline-block; margin-top: 22px; padding: 6px 18px; border: 3px solid var(--danger); color: var(--danger); font-family: var(--serif); font-size: 22px; letter-spacing: .3em; border-radius: 6px; opacity: 0; transform: rotate(-9deg) scale(2.4); animation: diStamp .28s cubic-bezier(.2, 1.4, .4, 1) 1.75s both; }
+.di-hint { margin: 26px 0 0; font-size: 13px; letter-spacing: .2em; color: var(--muted); opacity: 0; animation: diPulse 1s ease-out 2.8s both; }
+@keyframes diFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes diKen { from { transform: scale(1.02) translate3d(0, 0, 0); } to { transform: scale(1.16) translate3d(-1.5%, -1%, 0); } }
+@keyframes diUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes diChar { from { opacity: 0; transform: translateY(14px) scale(1.12); } to { opacity: 1; transform: none; } }
+@keyframes diStamp { 0% { opacity: 0; transform: rotate(-9deg) scale(2.4); } 100% { opacity: .95; transform: rotate(-9deg) scale(1); } }
+@keyframes diPulse { from { opacity: 0; } to { opacity: .85; } }
+
+.rise { animation: diUp .6s ease-out both; }
+.det-evcard.pop { animation: detPop .45s cubic-bezier(.2, 1.2, .4, 1) both; border-color: var(--accent); }
+@keyframes detPop { from { opacity: 0; transform: scale(.94) translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* 审问分层 */
+.det-grp { margin: 12px 0 2px; font-size: 12px; letter-spacing: .12em; color: var(--accent); opacity: .9; }
+.det-grp:first-child { margin-top: 0; }
+.det-qs { display: flex; flex-direction: column; gap: 8px; }
+.det-q.fresh { border-color: var(--accent); animation: diUp .45s ease-out both; }
+.det-q em.nw { color: var(--accent-ink); background: var(--accent); padding: 0 6px; border-radius: 99px; font-size: 10px; }
+.det-lock { margin: 4px 0 0; font-size: 12.5px; line-height: 1.6; }
+
+/* 表情 */
+.det-big { position: relative; }
+.det-big::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.det-big.m-angry::after { background: rgba(210, 60, 50, .2); opacity: 1; }
+.det-big.m-scared::after, .det-big.m-panic::after, .det-big.m-shocked::after { background: rgba(160, 190, 255, .16); opacity: 1; }
+.det-big.m-weep::after { background: rgba(100, 140, 200, .14); opacity: 1; }
+.det-moodtag { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 2px 4px; text-align: center; font-style: normal; font-size: 11.5px; letter-spacing: .06em; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.78)); z-index: 1; }
+.det-big.act.m-nervous svg { animation: mTremble .55s linear 1; }
+.det-big.act.m-annoyed svg { animation: mTremble .4s linear 1; }
+.det-big.act.m-angry svg { animation: mAngry .5s ease-out 1; }
+.det-big.act.m-scared svg, .det-big.act.m-panic svg, .det-big.act.m-shocked svg { animation: mRecoil .6s ease-out 1; }
+.det-big.act.m-weep svg { animation: mDroop .9s ease-out 1; }
+@keyframes mTremble { 0%, 100% { transform: none; } 15% { transform: translateX(-2px); } 35% { transform: translateX(2px); } 55% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+@keyframes mAngry { 0% { transform: scale(1); } 20% { transform: scale(1.1) translateX(-3px); } 40% { transform: scale(1.1) translateX(3px); } 60% { transform: scale(1.08) translateX(-2px); } 100% { transform: scale(1); } }
+@keyframes mRecoil { 0% { transform: none; } 25% { transform: scale(.88) translateY(4px); } 100% { transform: none; } }
+@keyframes mDroop { 0% { transform: none; } 50% { transform: translateY(4px); } 100% { transform: none; } }
+.det-mt { font-style: normal; display: block; margin-top: 4px; font-size: 12px; color: var(--accent); opacity: .85; }
+.det-msg .mini.dot { display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 13px; color: var(--muted); background: var(--panel2); }
+
+/* 指认揭晓 */
+.det-reveal { position: fixed; inset: 0; z-index: 65; background: rgba(4,6,12,.96); display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; animation: diFade .4s ease-out both; }
+.dr-in { padding: 0 30px; }
+.dr-a { margin: 0 0 16px; letter-spacing: .3em; color: var(--muted); font-size: 14px; }
+.dr-p { width: 170px; height: 170px; margin: 0 auto; border-radius: 50%; overflow: hidden; border: 3px solid var(--line); will-change: transform; animation: drGrow 2.2s ease-out both; }
+.dr-p svg { width: 100%; height: 100%; display: block; }
+.dr-n { margin: 16px 0 6px; font-family: var(--serif); font-size: 30px; letter-spacing: .14em; }
+.dr-b { margin: 6px 0 0; font-size: 18px; color: #d4dbea; min-height: 1.6em; }
+.det-reveal.yes .dr-p { border-color: var(--ok); } .det-reveal.yes .dr-b { color: var(--ok); animation: detPop .5s ease-out both; }
+.det-reveal.no .dr-p { border-color: var(--danger); } .det-reveal.no .dr-b { color: var(--danger); animation: detPop .5s ease-out both; }
+@keyframes drGrow { from { transform: scale(.7); opacity: .3; } to { transform: scale(1); opacity: 1; } }
+
+html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count: 1 !important; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -3480,6 +3549,106 @@ const ART = (() => {
     return svg.replace(' xmlns="http://www.w3.org/2000/svg"', '');
   }
 
+  // ---------------------------------------------------------------- 每个案件、每个地点各有一张不重复的图
+  // 以基础场景为底，再按“案件+地点”叠加：不同的取景/构图、色调、光线、天气，以及与该地点相关的随机摆设。
+  const hash32 = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const rngSeed = (a) => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  // 摆设：原点在底部中心，高度约 20–60
+  const PROPS = {
+    candle: { kw: '餐宴厅堂祭灵仪式教堂卧', g: (a, b) => `<rect x="-3" y="-26" width="6" height="26" fill="#efe6cf"/><path d="M0 -38q-5 7 0 11q5-4 0-11z" fill="#ffc857"/><circle cx="0" cy="-33" r="11" fill="#ffc857" opacity=".13"/><rect x="-8" y="-3" width="16" height="3" fill="${b}"/>` },
+    vase: { kw: '厅堂客卧走廊门花', g: (a, b) => `<path d="M-8 0Q-14 -20 -5 -30L-4 -38H4L5 -30Q14 -20 8 0Z" fill="${a}"/><path d="M-6 -14Q0 -10 6 -14" stroke="${b}" stroke-width="1.6" fill="none"/><path d="M0 -38l-6 -14M0 -38l6 -12M0 -38l0 -16" stroke="#6a8a4a" stroke-width="1.4"/>` },
+    bottle: { kw: '酒窖餐厨吧药实验诊', g: (a, b) => `<rect x="-5" y="-34" width="10" height="34" rx="2" fill="${a}"/><rect x="-2" y="-44" width="4" height="12" fill="${a}"/><rect x="-2.6" y="-46" width="5.2" height="3" fill="${b}"/><rect x="-4" y="-22" width="8" height="10" fill="#efe6cf" opacity=".85"/>` },
+    glass: { kw: '餐宴酒吧厅', g: (a, b) => `<path d="M-8 -26h16l-2 12a6 6 0 0 1-12 0z" fill="#d9e8ff" opacity=".35" stroke="#bcd" stroke-width="1"/><path d="M0 -10v10M-6 0h12" stroke="#bcd" stroke-width="1.6"/><path d="M-6 -20h12" stroke="${a}" stroke-width="3" opacity=".7"/>` },
+    clock: { kw: '厅走廊书房客堂门', wall: 1, g: (a, b) => `<circle r="14" fill="#efe6cf" stroke="${b}" stroke-width="3"/><path d="M0 0V-9M0 0L7 4" stroke="#2a2018" stroke-width="2" stroke-linecap="round"/><circle r="1.6" fill="#2a2018"/>` },
+    painting: { kw: '厅走廊书房卧客堂画廊', wall: 1, g: (a, b) => `<rect x="-17" y="-22" width="34" height="44" fill="${b}"/><rect x="-14" y="-19" width="28" height="38" fill="${a}"/><path d="M-14 8Q-4 -6 4 4T14 -2V19H-14Z" fill="#1d2a3a" opacity=".6"/><circle cx="5" cy="-8" r="4" fill="#f0e2b0" opacity=".8"/>` },
+    mask: { kw: '舞台后台剧场镜演戏厅', wall: 1, g: (a, b) => `<path d="M-13 -16Q0 -24 13 -16Q15 8 0 18Q-15 8 -13 -16Z" fill="${a}" stroke="${b}" stroke-width="1.6"/><path d="M-8 -6q3 -3 6 0M2 -6q3 -3 6 0M-5 8q5 4 10 0" stroke="#1a1410" stroke-width="2" fill="none"/>` },
+    window: { kw: '室厅卧书客走廊阁', wall: 1, g: (a, b) => `<rect x="-18" y="-24" width="36" height="48" fill="#12203a" stroke="${b}" stroke-width="3"/><path d="M0 -24V24M-18 0H18" stroke="${b}" stroke-width="2"/><circle cx="8" cy="-12" r="5" fill="#f3efd9" opacity=".85"/>` },
+    key: { kw: '门锁室卧密书', g: (a, b) => `<circle cx="-8" cy="-3" r="5" fill="none" stroke="#d4af37" stroke-width="2.4"/><path d="M-3 -3H12M8 -3v5M12 -3v4" stroke="#d4af37" stroke-width="2.4" fill="none"/>` },
+    rope: { kw: '船舱甲板码头渡轮仓库', g: (a, b) => `<ellipse cx="0" cy="-5" rx="14" ry="5" fill="none" stroke="#b79a62" stroke-width="3.4"/><ellipse cx="0" cy="-9" rx="11" ry="4" fill="none" stroke="#b79a62" stroke-width="3.4"/><path d="M14 -5q10 -2 16 4" stroke="#b79a62" stroke-width="3" fill="none"/>` },
+    knife: { kw: '厨餐工具房', g: (a, b) => `<path d="M-14 -3L10 -6L14 -2L-14 1Z" fill="#cfd5dc"/><rect x="10" y="-7" width="14" height="6" rx="2" fill="#4a3226"/>` },
+    pot: { kw: '厨餐', g: (a, b) => `<path d="M-14 -22h28l-3 22h-22z" fill="${a}"/><rect x="-16" y="-25" width="32" height="4" rx="2" fill="${b}"/><path d="M14 -16h10" stroke="${b}" stroke-width="3"/>` },
+    cup: { kw: '餐厨客厅书房卧', g: (a, b) => `<path d="M-8 -14h16l-2 14h-12z" fill="#efe9dc"/><path d="M8 -11q8 0 0 8" stroke="#efe9dc" stroke-width="2" fill="none"/><ellipse cx="0" cy="-14" rx="8" ry="2" fill="#6a3a22"/>` },
+    suitcase: { kw: '客卧旅码头船舱房', g: (a, b) => `<rect x="-20" y="-24" width="40" height="24" rx="3" fill="${a}"/><rect x="-6" y="-28" width="12" height="4" rx="1.5" fill="none" stroke="${b}" stroke-width="2"/><rect x="-20" y="-14" width="40" height="3" fill="${b}"/>` },
+    chair: { kw: '厅餐书房客堂室', g: (a, b) => `<rect x="-12" y="-22" width="24" height="5" fill="${a}"/><rect x="-12" y="-52" width="5" height="32" fill="${a}"/><rect x="-12" y="-52" width="24" height="5" fill="${a}"/><rect x="-11" y="-17" width="3" height="17" fill="${b}"/><rect x="8" y="-17" width="3" height="17" fill="${b}"/>` },
+    lamp: { kw: '书房卧客厅客堂', g: (a, b) => `<path d="M-10 -34h20l5 16h-30z" fill="#f1d9a0"/><circle cx="0" cy="-22" r="22" fill="#ffd27a" opacity=".16"/><rect x="-1.6" y="-18" width="3.2" height="16" fill="${b}"/><rect x="-8" y="-3" width="16" height="3" rx="1.5" fill="${b}"/>` },
+    plant: { kw: '花园温室庭院厅客堂窗', g: (a, b) => `<path d="M-9 0L-7 -14H7L9 0Z" fill="${b}"/><path d="M0 -14Q-14 -22 -12 -40Q-2 -34 0 -14M0 -14Q14 -24 12 -42Q2 -34 0 -14M0 -14Q0 -30 0 -48" stroke="#3f7a3a" stroke-width="5" fill="none" stroke-linecap="round"/>` },
+    barrel: { kw: '酒窖地仓库船舱', g: (a, b) => `<path d="M-14 -34Q-20 -17 -14 0H14Q20 -17 14 -34Z" fill="${a}"/><path d="M-16 -24H16M-16 -10H16" stroke="${b}" stroke-width="2.4"/>` },
+    books: { kw: '书图馆房室研', g: (a, b) => `<rect x="-16" y="-8" width="32" height="8" fill="${a}"/><rect x="-13" y="-16" width="26" height="8" fill="${b}"/><rect x="-14" y="-23" width="24" height="7" fill="#4a3a5a"/><path d="M-13 -4h26M-10 -12h20" stroke="#d4af37" stroke-width="1" opacity=".7"/>` },
+    camera: { kw: '监控机房门口走廊录像室', wall: 1, g: (a, b) => `<rect x="-14" y="-8" width="28" height="16" rx="3" fill="#2a2d33"/><circle cx="10" cy="0" r="6" fill="#1a1c20" stroke="#555"/><circle cx="-9" cy="-3" r="2.2" fill="#e57373"/><path d="M0 8v10" stroke="#555" stroke-width="3"/>` },
+    radio: { kw: '客厅卧留声音乐舞台后台', g: (a, b) => `<rect x="-17" y="-24" width="34" height="24" rx="3" fill="${a}"/><circle cx="-7" cy="-12" r="7" fill="#2a2018"/><circle cx="-7" cy="-12" r="4" fill="${b}" opacity=".5"/><circle cx="10" cy="-16" r="2.6" fill="${b}"/><circle cx="10" cy="-8" r="2.6" fill="${b}"/>` },
+    lantern: { kw: '花园甲板码头阁院门外雪', g: (a, b) => `<path d="M0 -50v-6" stroke="#333" stroke-width="2"/><rect x="-8" y="-50" width="16" height="22" rx="4" fill="#d8b36a"/><path d="M-8 -39h16" stroke="${b}" stroke-width="1.6"/><circle cx="0" cy="-39" r="22" fill="#ffd27a" opacity=".16"/><path d="M0 -28v10" stroke="#333" stroke-width="2"/>` },
+    crate: { kw: '仓库码头船舱车库拍卖', g: (a, b) => `<rect x="-17" y="-28" width="34" height="28" fill="${a}"/><path d="M-17 -28L17 0M17 -28L-17 0" stroke="${b}" stroke-width="2.4"/><rect x="-17" y="-28" width="34" height="28" fill="none" stroke="${b}" stroke-width="2.6"/>` },
+    trophy: { kw: '拍卖厅书房大厅展', g: (a, b) => `<path d="M-9 -34h18q0 14 -9 18q-9 -4 -9 -18z" fill="#d4af37"/><rect x="-2" y="-17" width="4" height="10" fill="#d4af37"/><rect x="-9" y="-7" width="18" height="7" fill="${b}"/>` },
+    umbrella: { kw: '门外庭院雨走廊入口', g: (a, b) => `<path d="M-22 -26Q0 -50 22 -26Z" fill="${a}"/><path d="M0 -26V0q0 5 5 5" stroke="#3a2a20" stroke-width="2.4" fill="none"/>` },
+    mirror: { kw: '镜卧化妆更衣后台厅', wall: 1, g: (a, b) => `<ellipse rx="14" ry="22" fill="#9db8d0" opacity=".55" stroke="${b}" stroke-width="3"/><path d="M-5 -10L3 -18M-7 0L6 -13" stroke="#fff" stroke-width="1.6" opacity=".6"/>` },
+    bell: { kw: '前台旅馆民宿门服务', g: (a, b) => `<path d="M-12 0Q-12 -16 0 -18Q12 -16 12 0Z" fill="#d4af37"/><rect x="-14" y="0" width="28" height="3" fill="${b}"/><circle cx="0" cy="-20" r="2.2" fill="#d4af37"/>` },
+    syringe: { kw: '诊医药实验护病', g: (a, b) => `<rect x="-16" y="-4" width="24" height="7" rx="2" fill="#dfe8ee" stroke="#8a9aa6"/><path d="M8 0h14" stroke="#8a9aa6" stroke-width="1.6"/><rect x="-22" y="-5" width="6" height="9" fill="#8a9aa6"/><rect x="-12" y="-2" width="12" height="3" fill="${a}"/>` },
+    skull: { kw: '古董地密祭灵', g: (a, b) => `<path d="M-10 -10Q-12 -26 0 -26Q12 -26 10 -10V-4H-10Z" fill="#e8e2d0"/><circle cx="-4" cy="-14" r="2.6" fill="#1a1410"/><circle cx="4" cy="-14" r="2.6" fill="#1a1410"/>` }
+  };
+  const PROP_KEYS = Object.keys(PROPS);
+  const PAL = [['#6a3a2a', '#c9a14a'], ['#2e4a6a', '#9ab0c8'], ['#3d5a3a', '#cfa84a'], ['#5a2e3e', '#d9b36a'], ['#4a3a5a', '#bfa8d8'], ['#7a5a2a', '#e8d29a'], ['#2a5a5a', '#9fd0c8'], ['#5a5a5a', '#d0d0d0']];
+
+  function sceneFor(caseId, locId, baseId, o) {
+    o = o || {};
+    const ck = 'sf|' + caseId + '|' + locId + '|' + baseId + '|' + (o.cls || '');
+    if (cache.has(ck)) return cache.get(ck);
+    const u = ++uid, seed = hash32(caseId + '/' + locId), r = rngSeed(seed), fn = SCENES[baseId] || SCENES.cover;
+    const cover = locId === 'cover';
+    const hue = Math.floor(r() * 360);
+    // 取景：不同的缩放与偏移，水平翻转
+    const z = 1 + r() * (cover ? 0.14 : 0.3), vw = 400 / z, vh = 240 / z;
+    const vx = r() * (400 - vw), vy = r() * (240 - vh) * 0.7, flip = r() < 0.5;
+    const rawBase = fn(u);
+    // 选摆设：优先与地点名称/描述相关
+    const text = (o.text || '') + '';
+    const rel = PROP_KEYS.filter((k) => [...PROPS[k].kw].some((ch) => text.includes(ch)));
+    const pool = rel.length >= 3 ? rel : rel.concat(PROP_KEYS.filter((k) => !rel.includes(k)));
+    const pick = (n, wallOnly) => {
+      const out = []; let guard = 0;
+      while (out.length < n && guard++ < 60) {
+        const k = rel.length && r() < 0.7 ? rel[Math.floor(r() * rel.length)] : PROP_KEYS[Math.floor(r() * PROP_KEYS.length)];
+        const w = !!PROPS[k].wall; if (wallOnly !== undefined && w !== wallOnly) continue;
+        if (!out.includes(k)) out.push(k);
+      }
+      return out;
+    };
+    void pool;
+    const slots = [[28, 118], [150, 248], [290, 372]];
+    let props = '';
+    pick(cover ? 1 : 3, false).forEach((k, i) => {
+      const [a, b] = slots[(i + Math.floor(r() * 3)) % 3]; const x = a + r() * (b - a), y = 196 + r() * 24, sc = 0.8 + r() * 0.55, pal = PAL[Math.floor(r() * PAL.length)];
+      props += `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${sc.toFixed(2)})" opacity=".96"><ellipse cx="0" cy="1" rx="${(16 * sc).toFixed(0)}" ry="3" fill="#000" opacity=".28" transform="scale(${(1 / sc).toFixed(2)})"/>${PROPS[k].g(pal[0], pal[1])}</g>`;
+    });
+    pick(cover ? 0 : 1, true).forEach((k) => {
+      const x = 40 + r() * 320, y = 56 + r() * 26, sc = 0.9 + r() * 0.5, pal = PAL[Math.floor(r() * PAL.length)];
+      props += `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${sc.toFixed(2)})" opacity=".94">${PROPS[k].g(pal[0], pal[1])}</g>`;
+    });
+    // 光线 / 天气
+    const light = Math.floor(r() * 8), lx = 60 + r() * 280, lid = 'lg' + u;
+    let L = '';
+    switch (light) {
+      case 0: L = `<polygon points="${lx - 20},0 ${lx + 30},0 ${lx + 130},240 ${lx - 60},240" fill="#fff" opacity=".1"/>`; break;
+      case 1: L = `<defs><radialGradient id="${lid}"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".5"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient></defs><circle cx="${lx}" cy="${60 + r() * 60}" r="130" fill="url(#${lid})"/>`; break;
+      case 2: L = `<ellipse cx="120" cy="222" rx="190" ry="26" fill="#cfe0ea" opacity=".18"/><ellipse cx="300" cy="206" rx="170" ry="20" fill="#cfe0ea" opacity=".13"/>`; break;
+      case 3: L = `<g stroke="#bcd6ff" stroke-width=".8" opacity=".35">${Array.from({ length: 36 }, () => { const x = r() * 420, y = r() * 220; return `<path d="M${x.toFixed(0)} ${y.toFixed(0)}l-5 14"/>`; }).join('')}</g>`; break;
+      case 4: L = `<defs><linearGradient id="${lid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><polygon points="${lx - 10},0 ${lx + 10},0 ${lx + 90},240 ${lx - 90},240" fill="url(#${lid})"/>`; break;
+      case 5: L = `<g fill="#fff" opacity=".4">${Array.from({ length: 26 }, () => `<circle cx="${(r() * 400).toFixed(0)}" cy="${(r() * 240).toFixed(0)}" r="${(0.7 + r() * 1.6).toFixed(1)}"/>`).join('')}</g>`; break;
+      case 6: L = `<defs><radialGradient id="${lid}" cx=".1" cy=".1" r=".9"><stop offset="0" stop-color="#ff3b30" stop-opacity=".4"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient></defs><rect width="400" height="240" fill="url(#${lid})"/>`; break;
+      default: L = `<g fill="#fff" opacity=".1">${Array.from({ length: 5 }, (_, i) => `<polygon points="${lx - 60 + i * 26},0 ${lx - 46 + i * 26},0 ${lx + 40 + i * 26},240 ${lx + 26 + i * 26},240"/>`).join('')}</g>`;
+    }
+    // 色调：低饱和的整体着色 + 暗角
+    const tint = `<rect width="400" height="240" fill="hsl(${hue} 55% ${cover ? 34 : 30}%)" opacity="${(0.16 + r() * 0.12).toFixed(2)}"/>`;
+    // 封面：案名首字做成大水印
+    const mark = cover && o.title ? `<text x="${flip ? 120 : 280}" y="190" text-anchor="middle" font-size="190" font-family="serif" fill="#fff" opacity=".1">${String(o.title).charAt(0).replace(/[<&]/g, '')}</text>` : '';
+    const inner = `<g transform="${flip ? 'translate(400 0) scale(-1 1)' : ''}">${rawBase}</g>${tint}${L}${mark}${props}${vignette(u)}`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" class="scene s-${baseId} ${o.cls || ''}" viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${o.label || ''}">${inner}</svg>`;
+    // 手机：烘焙成静态图片，并加一层色相偏移让同一底图看起来更不同
+    const out = LITE_ART
+      ? `<img class="scene s-${baseId} ${o.cls || ''}" alt="${o.label || ''}" decoding="sync" draggable="false" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}">`
+      : svg.replace(' xmlns="http://www.w3.org/2000/svg"', '');
+    cache.set(ck, out); return out;
+  }
+
   // ---------------------------------------------------------------- 按“外观设定”生成立绘
   const L_SKIN = { fair: ['#f6dcc4', '#dcae92'], light: ['#f0cfae', '#cf9f7c'], tan: ['#dcaa80', '#b88160'], brown: ['#b9805c', '#8f5e42'], deep: ['#8a5a3e', '#64402c'] };
   const L_HAIR = { black: '#17151c', brown: '#4a3022', auburn: '#6b3524', grey: '#8e8d90', white: '#dcdde2', blonde: '#c9a45a', red: '#9a3a22', silver: '#b9bcc4' };
@@ -3492,7 +3661,23 @@ const ART = (() => {
     sad: { m: 'M93 131Q100 126 107 131', b: { tilt: 2.6, arch: 4 } },
     smile: { m: 'M89 126Q100 137 111 126', b: { arch: 4 } },
     tired: { m: 'M93 129Q100 130 107 129', b: { tilt: 1 }, lid: .9, bags: true },
-    sly: { m: 'M88 127Q103 134 113 122', b: { lr: 2 }, lid: 1.1 }
+    sly: { m: 'M88 127Q103 134 113 122', b: { lr: 2 }, lid: 1.1 },
+    // —— 审问时的情绪表情 ——
+    nervous: { m: 'M92 130Q96 127 100 130Q104 133 108 130', b: { tilt: 2.4, arch: 4.5 }, lid: -0.3, pr: 2.5, fx: 'sweat1' },
+    scared: { m: 'M94 129Q100 139 106 129Q100 125 94 129Z', b: { tilt: 3.2, arch: 6, y: 82 }, lid: -1.7, pr: 2, fx: 'sweat2', pale: 1 },
+    panic: { m: 'M93 128Q100 142 107 128Q100 123 93 128Z', b: { tilt: 3.6, arch: 6.5, y: 81 }, lid: -2.1, pr: 1.7, fx: 'sweat3', pale: 1 },
+    shocked: { m: 'M96 127a4 5.2 0 1 0 8 0a4 5.2 0 1 0-8 0', b: { tilt: 0.5, arch: 7, y: 81 }, lid: -2, pr: 2, fx: 'sweat1' },
+    angry: { m: 'M91 132Q100 124 109 132', b: { tilt: -3.6, arch: 0.6, w: 4 }, lid: 0.7, pr: 3, fx: 'rage' },
+    annoyed: { m: 'M92 130Q100 127 108 131', b: { tilt: -1.5, lr: 1 }, lid: 0.55, fx: 'blush' },
+    weep: { m: 'M93 132Q100 125 107 132', b: { tilt: 2.8, arch: 4.5 }, lid: 0.4, fx: 'tears' }
+  };
+  const MOOD_FX = {
+    sweat1: '<path d="M127 76q-4 8 0 11q4-3 0-11z" fill="#bfe6ff" opacity=".92"/>',
+    sweat2: '<path d="M127 76q-4 8 0 11q4-3 0-11zM72 80q-3.5 7 0 10q3.5-3 0-10z" fill="#bfe6ff" opacity=".92"/>',
+    sweat3: '<path d="M127 74q-4 8 0 11q4-3 0-11zM72 78q-3.5 7 0 10q3.5-3 0-10zM134 100q-3 6 0 9q3-3 0-9z" fill="#bfe6ff" opacity=".92"/><path d="M60 64l-6-3M140 64l6-3M58 78l-7 0M142 78l7 0" stroke="#e8e8f0" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>',
+    rage: '<ellipse cx="75" cy="112" rx="10" ry="7" fill="#e0453a" opacity=".38"/><ellipse cx="125" cy="112" rx="10" ry="7" fill="#e0453a" opacity=".38"/><path d="M121 64l5 3-3 5M132 62l-6 4 4 5" stroke="#d1453b" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    blush: '<ellipse cx="75" cy="112" rx="9" ry="6" fill="#e0453a" opacity=".24"/><ellipse cx="125" cy="112" rx="9" ry="6" fill="#e0453a" opacity=".24"/>',
+    tears: '<path d="M82 103q-3.5 9 0 13q3.5-4 0-13zM118 103q-3.5 9 0 13q3.5-4 0-13z" fill="#a9d6ff" opacity=".9"/>'
   };
   const darken = (hex, k) => {
     const n = parseInt(hex.slice(1), 16);
@@ -3608,7 +3793,7 @@ const ART = (() => {
     const ears = `<ellipse cx="${f ? 64 : 62}" cy="99" rx="5.5" ry="10" fill="${sk2}"/><ellipse cx="${f ? 136 : 138}" cy="99" rx="5.5" ry="10" fill="${sk2}"/>`;
     const headP = `<path d="${head}" fill="url(#sk${u})"/>`;
     const lid = mood.lid || 0;
-    const eye = (x) => `<ellipse cx="${x}" cy="97" rx="${f ? 6.2 : 6}" ry="${(f ? 4.2 : 3.9) - lid}" fill="#f6f1e8"/><circle cx="${x}" cy="97.4" r="3" fill="${look.skin === 'deep' ? '#241812' : '#3a2a20'}"/><circle cx="${x}" cy="97.4" r="1.4" fill="#0a0806"/><circle cx="${x + 1.2}" cy="96.2" r=".9" fill="#fff"/><path d="M${x - 6.5} ${96 - lid * 0.6}Q${x} ${92.5 - lid}, ${x + 6.5} ${96 - lid * 0.6}" stroke="#2a1c14" stroke-width="${f ? 2 : 1.7}" fill="none" stroke-linecap="round"/>${f ? `<path d="M${x - 6.6} 95.4l-2-1.6M${x + 6.6} 95.4l2-1.6" stroke="#2a1c14" stroke-width="1.2" stroke-linecap="round"/>` : ''}`;
+    const eye = (x) => `<ellipse cx="${x}" cy="97" rx="${f ? 6.2 : 6}" ry="${(f ? 4.2 : 3.9) - lid}" fill="#f6f1e8"/><circle cx="${x}" cy="97.4" r="${mood.pr || 3}" fill="${look.skin === 'deep' ? '#241812' : '#3a2a20'}"/><circle cx="${x}" cy="97.4" r="${(mood.pr || 3) * 0.47}" fill="#0a0806"/><circle cx="${x + 1.2}" cy="96.2" r=".9" fill="#fff"/><path d="M${x - 6.5} ${96 - lid * 0.6}Q${x} ${92.5 - lid}, ${x + 6.5} ${96 - lid * 0.6}" stroke="#2a1c14" stroke-width="${f ? 2 : 1.7}" fill="none" stroke-linecap="round"/>${f ? `<path d="M${x - 6.6} 95.4l-2-1.6M${x + 6.6} 95.4l2-1.6" stroke="#2a1c14" stroke-width="1.2" stroke-linecap="round"/>` : ''}`;
     const bo = Object.assign({ y: 85, arch: 3, tilt: 0, w: f ? 2.4 : 3.2, lr: 0 }, mood.b);
     const bc = darken(hc === L_HAIR.white || hc === L_HAIR.silver ? '#d8dae0' : hc, 1);
     const brows = `<path d="M72 ${bo.y + bo.tilt - bo.lr}Q83 ${bo.y - bo.arch - bo.lr} 94 ${bo.y - bo.tilt - bo.lr + 1}" stroke="${bc}" stroke-width="${bo.w}" fill="none" stroke-linecap="round"/><path d="M106 ${bo.y - bo.tilt + 1}Q117 ${bo.y - bo.arch} 128 ${bo.y + bo.tilt}" stroke="${bc}" stroke-width="${bo.w}" fill="none" stroke-linecap="round"/>`;
@@ -3638,10 +3823,13 @@ const ART = (() => {
     if (acc.includes('earrings')) accHead += `<circle cx="${f ? 64 : 62}" cy="110" r="3.2" fill="#f4f0ea"/><circle cx="${f ? 136 : 138}" cy="110" r="3.2" fill="#f4f0ea"/>`;
     if (acc.includes('headset')) accHead += `<path d="M62 94C58 50 142 50 138 94" stroke="#2a2d35" stroke-width="4" fill="none"/><rect x="55" y="88" width="10" height="20" rx="4" fill="#2a2d35"/><rect x="135" y="88" width="10" height="20" rx="4" fill="#2a2d35"/><path d="M58 108Q64 128 86 130" stroke="#2a2d35" stroke-width="2.4" fill="none"/><circle cx="88" cy="130" r="3" fill="#2a2d35"/>`;
     const finish = `<rect width="200" height="240" fill="url(#rim${u})"/><rect width="200" height="240" fill="url(#vg${u})"/>`;
-    return defs + backdrop + back + hoodBack + neck + body + neckCover + accBody + ears + headP + wr + brows + eye(84) + eye(116) + nose + cheeks + mouth + bd + front + gl + accHead + finish;
+    const pale = mood.pale ? `<path d="${head}" fill="#cfe0ff" opacity=".18"/>` : '';
+    const mfx = mood.fx ? MOOD_FX[mood.fx] || '' : '';
+    return defs + backdrop + back + hoodBack + neck + body + neckCover + accBody + ears + headP + pale + wr + brows + eye(84) + eye(116) + nose + cheeks + mouth + bd + mfx + front + gl + accHead + finish;
   }
 
   function portraitFromLook(look, o = {}) {
+    if (o.mood && MOODS[o.mood]) look = Object.assign({}, look, { mood: o.mood });
     const ck = 'L|' + JSON.stringify(look) + '|' + (o.crop || '') + '|' + (o.cls || '') + '|' + (o.age || '');
     if (cache.has(ck)) return cache.get(ck);
     const u = ++uid;
@@ -3670,7 +3858,7 @@ const ART = (() => {
   };
   const icon = (n) => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[n] || ''}</svg>`;
 
-  return { portrait, scene, icon, SCENES };
+  return { portrait, scene, sceneFor, icon, SCENES };
 })();
 if (typeof window !== 'undefined') window.ART = ART;
 
@@ -3823,6 +4011,190 @@ if (typeof window !== 'undefined') window.FX = FX;
 </script>
 <script>
 'use strict';
+// 音效与背景音乐：全部用 WebAudio 现场合成，不需要任何音频文件。
+// 首次点击/触摸后才会真正出声（浏览器规定）；页面切到后台自动暂停；可静音，设置会记住。
+const SFX = (() => {
+  const KEY = 'sfx:muted';
+  let ac = null, master = null, musicBus = null, sfxBus = null, noiseBuf = null;
+  let muted = false, timer = null, mode = null, seed = 1, root = 50, scale = [0, 2, 3, 5, 7, 8, 10];
+  let nextT = 0, bar = 0, tense = false, rnd = Math.random;
+  try { muted = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  const LITE = typeof navigator !== 'undefined' && (/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) || (navigator.hardwareConcurrency || 8) <= 4);
+
+  const SCALES = {
+    minor: [0, 2, 3, 5, 7, 8, 10], dorian: [0, 2, 3, 5, 7, 9, 10], phryg: [0, 1, 3, 5, 7, 8, 10], harm: [0, 2, 3, 5, 7, 8, 11], lyd: [0, 2, 4, 6, 7, 9, 11]
+  };
+  const TONE_SCALE = { cold: 'dorian', dark: 'phryg', warm: 'minor', none: 'minor', red: 'harm', gold: 'dorian', sea: 'dorian', night: 'phryg' };
+  const PROG = [[0, 2, 4], [5, 0, 2], [3, 5, 0], [4, 6, 1], [0, 2, 4], [2, 4, 6], [5, 0, 2], [4, 6, 1]];
+  const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const degSemi = (d) => scale[((d % 7) + 7) % 7] + 12 * Math.floor(d / 7);
+  function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  function ensure() {
+    if (ac) return ac;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      ac = new AC();
+      master = ac.createGain(); master.gain.value = muted ? 0 : 0.9; master.connect(ac.destination);
+      musicBus = ac.createGain(); musicBus.gain.value = 0.5; musicBus.connect(master);
+      sfxBus = ac.createGain(); sfxBus.gain.value = 0.85; sfxBus.connect(master);
+      // 轻微回声，让音色有空间感
+      const d = ac.createDelay(1); d.delayTime.value = 0.34; const fb = ac.createGain(); fb.gain.value = 0.32; const wet = ac.createGain(); wet.gain.value = 0.35;
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
+      musicBus.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(wet); wet.connect(master);
+      noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+      const ch = noiseBuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+    } catch (e) { ac = null; }
+    return ac;
+  }
+  function wake() { const a = ensure(); if (a && a.state === 'suspended') { try { a.resume(); } catch (e) {} } return a; }
+  ['pointerdown', 'touchend', 'keydown'].forEach((ev) => document.addEventListener(ev, () => { if (mode || ac) wake(); else ensure(); }, { passive: true }));
+  document.addEventListener('visibilitychange', () => {
+    if (!ac) return;
+    try { if (document.hidden) ac.suspend(); else if (!muted) ac.resume(); } catch (e) {}
+  });
+
+  // ---------- 基础合成 ----------
+  function tone(f, t, dur, o) {
+    if (!ac) return; o = o || {};
+    const osc = ac.createOscillator(), g = ac.createGain();
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(f, t);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.to), t + dur);
+    if (o.det) osc.detune.value = o.det;
+    const a = o.attack == null ? 0.01 : o.attack, v = o.gain == null ? 0.2 : o.gain;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    let node = osc;
+    if (o.lp) { const fl = ac.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = o.lp; osc.connect(fl); node = fl; }
+    node.connect(g); g.connect(o.bus || sfxBus);
+    osc.start(t); osc.stop(t + dur + 0.05);
+  }
+  function noise(t, dur, o) {
+    if (!ac) return; o = o || {};
+    const src = ac.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const f = ac.createBiquadFilter(); f.type = o.type || 'bandpass'; f.frequency.setValueAtTime(o.f || 1200, t); f.Q.value = o.q || 0.8;
+    if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    const g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(o.gain || 0.2, t + (o.attack || 0.02));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(o.bus || sfxBus); src.start(t); src.stop(t + dur + 0.05);
+  }
+  const T = () => ac.currentTime + 0.02;
+  const play = (fn) => { if (muted) return; if (!wake()) return; try { fn(T()); } catch (e) {} };
+
+  // ---------- 音效 ----------
+  const fx = {
+    click: (t) => tone(1100, t, 0.05, { type: 'triangle', gain: 0.08 }),
+    tab: (t) => { noise(t, 0.12, { f: 2200, to: 800, gain: 0.07 }); tone(520, t, 0.08, { type: 'triangle', gain: 0.05 }); },
+    ask: (t) => { tone(260, t, 0.16, { to: 130, gain: 0.18 }); tone(780, t + 0.02, 0.1, { type: 'triangle', gain: 0.05 }); },
+    search: (t) => { noise(t, 0.5, { f: 600, to: 3200, q: 1.4, gain: 0.16 }); noise(t + 0.25, 0.3, { f: 3000, to: 900, gain: 0.08 }); },
+    clue: (t) => { [880, 1175, 1568].forEach((f, i) => { tone(f, t + i * 0.09, 1.3, { gain: 0.14 }); tone(f * 2.01, t + i * 0.09, 0.6, { gain: 0.04 }); }); },
+    nothing: (t) => tone(200, t, 0.3, { type: 'triangle', to: 150, gain: 0.1 }),
+    pick: (t) => { tone(660, t, 0.1, { type: 'triangle', gain: 0.1 }); tone(990, t + 0.06, 0.14, { type: 'triangle', gain: 0.08 }); },
+    // 证物对质：沉重一击
+    confront: (t) => { tone(90, t, 0.7, { to: 40, gain: 0.5 }); noise(t, 0.25, { f: 900, to: 200, gain: 0.25 }); },
+    // 谎言被揭穿：不和谐的刺音
+    lie: (t) => {
+      tone(80, t, 1.2, { to: 38, gain: 0.55 }); noise(t, 0.3, { f: 1500, to: 300, gain: 0.3 });
+      tone(233, t, 1.1, { type: 'sawtooth', gain: 0.1, lp: 900 }); tone(247, t, 1.1, { type: 'sawtooth', gain: 0.1, lp: 900 });
+      tone(1760, t + 0.04, 0.9, { gain: 0.05 });
+    },
+    // 关键破绽：重击 + 上升的和弦 + 铃声
+    crack: (t) => {
+      tone(70, t, 1.8, { to: 32, gain: 0.7 }); noise(t, 0.5, { f: 1200, to: 150, gain: 0.4 });
+      [220, 277, 330, 440].forEach((f) => tone(f, t + 0.15, 2.4, { type: 'sawtooth', gain: 0.07, attack: 0.9, lp: 1300 }));
+      [1320, 1760, 2093].forEach((f, i) => tone(f, t + 0.9 + i * 0.12, 1.6, { gain: 0.1 }));
+    },
+    stamp: (t) => { tone(65, t, 0.5, { to: 35, gain: 0.7 }); noise(t, 0.12, { f: 700, to: 200, gain: 0.45 }); },
+    swell: (t) => { tone(55, t, 3.2, { type: 'sawtooth', gain: 0.16, attack: 2.2, lp: 400 }); tone(82.5, t, 3.2, { type: 'sawtooth', gain: 0.1, attack: 2.2, lp: 500 }); noise(t, 3, { f: 300, to: 2400, gain: 0.08, attack: 2.4 }); },
+    drum: (t) => { for (let i = 0; i < 26; i++) { const tt = t + i * 0.075 + (i * i) * 0.0009; noise(tt, 0.07, { f: 220, q: 0.5, gain: 0.05 + i * 0.006 }); tone(110, tt, 0.07, { to: 80, gain: 0.04 + i * 0.006 }); } },
+    gasp: (t) => noise(t, 0.35, { f: 500, to: 2600, q: 1.1, gain: 0.14 }),
+    growl: (t) => { tone(70, t, 0.45, { type: 'sawtooth', to: 55, gain: 0.16, lp: 300 }); noise(t, 0.3, { f: 200, gain: 0.07 }); },
+    sob: (t) => { tone(330, t, 0.5, { to: 262, gain: 0.07, attack: 0.15 }); tone(310, t + 0.5, 0.5, { to: 247, gain: 0.06, attack: 0.15 }); },
+    win: (t) => {
+      [261.6, 329.6, 392, 523.3, 659.3, 784].forEach((f, i) => { tone(f, t + i * 0.13, 1.8, { type: 'triangle', gain: 0.16 }); tone(f * 2, t + i * 0.13, 1, { gain: 0.04 }); });
+      [130.8, 196].forEach((f) => tone(f, t, 3.2, { gain: 0.2, attack: 0.1 }));
+      [1568, 2093, 2637].forEach((f, i) => tone(f, t + 0.9 + i * 0.1, 1.4, { gain: 0.07 }));
+    },
+    lose: (t) => {
+      [392, 349.2, 311.1, 261.6].forEach((f, i) => { tone(f, t + i * 0.38, 1.6, { type: 'triangle', gain: 0.15, lp: 1200 }); });
+      tone(98, t, 3.4, { type: 'sawtooth', gain: 0.1, attack: 0.3, lp: 300 });
+    }
+  };
+  const api = {
+    muted: () => muted,
+    toggle() {
+      muted = !muted; try { localStorage.setItem(KEY, muted ? '1' : '0'); } catch (e) {}
+      if (ac && master) master.gain.setTargetAtTime(muted ? 0 : 0.9, ac.currentTime, 0.05);
+      if (!muted) { wake(); if (mode) start(); }
+      return muted;
+    },
+    wake
+  };
+  Object.keys(fx).forEach((k) => { api[k] = () => play(fx[k]); });
+
+  // ---------- 背景音乐 ----------
+  function playBar(t) {
+    const prog = PROG[bar % PROG.length]; const len = barLen();
+    const base = root + (mode === 'menu' ? 0 : 0);
+    // 铺底和弦
+    prog.forEach((d, i) => {
+      const m = base + degSemi(d) + (i === 0 ? -12 : 0);
+      tone(hz(m), t, len + 1.5, { type: i === 0 ? 'triangle' : 'sine', gain: 0.07, attack: 1.6, bus: musicBus, lp: 900 });
+    });
+    tone(hz(base + degSemi(prog[0]) - 12), t, len + 1, { gain: 0.1, attack: 0.8, bus: musicBus });
+    // 零散的琴音
+    const n = mode === 'menu' ? 3 : 2 + Math.floor(rnd() * 3);
+    for (let i = 0; i < n; i++) {
+      const at = t + 0.4 + rnd() * (len - 1.2);
+      const d = prog[Math.floor(rnd() * 3)] + (rnd() < 0.5 ? 7 : 14) + (rnd() < 0.25 ? 1 : 0);
+      tone(hz(base + 12 + degSemi(d)), at, 2.2, { type: 'triangle', gain: 0.07 + rnd() * 0.04, attack: 0.012, bus: musicBus, lp: 2600 });
+    }
+    if (mode === 'win') tone(hz(base + 24), t, 2, { gain: 0.04, bus: musicBus });
+    // 心跳：审问时叠加
+    if (tense) {
+      const beats = Math.floor(len / 0.95);
+      for (let i = 0; i < beats; i++) {
+        const bt = t + i * 0.95;
+        tone(58, bt, 0.22, { to: 38, gain: 0.34, bus: musicBus }); tone(52, bt + 0.2, 0.2, { to: 36, gain: 0.24, bus: musicBus });
+      }
+      tone(hz(base + 36 + 1), t, len, { type: 'sine', gain: 0.018, attack: 2, bus: musicBus });
+    }
+    bar++;
+  }
+  const barLen = () => (mode === 'menu' ? 6.5 : 5.2);
+  function sched() {
+    if (!ac || muted || !mode || document.hidden) return;
+    if (ac.state === 'suspended') return;
+    const now = ac.currentTime;
+    if (nextT < now) nextT = now + 0.05;
+    let guard = 0;
+    while (nextT < now + 1.2 && guard++ < 3) { playBar(nextT); nextT += barLen(); }
+  }
+  function start() {
+    if (!ensure()) return;
+    clearInterval(timer); nextT = 0; timer = setInterval(sched, LITE ? 400 : 250); sched();
+  }
+  // seed: 案件 id；tone: 案件基调
+  api.music = (m, sd, tn) => {
+    const key = m + '|' + sd;
+    if (mode === m && key === api._key && timer) return;
+    api._key = key; mode = m; seed = hashStr(String(sd || 'menu'));
+    rnd = mulberry(seed);
+    root = 40 + (seed % 9);
+    scale = SCALES[m === 'menu' ? 'dorian' : (TONE_SCALE[tn] || (['minor', 'dorian', 'phryg', 'harm'][seed % 4]))];
+    bar = seed % 4; tense = false;
+    ensure(); start();
+  };
+  api.tension = (on) => { tense = !!on; };
+  api.stop = () => { mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
+  return api;
+})();
+if (typeof window !== 'undefined') window.SFX = SFX;
+
+</script>
+<script>
+'use strict';
 // 单人侦探模式：纯前端。案件数据来自 window.__CASES（见 docs/detective-spec.md）。
 // 进度存 localStorage（读写都包 try/catch，存不了也能玩）。
 (function () {
@@ -3836,6 +4208,11 @@ if (typeof window !== 'undefined') window.FX = FX;
   let pickClue = false;
   let lastClue = null;
   let confirmSubmit = false;
+  let flash = null;     // 刚被问过话的人，用于触发一次表情动画
+  let timers = [];
+  const later = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const muteBtn = () => `<button class="btn small ghost det-mute" data-act="mute" aria-label="音效开关">${window.SFX && SFX.muted() ? '🔇' : '🔊'}</button>`;
 
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
@@ -3844,7 +4221,7 @@ if (typeof window !== 'undefined') window.FX = FX;
   const cases = () => window.__CASES || [];
   const caseById = (id) => cases().find((c) => c.id === id);
   const key = (id) => 'det:' + id;
-  const fresh = () => ({ ptr: {}, found: [], asked: {}, conf: {}, broken: [], log: [], mark: [], searches: 0, asks: 0, result: null });
+  const fresh = () => ({ ptr: {}, found: [], asked: {}, conf: {}, broken: [], log: [], mark: [], seen: {}, searches: 0, asks: 0, result: null });
   function save() { if (C) store.set(key(C.id), G); }
 
   const clueMap = () => { const m = {}; C.locations.forEach((l) => l.clues.forEach((k) => { m[k.id] = Object.assign({ loc: l.id, locName: l.name }, k); })); return m; };
@@ -3860,17 +4237,65 @@ if (typeof window !== 'undefined') window.FX = FX;
     return isAsked(a, b) || isBroken(a, b);
   };
   const toast = (m) => { if (window.toast) window.toast(m); };
+  const sfx = (n) => { try { if (window.SFX && SFX[n]) SFX[n](); } catch (e) {} };
+  const hashS = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+
+  // ---------- 审问分层：先聊基本情况，再追问，最后才能深挖 ----------
+  // 开场：每人前 3 个“不涉及谎言、没有前置条件”的话题，一开始就能问
+  // 追问：其余没有前置条件的话题（含多数敏感问题），聊完两个开场话题后才出现
+  // 深挖：需要证物/别人的口供作前置的话题，除满足前置外，还要先问过该人至少 3 件事
+  const openersOf = (s) => {
+    const o = s.topics.filter((t) => !t.lie && !(t.needs && t.needs.length)).slice(0, 3).map((t) => t.id);
+    if (!o.length) { const f = s.topics.find((t) => !(t.needs && t.needs.length)); if (f) o.push(f.id); }
+    return o;
+  };
+  const tierOf = (s, t) => (t.needs && t.needs.length ? 2 : openersOf(s).includes(t.id) ? 0 : 1);
+  const talked = (s) => ((G.asked[s.id] || []).length) + Object.keys(G.conf).filter((k) => k.startsWith(s.id + '.')).length;
+  const unlocked = (s, t) => {
+    const tr = tierOf(s, t);
+    if (tr === 0) return true;
+    if (tr === 1) { const op = openersOf(s); return op.filter((id) => isAsked(s.id, id)).length >= Math.min(2, op.length); }
+    return (t.needs || []).every(needOk) && talked(s) >= 3;
+  };
+
+  // ---------- 表情 ----------
+  const MOOD_TXT = { nervous: '神色慌张', scared: '面露惧色', panic: '惊慌失措', shocked: '大吃一惊', angry: '怒形于色', annoyed: '明显不耐烦', weep: '神情黯然' };
+  const RE_ANGRY = /凭什么|你敢|放肆|荒唐|荒谬|够了|无礼|滚|怀疑我|岂有此理|少废话|闭嘴|太过分|别太过分|我受够/;
+  const RE_FEAR = /害怕|吓死|吓得|不敢|别过来|别问了|不要再|求你|别逼|我不想|我怕|发抖|救命/;
+  const RE_SAD = /哭|眼泪|泪|难过|心痛|心疼|可怜|走得|不在了|舍不得|想念/;
+  // 同一个人的同一句回答，每次表情都一样；说谎的人不一定紧张（也有面不改色的），老实人被问到敏感处也会不安
+  function moodOfEntry(s, e) {
+    const h = hashS(s.id + '|' + (e.t || e.title || '')) % 100;
+    if (e.kind === 'c') {
+      if (e.crack) return h < 55 ? 'panic' : 'scared';
+      if (e.broke) return ['nervous', 'angry', 'shocked', 'weep'][h % 4];
+      return h < 40 ? 'annoyed' : null;
+    }
+    const t = s.topics.find((x) => x.id === e.t) || {};
+    if (t.mood) return t.mood === 'calm' ? null : t.mood;
+    const txt = e.a || '';
+    if (RE_ANGRY.test(txt)) return 'angry';
+    if (RE_FEAR.test(txt)) return 'scared';
+    if (RE_SAD.test(txt)) return 'weep';
+    if (t.lie) return h < 28 ? null : h < 64 ? 'nervous' : h < 84 ? 'annoyed' : 'scared';
+    if (t.needs && t.needs.length) return h < 38 ? 'nervous' : null;
+    return null;
+  }
+  const portraitOf = (s, mood, crop) => ART.portrait(s.look, { age: s.age, crop: crop, mood: mood || null });
+  const lastMood = (s) => { const l = G.log.filter((e) => e.s === s.id); return l.length ? moodOfEntry(s, l[l.length - 1]) : null; };
 
   // ---------- 入口 ----------
   function open() {
     $('#home').hidden = true; $('#room').hidden = true;
     root().hidden = false;
     delete document.body.dataset.tone;
-    C = null; renderList();
+    C = null; clearTimers(); renderList();
+    try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
     window.scrollTo(0, 0);
   }
   function close() {
-    root().hidden = true; C = null;
+    root().hidden = true; C = null; clearTimers();
+    try { SFX.stop(); } catch (e) {}
     delete document.body.dataset.tone;
     if (window.showHome) window.showHome();
   }
@@ -3880,13 +4305,13 @@ if (typeof window !== 'undefined') window.FX = FX;
     const list = cases();
     root().innerHTML = `
       <div class="det-wrap">
-        <div class="det-top"><button class="btn small ghost" data-act="home">‹ 返回</button><div class="det-title">单人侦探</div><span></span></div>
+        <div class="det-top"><button class="btn small ghost" data-act="home">‹ 返回</button><div class="det-title">单人侦探</div>${muteBtn()}</div>
         <p class="det-lead">你是被请来的侦探。搜证、审问、对质，最后指认凶手。不需要朋友，也不需要开麦。</p>
         <div class="det-list">${list.map((c) => {
           const g = store.get(key(c.id)); const r = g && g.result;
           const badge = r ? `<span class="det-badge g-${r.grade}">${r.grade}</span>` : g && (g.searches || g.asks) ? '<span class="det-badge go">进行中</span>' : '';
           return `<button class="sc-card det-case" data-case="${esc(c.id)}">
-            <div class="sc-art">${ART.scene(c.cover)}</div>
+            <div class="sc-art">${ART.sceneFor(c.id, 'cover', c.cover, { title: c.title, text: c.title + c.tagline })}</div>
             <div class="sc-info"><div class="sc-name">${esc(c.title)} ${badge}</div>
             <div class="sc-tag">${esc(c.tagline)}</div>
             <div class="sc-meta">难度 <span class="stars">${stars(c.difficulty)}</span> · 搜证 ${c.budget.search} 次 · 提问 ${c.budget.ask} 次</div></div></button>`;
@@ -3898,9 +4323,34 @@ if (typeof window !== 'undefined') window.FX = FX;
     C = caseById(id); if (!C) return;
     const g = store.get(key(id));
     G = g && g.log ? Object.assign(fresh(), g) : fresh();
-    tab = G.result ? 'accuse' : 'brief'; sel = null; pickClue = false; lastClue = null;
+    tab = G.result ? 'accuse' : 'brief'; sel = null; pickClue = false; lastClue = null; flash = null;
+    clearTimers();
     document.body.dataset.tone = C.tone || 'none';
-    renderCase(); window.scrollTo(0, 0);
+    try { SFX.music('case', C.id, C.tone); SFX.tension(false); } catch (e) {}
+    window.scrollTo(0, 0);
+    if (!G.result && !G.searches && !G.asks && !G.introDone) return showIntro();
+    renderCase();
+  }
+
+  // ---------- 开场动画：只用淡入/缩放/位移（GPU 合成），播完就静止，不会卡 ----------
+  function showIntro() {
+    const idx = cases().findIndex((x) => x.id === C.id) + 1;
+    const chars = [...C.title].map((ch, i) => `<span style="animation-delay:${(0.7 + i * 0.16).toFixed(2)}s">${esc(ch)}</span>`).join('');
+    root().innerHTML = `<div class="det-intro" data-act="skipintro" role="button" aria-label="点击开始调查">
+      <div class="di-bg">${ART.sceneFor(C.id, 'cover', C.cover, { title: C.title, text: C.title + C.tagline })}</div>
+      <div class="di-shade"></div>
+      <div class="di-c">
+        <p class="di-no">CASE FILE · No.${String(idx).padStart(2, '0')} · 难度 ${'★'.repeat(C.difficulty)}</p>
+        <h2 class="di-t">${chars}</h2>
+        <p class="di-tag">${esc(C.tagline)}</p>
+        <div class="di-stamp">卷宗开启</div>
+        <p class="di-hint">轻点屏幕，开始调查</p>
+      </div></div>`;
+    sfx('swell'); later(() => sfx('stamp'), 1750);
+  }
+  function endIntro() {
+    clearTimers(); if (!C) return;
+    G.introDone = true; save(); renderCase(); window.scrollTo(0, 0); sfx('click');
   }
 
   // ---------- 主界面 ----------
@@ -3911,23 +4361,24 @@ if (typeof window !== 'undefined') window.FX = FX;
     root().innerHTML = `
       <div class="det-wrap">
         <div class="det-top"><button class="btn small ghost" data-act="list">‹ 案件</button><div class="det-title">${esc(C.title)}</div>
-          <div class="det-meter" title="剩余搜证 / 提问次数"><b>${searchLeft()}</b> 搜 · <b>${askLeft()}</b> 问</div></div>
+          <div class="det-tr">${muteBtn()}<div class="det-meter" title="剩余搜证 / 提问次数"><b>${searchLeft()}</b> 搜 · <b>${askLeft()}</b> 问</div></div></div>
         <nav class="tabs det-tabs">${TABS.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}${k === 'notes' && G.found.length ? `<em>${G.found.length}</em>` : ''}</button>`).join('')}</nav>
         <div class="det-body">${body}</div>
       </div>`;
     wireFx();
+    try { SFX.tension((tab === 'ask' && !!sel) || (tab === 'accuse' && !G.result)); } catch (e) {}
   }
   function wireFx() { try { root().querySelectorAll('.det-fx').forEach((el) => FX.sparkle(el, 6, { min: 5, max: 8 })); } catch (e) {} }
 
   function viewBrief() {
     return `
-      <div class="det-hero">${ART.scene(C.cover)}<div class="det-hero-t"><p class="eyebrow">委托</p><h2>${esc(C.title)}</h2></div></div>
-      <div class="card"><p class="det-p">${esc(C.brief).replace(/\n/g, '<br>')}</p></div>
-      <div class="card det-victim"><div class="det-av">${ART.portrait(C.victim.look, { age: C.victim.age || 50 })}</div>
+      <div class="det-hero">${ART.sceneFor(C.id, 'cover', C.cover, { title: C.title, text: C.title + C.tagline })}<div class="det-hero-t"><p class="eyebrow">委托</p><h2>${esc(C.title)}</h2></div></div>
+      <div class="card rise" style="animation-delay:.15s"><p class="det-p">${esc(C.brief).replace(/\n/g, '<br>')}</p></div>
+      <div class="card det-victim rise" style="animation-delay:.35s"><div class="det-av">${ART.portrait(C.victim.look, { age: C.victim.age || 50 })}</div>
         <div><h4>死者 · ${esc(C.victim.name)}</h4><p class="det-p">${esc(C.victim.desc)}</p></div></div>
-      <div class="card"><h4>已知事实</h4><ul class="det-ul">${C.publicFacts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>
-      <div class="card"><h4>现场时间线</h4><div class="det-tl">${C.timeline.map((t) => `<div><b>${esc(t.t)}</b><span>${esc(t.text)}</span></div>`).join('')}</div></div>
-      <div class="card"><h4>规则</h4><p class="det-p">搜证和提问都有次数限制。线索会随着你反复搜查同一个地点而逐渐深入。把你找到的证物拿给嫌疑人看，谎言就会露出破绽。准备好了，就去“指认”。</p>
+      <div class="card rise" style="animation-delay:.55s"><h4>已知事实</h4><ul class="det-ul">${C.publicFacts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>
+      <div class="card rise" style="animation-delay:.75s"><h4>现场时间线</h4><div class="det-tl">${C.timeline.map((t) => `<div><b>${esc(t.t)}</b><span>${esc(t.text)}</span></div>`).join('')}</div></div>
+      <div class="card rise" style="animation-delay:.95s"><h4>规则</h4><p class="det-p">搜证和提问都有次数限制。线索会随着你反复搜查同一个地点而逐渐深入。把你找到的证物拿给嫌疑人看，谎言就会露出破绽。审问要循序渐进：先聊基本情况，对方松了口才问得出更敏感的话题；留意他们的表情，神色不对的地方往往有文章。准备好了，就去“指认”。</p>
       <button class="btn primary det-fx" data-tab="search">开始调查</button></div>`;
   }
 
@@ -3936,15 +4387,15 @@ if (typeof window !== 'undefined') window.FX = FX;
     const locs = C.locations.map((l) => {
       const got = (G.ptr[l.id] || 0), left = l.clues.length - got;
       const list = l.clues.slice(0, got).map((k) => `<button class="det-ev ${lastClue === k.id ? 'new' : ''}" data-ev="${k.id}"><b>${esc(k.title)}</b></button>`).join('');
-      return `<div class="det-loc"><div class="det-loc-art">${ART.scene(l.scene)}<div class="det-loc-n">${esc(l.name)}</div></div>
+      return `<div class="det-loc"><div class="det-loc-art">${ART.sceneFor(C.id, l.id, l.scene, { text: l.name + l.desc })}<div class="det-loc-n">${esc(l.name)}</div></div>
         <div class="det-loc-b"><p class="det-d">${esc(l.desc)}</p>
         <div class="det-evs">${list}</div>
         <button class="btn small ${left > 0 && searchLeft() > 0 ? 'det-go' : ''}" data-search="${l.id}" ${left <= 0 || searchLeft() <= 0 ? 'disabled' : ''}>${left <= 0 ? '已搜遍' : searchLeft() <= 0 ? '次数用完' : got ? '再仔细搜一次' : '搜查这里'}</button></div></div>`;
     }).join('');
-    const ev = lastClue && cm[lastClue] ? evCard(cm[lastClue]) : '';
+    const ev = lastClue && cm[lastClue] ? evCard(cm[lastClue], true) : '';
     return `${ev}<div class="det-grid">${locs}</div>`;
   }
-  const evCard = (k) => `<div class="card det-evcard"><h4>证物 · ${esc(k.title)} <small>${esc(k.locName)}</small></h4><p class="det-p">${esc(k.text)}</p></div>`;
+  const evCard = (k, pop) => `<div class="card det-evcard${pop ? ' pop' : ''}"><h4>证物 · ${esc(k.title)} <small>${esc(k.locName)}</small></h4><p class="det-p">${esc(k.text)}</p></div>`;
 
   // ---------- 审问 ----------
   function viewAsk() {
@@ -3956,23 +4407,38 @@ if (typeof window !== 'undefined') window.FX = FX;
   }
   function panel(s) {
     const cm = clueMap();
-    const tps = s.topics.filter((t) => (t.needs || []).every(needOk));
-    const hidden = s.topics.length - tps.length;
-    const log = G.log.filter((e) => e.s === s.id);
-    const btns = tps.map((t) => {
-      const asked = isAsked(s.id, t.id), br = isBroken(s.id, t.id);
-      return `<button class="det-q ${asked ? 'done' : ''} ${br ? 'broken' : ''}" data-q="${t.id}">${esc(t.q)}${br ? ' <em>已揭穿</em>' : ''}</button>`;
+    const seen = G.seen[s.id];
+    const vis = s.topics.filter((t) => unlocked(s, t));
+    const lockedP = s.topics.filter((t) => tierOf(s, t) === 1 && !unlocked(s, t)).length;
+    const lockedD = s.topics.filter((t) => tierOf(s, t) === 2 && !unlocked(s, t)).length;
+    const btn = (t) => {
+      const asked = isAsked(s.id, t.id), br = isBroken(s.id, t.id), fresh = seen && !seen.includes(t.id) && !asked;
+      return `<button class="det-q ${asked ? 'done' : ''} ${br ? 'broken' : ''} ${fresh ? 'fresh' : ''}" data-q="${t.id}">${esc(t.q)}${br ? ' <em>已揭穿</em>' : ''}${fresh ? ' <em class="nw">新</em>' : ''}</button>`;
+    };
+    const GROUPS = [[0, '开场 · 先聊聊基本情况'], [1, '追问 · 他对你松口了'], [2, '深挖 · 拿住他的破绽']];
+    const btns = GROUPS.map(([tr, label]) => {
+      const list = vis.filter((t) => tierOf(s, t) === tr); if (!list.length) return '';
+      return `<div class="det-grp">${label}</div>${list.map(btn).join('')}`;
     }).join('');
+    const hint = [];
+    if (lockedP) hint.push(`🔒 还有 ${lockedP} 个更敏感的问题：先把开场的话题聊两个，对方才肯往下说。`);
+    if (lockedD) hint.push(`🔒 还有 ${lockedD} 个深挖话题：需要更多证物或别人的口供，也要先和他多聊几句。`);
     const found = G.found.map((id) => cm[id]).filter(Boolean);
     const showList = pickClue ? `<div class="det-pick">${found.length ? found.map((k) => `<button class="det-ev" data-conf="${k.id}"><b>${esc(k.title)}</b><small>${esc(k.locName)}</small></button>`).join('') : '<p class="det-dim">你还没有证物。先去搜证。</p>'}</div>` : '';
-    const lg = log.map((e) => e.kind === 'q'
-      ? `<div class="det-msg me"><span>${esc(e.q)}</span></div><div class="det-msg them ${isBroken(s.id, e.t) ? 'lie' : ''}"><div class="mini">${ART.portrait(s.look, { age: s.age, crop: 'head' })}</div><span>${esc(e.a)}</span></div>`
-      : `<div class="det-msg me ev"><span>出示：${esc(e.title)}</span></div><div class="det-msg them ${e.crack ? 'crack' : e.broke ? 'lie' : ''}"><div class="mini">${ART.portrait(s.look, { age: s.age, crop: 'head' })}</div><span>${esc(e.a)}</span></div>${e.truth ? `<div class="det-note">${esc(s.name)}改口：${esc(e.truth)}</div>` : ''}`
-    ).join('');
+    const log = G.log.filter((e) => e.s === s.id);
+    const recent = log.length - 6;
+    const lg = log.map((e, i) => {
+      const mood = moodOfEntry(s, e);
+      const mini = i >= recent ? `<div class="mini">${portraitOf(s, mood, 'head')}</div>` : `<div class="mini dot">${esc(s.name.charAt(0))}</div>`;
+      return e.kind === 'q'
+        ? `<div class="det-msg me"><span>${esc(e.q)}</span></div><div class="det-msg them ${isBroken(s.id, e.t) ? 'lie' : ''}">${mini}<span>${esc(e.a)}${MOOD_TXT[mood] ? `<i class="det-mt">（${MOOD_TXT[mood]}）</i>` : ''}</span></div>`
+        : `<div class="det-msg me ev"><span>出示：${esc(e.title)}</span></div><div class="det-msg them ${e.crack ? 'crack' : e.broke ? 'lie' : ''}">${mini}<span>${esc(e.a)}${MOOD_TXT[mood] ? `<i class="det-mt">（${MOOD_TXT[mood]}）</i>` : ''}</span></div>${e.truth ? `<div class="det-note">${esc(s.name)}改口：${esc(e.truth)}</div>` : ''}`;
+    }).join('');
+    const mood = lastMood(s), act = flash === s.id; flash = null;
     return `<div class="card det-panel">
-      <div class="det-ph"><div class="det-big">${ART.portrait(s.look, { age: s.age })}</div><div><h4>${esc(s.name)} · ${esc(s.role)}</h4><p class="det-p">${esc(s.bio)}</p><p class="det-dim">语气：${esc(s.demeanor)}</p></div></div>
-      <div class="det-log" id="detLog">${lg || '<p class="det-dim">还没问过话。</p>'}</div>
-      <div class="det-qs">${btns}${hidden > 0 ? `<p class="det-dim">还有 ${hidden} 个话题，等你掌握更多线索才能问出口。</p>` : ''}</div>
+      <div class="det-ph"><div class="det-big m-${mood || 'calm'} ${act ? 'act' : ''}">${portraitOf(s, mood)}${MOOD_TXT[mood] ? `<em class="det-moodtag">${MOOD_TXT[mood]}</em>` : ''}</div><div><h4>${esc(s.name)} · ${esc(s.role)}</h4><p class="det-p">${esc(s.bio)}</p><p class="det-dim">语气：${esc(s.demeanor)}</p></div></div>
+      <div class="det-log" id="detLog">${lg || '<p class="det-dim">还没问过话。从开场的话题聊起。</p>'}</div>
+      <div class="det-qs">${btns}${hint.map((h) => `<p class="det-dim det-lock">${h}</p>`).join('')}</div>
       <div class="det-actions"><button class="btn small ${pickClue ? 'danger' : ''}" data-act="pick">${pickClue ? '取消' : '出示证物 ›'}</button>
       <button class="btn small ghost" data-mark="${s.id}">${G.mark.includes(s.id) ? '取消标记嫌疑' : '标记为嫌疑'}</button></div>${showList}</div>`;
   }
@@ -3981,10 +4447,22 @@ if (typeof window !== 'undefined') window.FX = FX;
     const again = isAsked(sid, tid);
     if (!again) {
       if (askLeft() <= 0) return toast('提问次数用完了。可以去指认了。');
+      G.seen[sid] = s.topics.filter((x) => unlocked(s, x)).map((x) => x.id);
       G.asks++; (G.asked[sid] = G.asked[sid] || []).push(tid);
       G.log.push({ s: sid, kind: 'q', t: tid, q: t.q, a: t.a, lie: !!t.lie });
     }
-    save(); renderCase(); scrollLog();
+    flash = sid; save(); renderCase(); scrollLog();
+    const e = G.log.filter((x) => x.s === sid).pop();
+    if (!again) {
+      sfx('ask'); reactSfx(moodOfEntry(s, e));
+      const n = s.topics.filter((x) => unlocked(s, x) && !G.seen[sid].includes(x.id)).length;
+      if (n > 0) later(() => toast(`${s.name} 松了口，多出 ${n} 个可问的话题`), 350);
+    }
+  }
+  function reactSfx(m) {
+    if (m === 'angry') later(() => sfx('growl'), 120);
+    else if (m === 'scared' || m === 'panic' || m === 'shocked') later(() => sfx('gasp'), 120);
+    else if (m === 'weep') later(() => sfx('sob'), 150);
   }
   function confront(cid) {
     const s = sus(sel), cm = clueMap(), k = cm[cid]; if (!k) return;
@@ -3994,13 +4472,16 @@ if (typeof window !== 'undefined') window.FX = FX;
     if (askLeft() <= 0) { renderCase(); return toast('提问次数用完了。'); }
     G.asks++; G.conf[ck] = 1;
     const f = (s.confronts || []).find((x) => x.clue === cid);
+    G.seen[sel] = s.topics.filter((x) => unlocked(s, x)).map((x) => x.id);
     const e = { s: sel, kind: 'c', title: k.title, a: f ? f.a : s.fallback };
     if (f && f.breaks && !isBroken(sel, f.breaks)) {
       G.broken.push(sel + '.' + f.breaks);
       const t = s.topics.find((x) => x.id === f.breaks);
       e.broke = true; e.truth = t && t.truth; e.crack = !!f.crack;
     }
-    G.log.push(e); save(); renderCase(); scrollLog();
+    G.log.push(e); flash = sel; save(); renderCase(); scrollLog();
+    sfx('confront');
+    if (e.crack) later(() => sfx('crack'), 260); else if (e.broke) later(() => sfx('lie'), 260); else reactSfx(moodOfEntry(s, e));
     if (e.crack) { try { const b = FX.burst(root(), 'gold'); setTimeout(() => b.remove(), 4500); } catch (x) {} }
   }
   function scrollLog() { const el = $('#detLog'); if (el) el.scrollTop = el.scrollHeight; }
@@ -4035,8 +4516,28 @@ if (typeof window !== 'undefined') window.FX = FX;
     const score = (okC ? 40 : 0) + (okM ? 15 : 0) + (okV ? 15 : 0) + Math.round(30 * keys / sol.keyClues.length);
     const grade = !okC ? 'C' : score >= 95 ? 'S' : score >= 80 ? 'A' : 'B';
     G.result = { okC, okM, okV, keys, total: sol.keyClues.length, score, grade, culprit: A.culprit, asks: G.asks, searches: G.searches };
-    save(); renderCase(); window.scrollTo(0, 0);
-    if (okC) { try { const b = FX.burst(root(), 'gold'); setTimeout(() => b.remove(), 4500); } catch (e) {} }
+    save(); reveal();
+  }
+  // 指认后的揭晓：鼓点、被指认者的脸、真相一击；点一下可跳过
+  function reveal() {
+    const r = G.result, acc = sus(r.culprit); clearTimers();
+    root().insertAdjacentHTML('beforeend', `<div class="det-reveal" data-act="skipreveal" role="button" aria-label="跳过">
+      <div class="dr-in"><p class="dr-a">你指认的是</p><div class="dr-p">${portraitOf(acc, null)}</div><h3 class="dr-n">${esc(acc.name)}</h3><p class="dr-b">……</p></div></div>`);
+    sfx('drum');
+    later(() => {
+      const ov = $('.det-reveal'); if (!ov) return;
+      ov.classList.add(r.okC ? 'yes' : 'no');
+      $('.dr-p', ov).innerHTML = portraitOf(acc, r.okC ? 'panic' : 'angry');
+      $('.dr-b', ov).textContent = r.okC ? '没错。就是他。' : '不是他。你抓错人了。';
+      sfx(r.okC ? 'crack' : 'lose');
+    }, 2200);
+    later(endReveal, 4900);
+  }
+  function endReveal() {
+    clearTimers(); const ov = $('.det-reveal'); if (ov) ov.remove();
+    if (!C || !G.result) return;
+    renderCase(); window.scrollTo(0, 0);
+    if (G.result.okC) { sfx('win'); try { const b = FX.burst(root(), 'gold'); setTimeout(() => b.remove(), 4500); } catch (e) {} }
   }
   function resultView(r) {
     const sol = C.solution, cu = sus(sol.culprit), cm = clueMap();
@@ -4054,22 +4555,25 @@ if (typeof window !== 'undefined') window.FX = FX;
   // ---------- 事件 ----------
   document.addEventListener('click', (e) => {
     const r = root(); if (!r || r.hidden || !r.contains(e.target)) return;
+    const ov = e.target.closest('[data-act="skipintro"],[data-act="skipreveal"]');
+    if (ov) return ov.dataset.act === 'skipintro' ? endIntro() : endReveal();
     const t = e.target.closest('button'); if (!t) return;
     const d = t.dataset;
-    if (d.case) return start(d.case);
-    if (d.act === 'home') return close();
-    if (d.act === 'list') { C = null; delete document.body.dataset.tone; return renderList(); }
+    if (d.act === 'mute') { const m = SFX.toggle(); r.querySelectorAll('.det-mute').forEach((b) => { b.textContent = m ? '🔇' : '🔊'; }); return; }
+    if (d.case) { sfx('click'); return start(d.case); }
+    if (d.act === 'home') { sfx('click'); return close(); }
+    if (d.act === 'list') { sfx('click'); clearTimers(); C = null; delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
-    if (d.tab) { tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
+    if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
       const l = C.locations.find((x) => x.id === d.search), got = G.ptr[l.id] || 0;
       if (got >= l.clues.length) return;
       if (searchLeft() <= 0) return toast('搜证次数用完了。');
       const k = l.clues[got]; G.ptr[l.id] = got + 1; G.searches++; if (!hasClue(k.id)) G.found.push(k.id);
-      lastClue = k.id; save(); renderCase(); return window.scrollTo(0, 0);
+      lastClue = k.id; save(); renderCase(); sfx('search'); later(() => sfx('clue'), 420); return window.scrollTo(0, 0);
     }
     if (d.ev) { lastClue = d.ev; renderCase(); return window.scrollTo(0, 0); }
-    if (d.sus) { sel = d.sus; pickClue = false; renderCase(); return scrollLog(); }
+    if (d.sus) { sfx('pick'); sel = d.sus; pickClue = false; renderCase(); return scrollLog(); }
     if (d.q) return ask(sel, d.q);
     if (d.act === 'pick') { pickClue = !pickClue; renderCase(); return; }
     if (d.conf) return confront(d.conf);
@@ -4081,7 +4585,7 @@ if (typeof window !== 'undefined') window.FX = FX;
       if (!confirmSubmit) { confirmSubmit = true; t.textContent = '再点一次确认（提交后不能更改）'; return; }
       confirmSubmit = false; return submit();
     }
-    if (d.act === 'again') { store.set(key(C.id), null); G = fresh(); tab = 'brief'; renderCase(); window.scrollTo(0, 0); }
+    if (d.act === 'again') { const id = C.id; store.set(key(id), null); start(id); }
   });
 
   window.DET = { open, close, available: () => cases().length > 0 };
