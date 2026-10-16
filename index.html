@@ -579,6 +579,14 @@ html.lite .scene, html.lite .ov .bgscene .scene, html.lite .intro .slide .bgscen
 html.lite .intro .slide { transition: opacity .6s; }
 html.lite .intro .textbox .tt, html.lite .locname { text-shadow: 0 1px 4px #000; }
 html.lite .intro .next { animation: none !important; }
+img.scene { object-fit: cover; }
+.det-loc-art img.scene { display: block; width: 100%; height: 130px; }
+.det-hero img.scene { display: block; width: 100%; height: 190px; }
+.det-case .sc-art img.scene { width: 100%; height: 100%; display: block; object-fit: cover; }
+html.lite .ovsnow { display: none !important; }
+html.lite .slide, html.lite .splash, html.lite .searchov { will-change: opacity; }
+html.lite .searchov .lens { box-shadow: none; }
+html.lite .searchov .darkmask { transition: opacity .3s; }
 
 
 :root { color-scheme: dark; }
@@ -2729,6 +2737,7 @@ window.__CASES = [{"id":"paimai","title":"压轴之夜","tagline":"暴雨封楼�
 'use strict';
 // 全部插画都是代码画的矢量图（SVG）：角色立绘 + 场景。没有任何外部图片，离线也能显示。
 const ART = (() => {
+  const LITE_ART = typeof navigator !== 'undefined' && (/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) || (navigator.hardwareConcurrency || 8) <= 4);
   let uid = 0;
   const rng = (seed) => { let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
 
@@ -3465,7 +3474,10 @@ const ART = (() => {
   function sceneRaw(id, o = {}) {
     const u = ++uid;
     const fn = SCENES[id] || SCENES.cover;
-    return `<svg class="scene s-${id} ${o.cls || ''}" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${o.label || ''}">${fn(u)}${vignette(u)}</svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" class="scene s-${id} ${o.cls || ''}" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${o.label || ''}">${fn(u)}${vignette(u)}</svg>`;
+    // 手机/低配设备：场景改成静态图片（浏览器只绘制一次再缓存），不再每帧重绘大 SVG 和各种环境动画，避免一闪一闪、一卡一卡
+    if (LITE_ART) return `<img class="scene s-${id} ${o.cls || ''}" alt="${o.label || ''}" decoding="sync" draggable="false" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}">`;
+    return svg.replace(' xmlns="http://www.w3.org/2000/svg"', '');
   }
 
   // ---------------------------------------------------------------- 按“外观设定”生成立绘
@@ -3747,7 +3759,7 @@ const FX = (() => {
   function burst(parent, kind) {
     const wrap = document.createElement('div');
     wrap.className = 'burst ' + kind;
-    const n = kind === 'gold' ? 46 : 8;
+    const n = kind === 'gold' ? (LITE ? 16 : 46) : 8;
     for (let i = 0; i < n; i++) {
       const p = document.createElement('i');
       const x = Math.random() * 100;
@@ -4505,7 +4517,10 @@ function showIntro() {
     d.className = 'slide';
     d.innerHTML = `<div class="bgscene">${ART.scene(sl.scene)}</div>`;
     slidesEl.appendChild(d);
-    requestAnimationFrame(() => d.classList.add('on'));
+    // 等图片解码好再淡入，避免淡入时先露出黑底
+    const im = d.querySelector('img');
+    const show = () => requestAnimationFrame(() => d.classList.add('on'));
+    if (im && im.decode) im.decode().then(show, show); else show();
     const old = slidesEl.querySelectorAll('.slide');
     // 旧画面保持不透明，等新画面完全淡入后再移除，避免两张图交叉淡入时中间变暗（一闪）
     if (old.length > 1) { const o = old[0]; setTimeout(() => o.remove(), 1000); }
@@ -4554,8 +4569,15 @@ function showSearch(locName, clue) {
     if (k >= 1) return finish();
     raf = requestAnimationFrame(tick);
   };
-  raf = requestAnimationFrame(tick);
-  el._stop = () => cancelAnimationFrame(raf);
+  if (document.documentElement.classList.contains('lite')) {
+    // 手机：不做手电筒移动动画（每帧重绘全屏渐变很卡），停一下直接出结果
+    setPos(W() * .5, H() * .5);
+    const to = setTimeout(finish, 900);
+    el._stop = () => clearTimeout(to);
+  } else {
+    raf = requestAnimationFrame(tick);
+    el._stop = () => cancelAnimationFrame(raf);
+  }
   el.addEventListener('click', (e) => { if (!done && !e.target.closest('.btn')) finish(); });
 }
 
