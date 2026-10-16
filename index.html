@@ -571,6 +571,9 @@ html.lite .rip { display: none !important; }
 html.lite .det-loc, html.lite .det-sus, html.lite .card { content-visibility: auto; contain-intrinsic-size: auto 180px; }
 html.lite body { background: var(--bg); }
 * { -webkit-tap-highlight-color: transparent; }
+/* 输入框：不做过渡动画，避免键盘弹出时重绘 */
+input, textarea { transition: none !important; }
+html.lite #snow { will-change: auto; }
 
 
 :root { color-scheme: dark; }
@@ -3677,6 +3680,11 @@ const FX = (() => {
       canvas.width = w * dpr; canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
+    // 输入文字时（键盘弹出、页面反复重排）暂停飘雪并隐藏画布，避免输入卡顿
+    const isTyping = () => { const a = document.activeElement; return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'); };
+    const onFocusIn = (e) => { if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) canvas.style.visibility = 'hidden'; };
+    const onFocusOut = () => { setTimeout(() => { if (!isTyping()) canvas.style.visibility = ''; }, 150); };
+    document.addEventListener('focusin', onFocusIn); document.addEventListener('focusout', onFocusOut);
     const mk = (top) => ({ x: Math.random() * w, y: top ? -10 : Math.random() * h, r: 0.6 + Math.random() * 2, v: 14 + Math.random() * 34, s: Math.random() * 6.28, a: 0.25 + Math.random() * 0.6 });
     fit();
     flakes = Array.from({ length: count }, () => mk(false));
@@ -3686,6 +3694,7 @@ const FX = (() => {
       raf = requestAnimationFrame(tick);
       const dt = Math.min(0.05, (t - last) / 1000); last = t;
       if (document.hidden) return;
+      if (isTyping()) return;
       if (LITE && t - lastDraw < 40) return;
       lastDraw = t;
       ctx.clearRect(0, 0, w, h);
@@ -3699,9 +3708,10 @@ const FX = (() => {
       ctx.globalAlpha = 1;
     };
     raf = requestAnimationFrame(tick);
-    const onResize = () => fit();
+    let rt = 0;
+    const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { if (!isTyping()) fit(); }, 250); };
     window.addEventListener('resize', onResize);
-    return () => { dead = true; cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
+    return () => { dead = true; cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener('resize', onResize); document.removeEventListener('focusin', onFocusIn); document.removeEventListener('focusout', onFocusOut); };
   }
 
   // 点击涟漪
