@@ -670,6 +670,21 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .leave-card p { margin: 0 0 16px; line-height: 1.7; font-size: 14.5px; }
 .leave-card .actions { display: flex; gap: 10px; justify-content: flex-end; }
 
+/* ===== 联机状态灯 / 房间码 ===== */
+.net { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 14px; padding: 7px 12px; border-radius: 999px; font-size: 12.5px; line-height: 1.4; background: rgba(255,255,255,.04); border: 1px solid var(--line); color: var(--muted); text-align: center; }
+.net i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: #e0b24a; }
+.net[data-s="ok"] { color: #b9e8cb; border-color: rgba(100,200,140,.5); } .net[data-s="ok"] i { background: #4fd18b; box-shadow: 0 0 8px #4fd18b; }
+.net[data-s="wait"] i { background: #e0b24a; box-shadow: 0 0 8px #e0b24a; }
+.net[data-s="bad"] { color: #f3b8b2; border-color: rgba(229,123,115,.55); } .net[data-s="bad"] i { background: #ec5b50; box-shadow: 0 0 8px #ec5b50; }
+.net.mini { margin: 4px 0 0; padding: 2px 8px; font-size: 11px; justify-content: flex-start; width: fit-content; }
+.net.mini i { width: 8px; height: 8px; }
+.room-code { letter-spacing: .12em; }
+.codebox { margin: 0 0 14px; padding: 14px 12px; text-align: center; border-radius: 16px; background: rgba(226,184,111,.07); border: 1px dashed var(--accent); }
+.codebox small { display: block; color: var(--muted); letter-spacing: .2em; font-size: 12px; }
+.codebox b { display: block; margin: 4px 0 10px; font-family: var(--serif); font-size: 52px; letter-spacing: .3em; padding-left: .3em; color: var(--accent); line-height: 1.1; }
+.codebox .actions { display: flex; gap: 10px; justify-content: center; }
+.codebox p { margin: 10px 0 0; font-size: 13px; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -678,6 +693,7 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .topbar { top: env(safe-area-inset-top, 0px); margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .toast { bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
 .home { min-height: 100%; }
+.codebox, .net { display: none !important; }
 
 </style>
 <div id="banner" class="banner" hidden>连接已断开，正在重连…</div>
@@ -695,6 +711,7 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
     </div>
     <div class="home-body">
       <p class="sub" id="homeSub">一桩发生在暴风雪山庄里的密室谋杀</p>
+      <div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div>
       <label class="field">
         <span>你的昵称</span>
         <input id="nameInput" maxlength="12" placeholder="例如：阿远" autocomplete="off">
@@ -718,6 +735,7 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
     <button id="backBtn" class="btn small ghost back-btn" aria-label="返回">‹ 返回</button>
     <div class="tb-left">
       <div class="room-code" id="roomCode" title="点击复制房间码"></div>
+      <div class="net mini" data-s="wait" role="status"><i></i><span>连接中</span></div>
       <div class="phase-name" id="phaseName"></div>
     </div>
     <div class="tb-right"><div class="timer" id="timer"></div><button class="btn small ghost sfx-toggle" aria-label="声音开关">🔊</button></div>
@@ -4721,6 +4739,17 @@ const wsUrl = () => {
 };
 let everConnected = false, tries = 0;
 const connected = () => !!(ws && ws.readyState === 1);
+// 连接指示灯：绿 = 已连上联机服务器；黄 = 正在连接；红 = 连不上（自动重试中）
+function updateNet() {
+  const st = connected() ? 'ok' : (ws && ws.readyState === 0 && !everConnected ? 'wait' : 'bad');
+  document.querySelectorAll('.net').forEach((el) => {
+    el.dataset.s = st;
+    const mini = el.classList.contains('mini');
+    el.querySelector('span').textContent = st === 'ok' ? (mini ? '已连接' : '已连接联机服务器')
+      : st === 'wait' ? (mini ? '连接中' : '正在连接联机服务器…（免费服务器睡醒要 30–60 秒）')
+      : (mini ? '连不上' : '连不上联机服务器，正在重试…（可先玩单人侦探）');
+  });
+}
 function setBanner() {
   const b = $('#banner');
   // 从没连上过时不打扰（单人侦探不需要服务器；点“创建房间”时会有提示）；连上后掉线才显示横幅
@@ -4736,14 +4765,15 @@ function wakeServer() {
 function connect() {
   tries++;
   ws = new WebSocket(wsUrl());
+  updateNet();
   ws.onopen = () => {
-    everConnected = true; tries = 0;
+    everConnected = true; tries = 0; updateNet();
     $('#banner').hidden = true;
     const s = session();
     if (s) send({ type: 'rejoin', code: s.code, token: s.token });
   };
   ws.onclose = () => {
-    setBanner();
+    updateNet(); setBanner();
     voiceTeardownPeers();
     clearTimeout(reconnectTimer);
     reconnectTimer = setTimeout(() => { wakeServer(); connect(); }, tries > 3 ? 4000 : 1500);
@@ -4879,7 +4909,7 @@ function onState() {
 }
 
 function render() {
-  $('#roomCode').textContent = S.code;
+  $('#roomCode').textContent = '房间码 ' + S.code;
   $('#phaseName').textContent = phaseInfo(S.phase)[0];
   renderPlayers();
   renderPhaseCard();
@@ -4919,7 +4949,10 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
-    body = `${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
+    body = `<div class="codebox"><small>房间码 · 发给朋友</small><b>${esc(S.code)}</b>
+        <div class="actions"><button class="btn small" id="copyCode">复制房间码</button><button class="btn small" id="shareCode">分享给朋友</button></div>
+        <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
+      ${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
       <p>试玩版已替你加了机器人。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>
       <div class="actions">${isHost() ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>
         <button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>
@@ -4957,6 +4990,12 @@ function renderPhaseCard() {
   const on = (sel, ev, fn) => { const x = el.querySelector(sel); if (x) x.addEventListener(ev, fn); };
   el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) send({ type: 'setscript', id: b.dataset.script }); }));
   on('#startBtn', 'click', () => { snd('start'); send({ type: 'start' }); });
+  on('#copyCode', 'click', async () => { try { await navigator.clipboard.writeText(S.code); toast('房间码 ' + S.code + ' 已复制，发给朋友吧'); } catch (e) { toast('房间码：' + S.code); } });
+  on('#shareCode', 'click', async () => {
+    const text = `来玩线上剧本杀！房间码：${S.code}。打开 App，输入昵称和房间码，点“加入”。`;
+    try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { return; }
+    try { await navigator.clipboard.writeText(text); toast('邀请文字已复制，粘贴给朋友即可'); } catch (e) { toast(text); }
+  });
   on('#addBotBtn', 'click', () => send({ type: 'addbot' }));
   on('#rmBotBtn', 'click', () => send({ type: 'removebot' }));
   on('#readyBtn', 'click', () => { snd('clue'); send({ type: 'ready' }); });

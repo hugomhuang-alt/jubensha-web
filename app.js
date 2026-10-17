@@ -66,6 +66,17 @@ const wsUrl = () => {
 };
 let everConnected = false, tries = 0;
 const connected = () => !!(ws && ws.readyState === 1);
+// 连接指示灯：绿 = 已连上联机服务器；黄 = 正在连接；红 = 连不上（自动重试中）
+function updateNet() {
+  const st = connected() ? 'ok' : (ws && ws.readyState === 0 && !everConnected ? 'wait' : 'bad');
+  document.querySelectorAll('.net').forEach((el) => {
+    el.dataset.s = st;
+    const mini = el.classList.contains('mini');
+    el.querySelector('span').textContent = st === 'ok' ? (mini ? '已连接' : '已连接联机服务器')
+      : st === 'wait' ? (mini ? '连接中' : '正在连接联机服务器…（免费服务器睡醒要 30–60 秒）')
+      : (mini ? '连不上' : '连不上联机服务器，正在重试…（可先玩单人侦探）');
+  });
+}
 function setBanner() {
   const b = $('#banner');
   // 从没连上过时不打扰（单人侦探不需要服务器；点“创建房间”时会有提示）；连上后掉线才显示横幅
@@ -81,14 +92,15 @@ function wakeServer() {
 function connect() {
   tries++;
   ws = new WebSocket(wsUrl());
+  updateNet();
   ws.onopen = () => {
-    everConnected = true; tries = 0;
+    everConnected = true; tries = 0; updateNet();
     $('#banner').hidden = true;
     const s = session();
     if (s) send({ type: 'rejoin', code: s.code, token: s.token });
   };
   ws.onclose = () => {
-    setBanner();
+    updateNet(); setBanner();
     voiceTeardownPeers();
     clearTimeout(reconnectTimer);
     reconnectTimer = setTimeout(() => { wakeServer(); connect(); }, tries > 3 ? 4000 : 1500);
@@ -224,7 +236,7 @@ function onState() {
 }
 
 function render() {
-  $('#roomCode').textContent = S.code;
+  $('#roomCode').textContent = '房间码 ' + S.code;
   $('#phaseName').textContent = phaseInfo(S.phase)[0];
   renderPlayers();
   renderPhaseCard();
@@ -264,7 +276,10 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
-    body = `${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
+    body = `<div class="codebox"><small>房间码 · 发给朋友</small><b>${esc(S.code)}</b>
+        <div class="actions"><button class="btn small" id="copyCode">复制房间码</button><button class="btn small" id="shareCode">分享给朋友</button></div>
+        <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
+      ${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
       <p>把房间码 <b>${esc(S.code)}</b> 发给朋友。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>
       <div class="actions">${isHost() ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>
         <button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>
@@ -302,6 +317,12 @@ function renderPhaseCard() {
   const on = (sel, ev, fn) => { const x = el.querySelector(sel); if (x) x.addEventListener(ev, fn); };
   el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) send({ type: 'setscript', id: b.dataset.script }); }));
   on('#startBtn', 'click', () => { snd('start'); send({ type: 'start' }); });
+  on('#copyCode', 'click', async () => { try { await navigator.clipboard.writeText(S.code); toast('房间码 ' + S.code + ' 已复制，发给朋友吧'); } catch (e) { toast('房间码：' + S.code); } });
+  on('#shareCode', 'click', async () => {
+    const text = `来玩线上剧本杀！房间码：${S.code}。打开 App，输入昵称和房间码，点“加入”。`;
+    try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { return; }
+    try { await navigator.clipboard.writeText(text); toast('邀请文字已复制，粘贴给朋友即可'); } catch (e) { toast(text); }
+  });
   on('#addBotBtn', 'click', () => send({ type: 'addbot' }));
   on('#rmBotBtn', 'click', () => send({ type: 'removebot' }));
   on('#readyBtn', 'click', () => { snd('clue'); send({ type: 'ready' }); });

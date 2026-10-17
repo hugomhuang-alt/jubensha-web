@@ -666,3 +666,18 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .leave-card h3 { margin: 0 0 8px; font-family: var(--serif); letter-spacing: .08em; }
 .leave-card p { margin: 0 0 16px; line-height: 1.7; font-size: 14.5px; }
 .leave-card .actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ===== 联机状态灯 / 房间码 ===== */
+.net { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 14px; padding: 7px 12px; border-radius: 999px; font-size: 12.5px; line-height: 1.4; background: rgba(255,255,255,.04); border: 1px solid var(--line); color: var(--muted); text-align: center; }
+.net i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: #e0b24a; }
+.net[data-s="ok"] { color: #b9e8cb; border-color: rgba(100,200,140,.5); } .net[data-s="ok"] i { background: #4fd18b; box-shadow: 0 0 8px #4fd18b; }
+.net[data-s="wait"] i { background: #e0b24a; box-shadow: 0 0 8px #e0b24a; }
+.net[data-s="bad"] { color: #f3b8b2; border-color: rgba(229,123,115,.55); } .net[data-s="bad"] i { background: #ec5b50; box-shadow: 0 0 8px #ec5b50; }
+.net.mini { margin: 4px 0 0; padding: 2px 8px; font-size: 11px; justify-content: flex-start; width: fit-content; }
+.net.mini i { width: 8px; height: 8px; }
+.room-code { letter-spacing: .12em; }
+.codebox { margin: 0 0 14px; padding: 14px 12px; text-align: center; border-radius: 16px; background: rgba(226,184,111,.07); border: 1px dashed var(--accent); }
+.codebox small { display: block; color: var(--muted); letter-spacing: .2em; font-size: 12px; }
+.codebox b { display: block; margin: 4px 0 10px; font-family: var(--serif); font-size: 52px; letter-spacing: .3em; padding-left: .3em; color: var(--accent); line-height: 1.1; }
+.codebox .actions { display: flex; gap: 10px; justify-content: center; }
+.codebox p { margin: 10px 0 0; font-size: 13px; }
