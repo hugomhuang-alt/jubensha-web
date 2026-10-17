@@ -276,8 +276,8 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
-    body = `<div class="codebox"><small>房间码 · 发给朋友</small><b>${esc(S.code)}</b>
-        <div class="actions"><button class="btn small" id="copyCode">复制房间码</button><button class="btn small" id="shareCode">分享给朋友</button></div>
+    body = `<div class="codebox"><div class="crow"><span>房间码：</span><b>${esc(S.code)}</b></div>
+        <div class="actions"><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">分享给朋友</button></div>
         <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
       ${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
       <p>把房间码 <b>${esc(S.code)}</b> 发给朋友。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>
@@ -873,5 +873,6 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') goBack(); 
 
 // 先把首页显示出来（单人侦探不需要服务器）；联机服务器在后台连接，连上之前提示“正在连接”
 if (!session()) showHome(); else setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden) showHome(); }, 2500);
+try { $('#ver').textContent = window.__BUILD ? '版本 ' + window.__BUILD : ''; } catch (e) {}
 wakeServer();
 connect();

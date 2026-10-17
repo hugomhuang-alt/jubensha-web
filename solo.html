@@ -685,6 +685,12 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .codebox .actions { display: flex; gap: 10px; justify-content: center; }
 .codebox p { margin: 10px 0 0; font-size: 13px; }
 
+.codebox { padding: 12px; }
+.codebox .crow { display: flex; align-items: baseline; justify-content: center; gap: 6px; margin-bottom: 10px; }
+.codebox .crow span { color: var(--muted); font-size: 16px; }
+.codebox .crow b { display: inline; margin: 0; font-size: 34px; letter-spacing: .24em; padding-left: .24em; }
+.fine.ver { margin: 6px 0 0; font-size: 11px; opacity: .6; text-align: center; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -723,6 +729,7 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
         <input id="codeInput" maxlength="4" placeholder="房间码" autocomplete="off" autocapitalize="characters">
         <button id="joinBtn" class="btn">加入</button>
       </div>
+      <p class="fine ver" id="ver"></p>
       <p class="fine" id="homeFine">4–8 人 · 约 90–120 分钟 · 需要麦克风（可选）</p>
     </div>
   </div>
@@ -4949,8 +4956,8 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
-    body = `<div class="codebox"><small>房间码 · 发给朋友</small><b>${esc(S.code)}</b>
-        <div class="actions"><button class="btn small" id="copyCode">复制房间码</button><button class="btn small" id="shareCode">分享给朋友</button></div>
+    body = `<div class="codebox"><div class="crow"><span>房间码：</span><b>${esc(S.code)}</b></div>
+        <div class="actions"><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">分享给朋友</button></div>
         <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
       ${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
       <p>试玩版已替你加了机器人。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>
@@ -5546,6 +5553,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') goBack(); 
 
 // 先把首页显示出来（单人侦探不需要服务器）；联机服务器在后台连接，连上之前提示“正在连接”
 if (!session()) showHome(); else setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden) showHome(); }, 2500);
+try { $('#ver').textContent = window.__BUILD ? '版本 ' + window.__BUILD : ''; } catch (e) {}
 wakeServer();
 connect();
 

@@ -681,3 +681,9 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .codebox b { display: block; margin: 4px 0 10px; font-family: var(--serif); font-size: 52px; letter-spacing: .3em; padding-left: .3em; color: var(--accent); line-height: 1.1; }
 .codebox .actions { display: flex; gap: 10px; justify-content: center; }
 .codebox p { margin: 10px 0 0; font-size: 13px; }
+
+.codebox { padding: 12px; }
+.codebox .crow { display: flex; align-items: baseline; justify-content: center; gap: 6px; margin-bottom: 10px; }
+.codebox .crow span { color: var(--muted); font-size: 16px; }
+.codebox .crow b { display: inline; margin: 0; font-size: 34px; letter-spacing: .24em; padding-left: .24em; }
+.fine.ver { margin: 6px 0 0; font-size: 11px; opacity: .6; text-align: center; }
