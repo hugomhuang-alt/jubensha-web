@@ -3,7 +3,7 @@
 module.exports = {
   scenes: ['cover', 'dining', 'study', 'library', 'kitchen', 'hall', 'clinic', 'guestroom',
     'coverShip', 'deck', 'cabin', 'engine', 'coverTheater', 'stage', 'backstage', 'cellar',
-    'coverStation', 'lab', 'mourning', 'coverOldHouse', 'garden'],
+    'coverStation', 'lab', 'mourning', 'coverOldHouse', 'garden', 'coverRestaurant', 'coverLibrary', 'coverWedding', 'coverAntique', 'coverBlackout', 'coverHospital', 'coverAuction', 'coverGramophone', 'coverTwins', 'coverHomestay'],
   tones: ['none', 'cold', 'warm', 'green', 'purple', 'red', 'sepia'],
   icons: ['key', 'glass', 'door', 'pill', 'cam', 'skull', 'siren', 'clock', 'phone', 'wave', 'fire', 'mask', 'book', 'anchor', 'snow'],
   look: {

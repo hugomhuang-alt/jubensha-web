@@ -730,6 +730,132 @@ const ART = (() => {
     }
   });
 
+  // ---------------------------------------------------------------- 每个案件专属封面（不再共用雪夜山庄）
+  const sky = (u, a, b, c) => `<linearGradient id="sk${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".6" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient><rect width="400" height="240" fill="url(#sk${u})"/>`;
+  const glow = (u, id, cx, cy, r, col, op) => `<radialGradient id="${id}${u}"><stop offset="0" stop-color="${col}" stop-opacity="${op}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient><circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}${u})"/>`;
+  Object.assign(SCENES, {
+    // 最后一道菜：高级餐厅，长桌，翻倒的酒杯，金匙
+    coverRestaurant(u) {
+      return `${sky(u, '#140a0c', '#2a1316', '#4a2418')}
+        <rect x="0" y="0" width="400" height="150" fill="#2b1518"/><g stroke="#3e2024" stroke-width="2">${Array.from({ length: 14 }, (_, i) => `<path d="M${i * 30} 0V150"/>`).join('')}</g>
+        <rect x="270" y="26" width="96" height="86" rx="3" fill="#0c1426" stroke="#6a4a2a" stroke-width="4"/><path d="M318 26V112M270 69H366" stroke="#6a4a2a" stroke-width="3"/>${Array.from({ length: 9 }, (_, i) => `<rect x="${278 + (i % 5) * 16}" y="${74 + Math.floor(i / 5) * 12}" width="${6 + (i % 3) * 3}" height="${14 + (i % 4) * 6}" fill="#ffd27a" opacity=".55"/>`).join('')}
+        ${glow(u, 'ch', 140, 40, 90, '#ffd9a0', .35)}<path d="M140 0V30" stroke="#caa14a" stroke-width="2"/><g fill="#e8c46a"><path d="M110 40h60l-8 -10h-44z"/>${[116, 128, 140, 152, 164].map((x) => `<rect x="${x - 1.5}" y="32" width="3" height="-8"/><path d="M${x} 30q-4 -8 0 -12q4 4 0 12z" fill="#ffd77a" class="flick"/>`).join('')}</g>
+        <path d="M0 150H400V240H0Z" fill="#1a0e10"/><path d="M0 164L400 164" stroke="#2a1a1c" stroke-width="2"/>
+        <path d="M30 168H370L392 214H8Z" fill="#efe6d6"/><path d="M30 168H370L392 214H8Z" fill="none" stroke="#c9b894" stroke-width="2"/><path d="M8 214H392V240H8Z" fill="#d6c8ac" opacity=".9"/>
+        ${[70, 140, 210, 280, 340].map((x, i) => `<ellipse cx="${x}" cy="${182 + (i % 2) * 6}" rx="16" ry="4.2" fill="#fff"/><ellipse cx="${x}" cy="${182 + (i % 2) * 6}" rx="9" ry="2.2" fill="#e2d8c4"/>`).join('')}
+        <g><path d="M205 176q8 -14 16 0" stroke="#d4af37" stroke-width="2.4" fill="none"/><ellipse cx="226" cy="176" rx="5" ry="3" fill="#d4af37"/><path d="M202 176h-22" stroke="#d4af37" stroke-width="2.4"/></g>
+        <g class="pulse"><circle cx="248" cy="186" r="9" fill="#ffd27a" opacity=".2"/></g><path d="M240 186l16 -8l3 8z" fill="#d9e8ff" opacity=".55" stroke="#bcd"/><path d="M256 182q14 4 22 10" stroke="#8a1f2a" stroke-width="3" fill="none" opacity=".8"/>
+        <g fill="#0a0507" opacity=".9"><rect x="30" y="92" width="16" height="70" rx="6"/><circle cx="38" cy="82" r="10"/><rect x="354" y="100" width="14" height="60" rx="6"/><circle cx="361" cy="91" r="9"/></g>`;
+    },
+    // 闭馆之后：深夜图书馆，书架、绿罩台灯、月光拱窗
+    coverLibrary(u) {
+      return `${sky(u, '#06100f', '#0e1f1d', '#15302a')}
+        <path d="M150 20Q200 -14 250 20V150H150Z" fill="#0c1a2e"/><path d="M150 20Q200 -14 250 20V150H150Z" fill="none" stroke="#6a5a3a" stroke-width="5"/><path d="M200 -4V150M150 84H250" stroke="#6a5a3a" stroke-width="3"/>${glow(u, 'mn', 196, 50, 60, '#cfe0ff', .55)}<circle cx="206" cy="50" r="13" fill="#f4f1dc"/>
+        <rect x="0" y="0" width="150" height="190" fill="#1d1410"/><rect x="250" y="0" width="150" height="190" fill="#1d1410"/>
+        ${[0, 1, 2, 3, 4].map((i) => `<rect x="0" y="${10 + i * 36}" width="150" height="4" fill="#3a2a1c"/><rect x="250" y="${10 + i * 36}" width="150" height="4" fill="#3a2a1c"/>${books(4, 14 + i * 36, 142, 32, 100 + i)}${books(254, 14 + i * 36, 142, 32, 200 + i)}`).join('')}
+        <path d="M0 190H400V240H0Z" fill="#251a12"/><path d="M0 200H400" stroke="#3a281a" stroke-width="2"/>
+        <rect x="120" y="170" width="160" height="12" fill="#4a3220"/><rect x="132" y="182" width="8" height="40" fill="#3a2616"/><rect x="260" y="182" width="8" height="40" fill="#3a2616"/>
+        <path d="M200 170V140M200 140q-22 0 -22 -18h44q0 18 -22 18" stroke="#c9a14a" stroke-width="2" fill="#1f8a5a"/>${glow(u, 'ld', 200, 150, 62, '#ffd77a', .5)}
+        <rect x="150" y="164" width="34" height="6" fill="#8a2a2a"/><rect x="156" y="158" width="28" height="6" fill="#2a4a7a"/><path d="M232 168l22 -4l4 5l-22 5z" fill="#e8e0c8"/><path d="M236 172l30 10" stroke="#8a1f2a" stroke-width="2" opacity=".8"/>
+        <g class="drift" fill="#fff" opacity=".35">${Array.from({ length: 16 }, (_, i) => `<circle cx="${150 + (i * 37) % 100}" cy="${60 + (i * 53) % 90}" r="${.7 + (i % 3) * .5}"/>`).join('')}</g>`;
+    },
+    // 婚礼前夜：夜晚花园，白花拱门，灯串，戒指盒
+    coverWedding(u) {
+      return `${sky(u, '#150f26', '#2c1d44', '#5a3a5a')}${stars(30, 3)}
+        ${glow(u, 'mn', 70, 46, 60, '#ffe9f0', .5)}<circle cx="70" cy="46" r="12" fill="#fff4ea"/>
+        <path d="M0 150Q100 120 200 140T400 128V240H0Z" fill="#1a2a2a"/><path d="M0 190H400V240H0Z" fill="#23352f"/>
+        <path d="M130 200V92Q200 24 270 92V200" stroke="#f4efe6" stroke-width="9" fill="none"/>${Array.from({ length: 22 }, (_, i) => { const t = i / 21, a = Math.PI * (1 - t), x = 200 + Math.cos(a) * 70, y = 92 - Math.sin(a) * 68 + (i % 2) * 5; return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${5 + (i % 3)}" fill="${['#f8d3dc', '#fff', '#f2a8bc', '#e9c6ff'][i % 4]}"/>`; }).join('')}
+        <path d="M0 40Q100 80 200 50T400 66" stroke="#2a2030" stroke-width="1.5" fill="none"/>${Array.from({ length: 18 }, (_, i) => `<circle class="${i % 3 ? 'tw' : 'pulse'}" cx="${i * 23 + 5}" cy="${(48 + Math.sin(i * .6) * 14 + i * .4).toFixed(0)}" r="3.4" fill="#ffd9a0" style="animation-delay:-${(i % 5)}s"/>`).join('')}
+        ${[0, 1, 2].map((r) => [-1, 1].map((s) => [0, 1, 2].map((c) => `<rect x="${200 + s * (34 + c * 26) - 7}" y="${196 + r * 12}" width="14" height="10" rx="2" fill="#efe6dc" opacity=".85"/>`).join('')).join('')).join('')}
+        <rect x="186" y="170" width="28" height="22" rx="3" fill="#3a2a40"/><rect x="190" y="160" width="20" height="12" rx="3" fill="#5a3a5a"/>${glow(u, 'rg', 200, 156, 26, '#fff', .7)}<circle cx="200" cy="154" r="5" fill="none" stroke="#ffe08a" stroke-width="2.4"/><path d="M196 149l4 -5l4 5z" fill="#bfe6ff"/>
+        <g fill="#f8d3dc" opacity=".8">${Array.from({ length: 14 }, (_, i) => `<ellipse class="fl" cx="${(i * 31) % 400}" cy="0" rx="2.4" ry="1.4" style="animation-duration:${6 + i % 5}s;animation-delay:-${i}s"/>`).join('')}</g>`;
+    },
+    // 古董店：昏黄的铺子，博古架、展柜聚光、门上挂牌
+    coverAntique(u) {
+      return `${sky(u, '#1a1008', '#2e1c0e', '#3e2a14')}
+        <rect x="0" y="0" width="400" height="170" fill="#33200f"/><g stroke="#241608" stroke-width="2">${Array.from({ length: 10 }, (_, i) => `<path d="M0 ${i * 18}H400"/>`).join('')}</g>
+        <rect x="14" y="20" width="120" height="150" fill="#2a1a0c" stroke="#6a4a22" stroke-width="4"/>${[0, 1, 2].map((i) => `<rect x="14" y="${54 + i * 38}" width="120" height="4" fill="#6a4a22"/>`).join('')}
+        <path d="M40 52q-14 -14 0 -30q14 16 0 30z M90 54q-8 -12 0 -26q8 14 0 26z" fill="#2a6a7a"/><path d="M60 92l10 -16l10 16z M100 92v-18h18v18z" fill="#a8452a"/><circle cx="50" cy="130" r="12" fill="#c9a14a"/><rect x="88" y="112" width="26" height="18" fill="#6a8a4a"/>
+        <rect x="266" y="20" width="120" height="150" fill="#2a1a0c" stroke="#6a4a22" stroke-width="4"/>${[0, 1, 2].map((i) => `<rect x="266" y="${54 + i * 38}" width="120" height="4" fill="#6a4a22"/>`).join('')}<path d="M290 52l8 -28l8 28z M330 54q10 -20 20 0z" fill="#9a8a6a"/><rect x="286" y="96" width="30" height="14" fill="#b86a3a"/><circle cx="350" cy="94" r="10" fill="#3a6a5a"/><path d="M280 140h90" stroke="#d4af37" stroke-width="3"/>
+        <path d="M0 170H400V240H0Z" fill="#241608"/>
+        <rect x="140" y="146" width="120" height="66" fill="#0d0a06" stroke="#8a6a32" stroke-width="3"/><rect x="146" y="152" width="108" height="54" fill="#1a140c"/><path d="M146 152L254 206" stroke="#fff" stroke-width="1.2" opacity=".25"/>
+        <path d="M160 150L240 150L262 70H138Z" fill="#fff4cf" opacity=".12"/>${glow(u, 'sp', 200, 160, 54, '#ffe9a8', .55)}
+        <path d="M184 190q-12 -26 16 -30q28 4 16 30z" fill="#d4af37"/><path d="M176 170q24 -22 48 0" stroke="#fff3c0" stroke-width="2" fill="none"/><g fill="none" stroke="#fff3c0" stroke-width="1.2" opacity=".8"><circle cx="200" cy="176" r="6"/><circle cx="192" cy="172" r="3"/><circle cx="208" cy="172" r="3"/></g>
+        <g class="swing" style="transform-origin:76px 0px"><path d="M76 0V30" stroke="#333"/><rect x="66" y="30" width="20" height="26" rx="5" fill="#c9302a"/><circle cx="76" cy="44" r="26" fill="#ffb060" opacity=".16"/></g>
+        <g><rect x="318" y="194" width="52" height="22" fill="#e8dcb8" stroke="#6a4a22" stroke-width="2"/><path d="M324 202h40M324 208h30" stroke="#8a2a2a" stroke-width="2"/></g>`;
+    },
+    // 断电夜：台风夜，整栋楼只剩一扇窗，闪电，歪斜的树
+    coverBlackout(u) {
+      return `${sky(u, '#05070d', '#0d1424', '#1c2a40')}
+        <rect width="400" height="240" fill="#cfe0ff" opacity="0" class="flash"><animate attributeName="opacity" values="0;0;.55;0;.3;0;0" dur="6s" repeatCount="indefinite"/></rect>
+        <path d="M290 0l-22 70l16 -2l-20 62l46 -78l-20 4z" fill="#eaf2ff" opacity=".0"><animate attributeName="opacity" values="0;0;1;0;.7;0;0" dur="6s" repeatCount="indefinite"/></path>
+        <rect x="70" y="60" width="200" height="150" fill="#0a0f1a"/><rect x="60" y="52" width="220" height="12" fill="#0f1626"/>
+        ${Array.from({ length: 4 }, (_, r) => Array.from({ length: 6 }, (_, c) => { const lit = r === 1 && c === 4; return lit ? glowWin(80 + c * 32, 76 + r * 34, 18, 22, { cls: 'flick', fill: '#ffd9a0' }) : `<rect x="${80 + c * 32}" y="${76 + r * 34}" width="18" height="22" fill="#111a2c" stroke="#1b2740"/>`; }).join('')).join('')}
+        <rect x="156" y="178" width="28" height="32" fill="#05080f"/><g fill="#1a2438"><rect x="0" y="206" width="400" height="34"/></g>
+        <path d="M70 60L170 24L270 60Z" fill="#0f1626"/>
+        <g stroke="#0a0f18" stroke-width="5" fill="none" stroke-linecap="round"><path d="M330 214Q326 150 350 112"/><path d="M350 112q-26 -12 -40 6M350 112q24 -14 40 4M350 112q-6 -22 -18 -30M350 112q10 -22 28 -28"/></g>
+        <path d="M168 208L120 236H220Z" fill="#fff6c8" opacity=".16"/><circle cx="168" cy="208" r="4" fill="#fff6c8"/>
+        <g opacity=".5">${rain(110, 7)}</g><g opacity=".4" class="drift2" fill="#8aa0c0"><ellipse cx="200" cy="222" rx="170" ry="8"/></g>`;
+    },
+    // 台风夜查房：医院走廊透视，绿色安全灯，推床
+    coverHospital(u) {
+      return `${sky(u, '#06161a', '#0c2a2e', '#133a3c')}
+        <path d="M0 0L130 70V170L0 240Z" fill="#0e2326"/><path d="M400 0L270 70V170L400 240Z" fill="#0e2326"/><rect x="130" y="70" width="140" height="100" fill="#071417"/><path d="M0 0H400L270 70H130Z" fill="#12333a"/><path d="M0 240H400L270 170H130Z" fill="#1b3a3e"/>
+        ${[0, 1, 2].map((i) => `<path d="M${150 + i * 0} ${68 + 0}" /><rect x="${176 + i * 0}" y="${78 + i * 0}" width="0" height="0"/>`).join('')}
+        <g fill="#cfeee8">${[[168, 14, 70], [188, 26, 60], [208, 36, 52]].map(([x, w, y], i) => `<rect x="${x + 6 - i * 8}" y="${y - 38 + i * 6}" width="${28 - i * 6}" height="3" opacity="${.9 - i * .2}" class="${i === 1 ? 'flick' : ''}"/>`).join('')}</g>
+        ${[0, 1, 2].map((i) => `<rect x="${24 + i * 34}" y="${100 + i * 8}" width="${22 - i * 4}" height="${58 - i * 10}" fill="#10292d" stroke="#1d4448"/>`).join('')}${[0, 1, 2].map((i) => `<rect x="${354 - i * 34}" y="${100 + i * 8}" width="${22 - i * 4}" height="${58 - i * 10}" fill="#10292d" stroke="#1d4448"/>`).join('')}
+        <rect x="170" y="86" width="60" height="20" rx="2" fill="#0b4a2a"/><text x="200" y="100" font-size="12" font-weight="700" text-anchor="middle" fill="#6dff9a">EXIT</text>${glow(u, 'ex', 200, 96, 40, '#50ff8a', .35)}
+        <g class="pulse"><circle cx="150" cy="90" r="5" fill="#ff4a4a"/></g><rect x="236" y="116" width="26" height="30" fill="#0a1c1f"/><path d="M243 124h12v14h-12z" fill="#e8f5f2"/><path d="M246 131h6M249 128v6" stroke="#d63a3a" stroke-width="2"/>
+        <g><rect x="150" y="186" width="100" height="10" rx="3" fill="#cfd8d8"/><rect x="158" y="176" width="84" height="10" rx="4" fill="#e9efef"/><circle cx="162" cy="204" r="6" fill="#222"/><circle cx="238" cy="204" r="6" fill="#222"/><path d="M200 178q8 0 12 -6" stroke="#7a1f1f" stroke-width="3" fill="none" opacity=".7"/></g>
+        <g opacity=".4">${rain(60, 5)}</g>`;
+    },
+    // 压轴之夜：拍卖厅，红幕，聚光灯下盖着的画，木槌
+    coverAuction(u) {
+      return `${sky(u, '#14060a', '#2a0c14', '#3a1420')}
+        <path d="M0 0H400V30Q380 54 360 30Q340 54 320 30Q300 54 280 30Q260 54 240 30Q220 54 200 30Q180 54 160 30Q140 54 120 30Q100 54 80 30Q60 54 40 30Q20 54 0 30Z" fill="#8a1426"/><g fill="#a31a30">${[20, 60, 100, 140, 180, 220, 260, 300, 340, 380].map((x) => `<path d="M${x} 0V150" stroke="#5a0c18" stroke-width="3"/>`).join('')}</g>
+        <rect x="0" y="30" width="400" height="130" fill="#3a0f1a"/><g stroke="#4a1522" stroke-width="3">${[40, 100, 160, 220, 280, 340].map((x) => `<path d="M${x} 30V160"/>`).join('')}</g>
+        <path d="M130 160L270 160L330 0L70 0Z" fill="#fff0c0" opacity=".13"/>${glow(u, 'spot', 200, 130, 80, '#fff0c0', .5)}
+        <g><path d="M150 168L170 100M250 168L230 100" stroke="#6a4a22" stroke-width="5"/><rect x="152" y="40" width="96" height="76" fill="#d4c8a8"/><path d="M146 36H254V122H146Z" fill="#b8892f"/><rect x="152" y="42" width="96" height="74" fill="#b0a58a"/><path d="M152 42L248 116M248 42L152 116" stroke="#8a7f66" stroke-width="2" opacity=".6"/><path d="M152 42H248V76Q200 60 152 80Z" fill="#cfc4a6" opacity=".9"/></g>
+        <rect x="0" y="160" width="400" height="80" fill="#1c0a10"/>${Array.from({ length: 3 }, (_, r) => Array.from({ length: 9 }, (_, c) => `<rect x="${24 + c * 42 + r * 8}" y="${176 + r * 20}" width="${24 + r * 3}" height="${14 + r * 4}" rx="4" fill="#0a0407"/>`).join('')).join('')}
+        <g><rect x="176" y="186" width="48" height="34" fill="#4a2a14"/><rect x="170" y="182" width="60" height="8" fill="#6a3c1c"/><rect x="190" y="174" width="26" height="8" rx="2" fill="#8a5a2a"/><rect x="214" y="166" width="5" height="22" rx="2" fill="#8a5a2a" transform="rotate(-18 214 188)"/></g>
+        ${[30, 360].map((x) => `<g><rect x="${x - 6}" y="120" width="12" height="60" fill="#a31a30"/><path d="M${x - 6} 120h12l-6 -10z" fill="#e8c46a"/></g>`).join('')}
+        <g class="drift" opacity=".3" fill="#fff">${Array.from({ length: 12 }, (_, i) => `<circle cx="${130 + (i * 41) % 140}" cy="${40 + (i * 29) % 110}" r="1.2"/>`).join('')}</g>`;
+    },
+    // 留声：老上海租界街头，路灯，霓虹，巨大的留声机喇叭
+    coverGramophone(u) {
+      return `${sky(u, '#0d0a1c', '#241238', '#4a2a4a')}${stars(18, 9)}${glow(u, 'mn', 330, 40, 50, '#ffe0a0', .4)}
+        <g fill="#150e22"><rect x="20" y="50" width="90" height="140"/><rect x="120" y="30" width="70" height="160"/><rect x="290" y="60" width="100" height="130"/></g>
+        ${Array.from({ length: 5 }, (_, r) => Array.from({ length: 3 }, (_, c) => ((r * 3 + c) % 3 === 1 ? glowWin(30 + c * 28, 62 + r * 24, 14, 16, { cls: 'flick' }) : `<rect x="${30 + c * 28}" y="${62 + r * 24}" width="14" height="16" fill="#1c1430"/>`)).join('')).join('')}
+        ${Array.from({ length: 6 }, (_, r) => `<rect x="${132 + (r % 2) * 28}" y="${42 + Math.floor(r / 2) * 36}" width="16" height="22" fill="${r % 3 === 0 ? '#ffd27a' : '#1c1430'}"/>`).join('')}
+        <rect x="300" y="76" width="80" height="26" rx="3" fill="#2a0a22"/><text x="340" y="95" font-size="15" font-weight="700" text-anchor="middle" fill="#ff5ab0" class="flick">留 声</text>${glow(u, 'ne', 340, 90, 60, '#ff3a9a', .35)}
+        <path d="M0 190H400V240H0Z" fill="#17101e"/><path d="M0 200H400" stroke="#2a1c36" stroke-width="2"/>
+        ${[90, 260].map((x) => `<g><rect x="${x - 2}" y="96" width="4" height="100" fill="#2a2030"/><path d="M${x} 98q-14 -2 -14 -14h28q0 12 -14 14z" fill="#ffd27a"/>${glow(u, 'lp' + x, x, 90, 44, '#ffd27a', .4)}</g>`).join('')}
+        <g><path d="M150 232L180 196L212 232Z" fill="#2a1a10"/><rect x="150" y="214" width="62" height="18" rx="3" fill="#5a3418"/><path d="M196 208Q246 170 292 118Q330 150 270 214Q230 234 196 208Z" fill="#d4af37"/><path d="M280 128Q316 154 266 208" fill="none" stroke="#fff3c0" stroke-width="2" opacity=".7"/><ellipse cx="288" cy="150" rx="26" ry="38" transform="rotate(34 288 150)" fill="#8a5a1a" opacity=".7"/><circle cx="170" cy="222" r="14" fill="#0a0806"/><path d="M170 222L184 212" stroke="#d4af37" stroke-width="2"/></g>
+        <g class="drift" opacity=".35" fill="#c0a8d8"><ellipse cx="120" cy="200" rx="110" ry="8"/><ellipse cx="320" cy="206" rx="90" ry="7"/></g><g opacity=".3">${rain(40, 14)}</g>`;
+    },
+    // 双生：对称的宅邸，一半暖、一半冷，两个窗口里各有一个人影
+    coverTwins(u) {
+      return `${sky(u, '#0a0c1e', '#1a1a3a', '#2a2a50')}${stars(34, 6)}
+        <rect x="0" y="0" width="200" height="240" fill="#ff9a5a" opacity=".06"/><rect x="200" y="0" width="200" height="240" fill="#5a9aff" opacity=".07"/>
+        ${[0, 1].map((s) => { const x = s ? 220 : 60, warm = s === 0; return `<g><rect x="${x}" y="60" width="120" height="130" fill="#0c0f20"/><path d="M${x - 10} 62L${x + 60} 20L${x + 130} 62Z" fill="#0c0f20"/><rect x="${x + 44}" y="86" width="32" height="46" rx="2" fill="${warm ? '#ffcf78' : '#9fc8ff'}" class="${warm ? 'flick' : ''}"/>${glow(u, 'w' + s, x + 60, 108, 54, warm ? '#ffb060' : '#6aa8ff', .35)}<path d="M${x + 60} 86V132M${x + 44} 109H${x + 76}" stroke="#0c0f20" stroke-width="2"/><rect x="${x + 53}" y="100" width="14" height="32" rx="6" fill="#05060e"/><circle cx="${x + 60}" cy="96" r="6" fill="#05060e"/><rect x="${x + 50}" y="150" width="20" height="40" fill="${warm ? '#6a3a1a' : '#1a3a6a'}"/>${[0, 1].map((k) => `<rect x="${x + 8 + k * 84}" y="90" width="22" height="30" fill="${warm ? '#2a1c18' : '#141c34'}"/>`).join('')}</g>`; }).join('')}
+        <path d="M200 20V190" stroke="#e8d8a0" stroke-width="1.6" stroke-dasharray="4 5" opacity=".7"/><g class="pulse"><circle cx="200" cy="108" r="7" fill="#fff" opacity=".6"/></g>
+        <path d="M0 190H400V240H0Z" fill="#0c1020"/><g transform="translate(0 480) scale(1 -1)" opacity=".28"><rect x="60" y="60" width="120" height="130" fill="#ffcf78"/><rect x="220" y="60" width="120" height="130" fill="#9fc8ff"/></g>
+        <path d="M0 200H400" stroke="#2a3050" stroke-width="2"/><g opacity=".5" fill="#aab8e0" class="drift2"><ellipse cx="200" cy="214" rx="180" ry="7"/></g>`;
+    },
+    // 雪山民宿：木屋、红灯笼、雪峰，门上挂着一把钥匙
+    coverHomestay(u) {
+      return `${sky(u, '#0a1020', '#233454', '#6a7ea0')}${stars(26, 8)}
+        <path d="M-20 170L90 40L170 130L250 20L340 140L420 80V240H-20Z" fill="#7e90b4"/><path d="M90 40L66 82L84 74L96 88L108 70ZM250 20L222 70L242 62L256 80L274 60Z" fill="#f2f6ff"/><path d="M-20 190L60 130L140 170L230 120L320 172L420 130V240H-20Z" fill="#3a4a6a"/>
+        ${[30, 56, 340, 370].map((x, i) => pine(x, 194 + (i % 2) * 6, 1 + (i % 3) * .2)).join('')}
+        <path d="M0 200Q120 188 200 198T400 196V240H0Z" fill="#e6eefb"/><path d="M0 214Q140 204 240 212T400 210V240H0Z" fill="#c9d8f0"/>
+        <g><rect x="110" y="118" width="180" height="82" fill="#5a3a22"/>${Array.from({ length: 9 }, (_, i) => `<path d="M110 ${126 + i * 9}H290" stroke="#43291a" stroke-width="1.4"/>`).join('')}<path d="M100 120L200 66L300 120L292 124L200 76L108 124Z" fill="#f2f6ff"/><path d="M104 122L200 70L296 122V130H104Z" fill="#3a2418"/><rect x="236" y="76" width="12" height="28" fill="#3a2a20"/>
+          ${glowWin(130, 140, 26, 24, { fill: '#ffcf78', cls: 'flick' })}${glowWin(244, 140, 26, 24, { fill: '#ffcf78' })}<rect x="186" y="146" width="28" height="54" fill="#2a1a10" stroke="#8a6a3a" stroke-width="2"/><circle cx="208" cy="174" r="2.2" fill="#d4af37"/>
+          <path d="M196 156l-6 -8M210 156l6 -8" stroke="#d4af37" stroke-width="1.4"/><g class="pulse"><circle cx="200" cy="164" r="4" fill="none" stroke="#d4af37" stroke-width="2"/></g></g>
+        ${[120, 280].map((x) => `<g class="swing" style="transform-origin:${x}px 124px"><path d="M${x} 124v10" stroke="#333"/><ellipse cx="${x}" cy="146" rx="9" ry="12" fill="#d8302a"/>${glow(u, 'rl' + x, x, 146, 24, '#ff8a5a', .35)}</g>`).join('')}
+        <path d="M200 200L170 238H236Z" fill="#ffd27a" opacity=".16"/>${flakes(40, 12)}`;
+    }
+  });
+
   function scene(id, o = {}) {
     const ck = 's|' + id + '|' + (o.cls || '') + '|' + (o.label || '');
     if (cache.has(ck)) return cache.get(ck);
@@ -792,7 +918,7 @@ const ART = (() => {
     const hue = Math.floor(r() * 360);
     // 取景：不同的缩放与偏移，水平翻转
     const z = 1 + r() * (cover ? 0.14 : 0.3), vw = 400 / z, vh = 240 / z;
-    const vx = r() * (400 - vw), vy = r() * (240 - vh) * 0.7, flip = r() < 0.5;
+    const vx = r() * (400 - vw), vy = r() * (240 - vh) * 0.7, flip = !cover && r() < 0.5;
     const rawBase = fn(u);
     // 选摆设：优先与地点名称/描述相关
     const text = (o.text || '') + '';
