@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1420">
+<title>线上剧本杀</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="banner" class="banner" hidden>连接已断开，正在重连…</div>
+<div id="toast" class="toast" hidden></div>
+<canvas id="snow"></canvas>
+
+<main id="home" class="home" hidden>
+  <button class="btn small ghost sfx-toggle home-tools" aria-label="声音开关">🔊</button>
+  <div class="home-card">
+    <div class="hero" id="hero">
+      <div class="hero-title">
+        <p class="eyebrow">选剧本 · 约朋友 · 开推理</p>
+        <h1 id="homeTitle">雪夜云栖</h1>
+      </div>
+    </div>
+    <div class="home-body">
+      <p class="sub" id="homeSub">一桩发生在暴风雪山庄里的密室谋杀</p>
+      <label class="field">
+        <span>你的昵称</span>
+        <input id="nameInput" maxlength="12" placeholder="例如：阿远" autocomplete="off">
+      </label>
+      <button id="createBtn" class="btn primary cta">创建房间</button>
+      <button id="detBtn" class="btn det-entry" hidden>🔍 单人侦探模式 <small>不用朋友，不用开麦</small></button>
+      <div class="or">或者加入朋友的房间</div>
+      <div class="join-row">
+        <input id="codeInput" maxlength="4" placeholder="房间码" autocomplete="off" autocapitalize="characters">
+        <button id="joinBtn" class="btn">加入</button>
+      </div>
+      <p class="fine" id="homeFine">4–8 人 · 约 90–120 分钟 · 需要麦克风（可选）</p>
+    </div>
+  </div>
+</main>
+
+<main id="det" class="det" hidden></main>
+
+<main id="room" class="room" hidden>
+  <header class="topbar">
+    <button id="backBtn" class="btn small ghost back-btn" aria-label="返回">‹ 返回</button>
+    <div class="tb-left">
+      <div class="room-code" id="roomCode" title="点击复制房间码"></div>
+      <div class="phase-name" id="phaseName"></div>
+    </div>
+    <div class="tb-right"><div class="timer" id="timer"></div><button class="btn small ghost sfx-toggle" aria-label="声音开关">🔊</button></div>
+  </header>
+
+  <section id="players" class="players"></section>
+  <section id="phaseCard" class="phase-card"></section>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="role">我的角色</button>
+    <button data-tab="case">案情</button>
+    <button data-tab="clues">线索</button>
+    <button data-tab="chat">聊天<span class="dot" id="chatDot" hidden></span></button>
+  </nav>
+
+  <section id="tabBody" class="tab-body"></section>
+  <section id="chatPane" class="chat-pane" hidden>
+    <div id="chatLog" class="chat-log"></div>
+    <form id="chatForm" class="chat-form">
+      <input id="chatInput" maxlength="300" placeholder="发送文字消息…" autocomplete="off">
+      <button class="btn">发送</button>
+    </form>
+  </section>
+
+  <footer class="voicebar" id="voiceBar"></footer>
+</main>
+
+<script src="cases.js"></script>
+<script src="config.js"></script>
+<script src="art.js"></script>
+<script src="sfx.js"></script>
+<script src="fx.js"></script>
+<script src="detective.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

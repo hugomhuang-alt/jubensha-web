@@ -1,0 +1,14 @@
+{
+  "name": "jubensha-online",
+  "version": "0.1.0",
+  "description": "线上剧本杀原型：多人房间 + 语音 + 轮流发言 + 原创剧本《雪夜云栖》",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/flow.test.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
