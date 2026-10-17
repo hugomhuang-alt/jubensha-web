@@ -778,6 +778,149 @@ html:not(.lite) body::after { content: ""; position: fixed; inset: 0; z-index: 3
 .home > .home-card { width: min(440px, calc(100vw - 32px)); }
 .join-row .btn { white-space: nowrap; min-width: 84px; }
 
+/* ===== v4：黑漆 + 香槟金 · 全屏界面 ===== */
+:root {
+  --bg: #09080e; --bg2: #100e18; --panel: #15121e; --panel2: #1d1828; --line: #2e2839;
+  --text: #efe8d8; --muted: #9a91a8; --accent: #d9b86f; --gold: #d9b86f; --accent-ink: #1a1206; --danger: #e5857b; --ok: #9fd3a8;
+  --foil: linear-gradient(135deg, #f6e6b4 0%, #d6b062 48%, #9c7630 100%);
+  --hair: rgba(217, 184, 111, .28);
+}
+body { background: radial-gradient(120% 60% at 50% -8%, #2a1626 0%, transparent 62%), radial-gradient(70% 40% at 100% 100%, rgba(217, 184, 111, .07), transparent 70%), var(--bg); }
+.btn.primary, .btn.primary.cta { background: var(--foil); color: var(--accent-ink); border: 0; font-weight: 700; letter-spacing: .16em; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 6px 22px rgba(217, 184, 111, .22); }
+.btn.primary:disabled { opacity: .45; box-shadow: none; }
+.btn.primary.cta { min-height: 52px; font-size: 16px; animation: none; }
+.link { background: none; border: 0; padding: 4px 2px; color: var(--accent); font-size: 14px; text-decoration: underline; text-decoration-color: rgba(217, 184, 111, .4); text-underline-offset: 4px; }
+.link.quiet { color: var(--muted); text-decoration-color: transparent; display: block; margin: 18px auto 0; }
+
+main.screen { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100dvh; width: 100%; max-width: 560px; margin: 0 auto; padding: max(16px, env(safe-area-inset-top)) 22px max(22px, env(safe-area-inset-bottom)); place-items: normal; }
+main.screen[hidden] { display: none !important; }
+.screen .bg-fade { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(80% 36% at 50% 0%, rgba(160, 80, 110, .22), transparent 70%); }
+.s-top { display: flex; align-items: center; gap: 12px; justify-content: space-between; min-height: 44px; }
+.s-top h2 { flex: 1; margin: 0; font-family: var(--serif); font-size: 20px; letter-spacing: .14em; font-weight: 600; }
+.s-top-r { display: flex; align-items: center; gap: 10px; }
+.mini-mark { display: inline-flex; align-items: center; gap: 8px; } .mini-mark .emblem { width: 28px; height: 28px; }
+.mini-mark b { font-family: var(--serif); font-size: 15px; letter-spacing: .32em; font-weight: 600; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.emblem circle, .emblem path { vector-effect: non-scaling-stroke; }
+.back { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--hair); background: transparent; color: var(--accent); font-size: 26px; line-height: 1; padding: 0 0 3px; }
+.home-tools, .s-top .sfx-toggle { position: static; }
+
+/* 主菜单 */
+.s-title { padding: 5vh 0 3vh; }
+.s-title h1 { margin: 0; font-family: var(--serif); font-weight: 700; font-size: clamp(40px, 12vw, 54px); letter-spacing: .2em; line-height: 1.15; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; filter: none; animation: none; }
+.s-title .sub { margin: 12px 0 0; text-align: left; color: var(--muted); font-size: 15px; letter-spacing: .08em; }
+.doors { display: grid; gap: 16px; }
+.door { position: relative; display: block; width: 100%; min-height: 176px; padding: 0; text-align: left; overflow: hidden; border-radius: 20px; border: 1px solid var(--hair); background: #0e0c14; isolation: isolate; transition: transform .18s ease, border-color .2s; }
+.door:active { transform: scale(.985); }
+.door.gold { border-color: rgba(217, 184, 111, .6); box-shadow: 0 0 0 1px rgba(217, 184, 111, .12), 0 14px 40px rgba(217, 184, 111, .12); }
+.door-art { position: absolute; inset: 0; z-index: -2; } .door-art .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+.door::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(9, 8, 14, .92) 8%, rgba(9, 8, 14, .45) 60%, rgba(9, 8, 14, .15)), linear-gradient(0deg, rgba(9, 8, 14, .7), transparent 55%); }
+.door-tx { position: absolute; left: 22px; bottom: 20px; right: 70px; display: flex; flex-direction: column; gap: 4px; }
+.door-tx small { font-size: 12px; letter-spacing: .12em; color: var(--accent); }
+.door-tx b { font-family: var(--serif); font-size: 30px; letter-spacing: .14em; font-weight: 700; color: #fff7e4; }
+.door-tx span { font-size: 13px; color: #cdc4d6; line-height: 1.5; }
+.door-go { position: absolute; right: 20px; bottom: 22px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--hair); background: rgba(9, 8, 14, .5); }
+.door-go::before { content: ""; position: absolute; left: 13px; top: 13px; width: 9px; height: 9px; border: solid var(--accent); border-width: 1.6px 1.6px 0 0; transform: rotate(45deg); }
+.door.gold .door-go { background: var(--foil); border: 0; } .door.gold .door-go::before { border-color: #2a1c06; }
+.s-foot { margin-top: auto; padding-top: 28px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.s-foot .net { margin: 0; } .s-foot .fine { margin: 0; }
+.acct { display: flex; align-items: center; gap: 8px; margin: 0; padding: 4px 6px 4px 4px; border: 1px solid var(--hair); border-radius: 999px; background: rgba(21, 18, 30, .6); }
+.acct-av { width: 28px; height: 28px; font-size: 13px; background: var(--foil); color: var(--accent-ink); }
+.acct-nm { flex: none; max-width: 90px; font-size: 13px; font-weight: 600; } .acct .link { font-size: 12px; text-decoration: none; color: var(--muted); }
+
+/* 登录 */
+.auth-form { display: flex; flex-direction: column; padding-top: 7vh; }
+.auth-form h2 { margin: 0; font-family: var(--serif); font-size: 36px; letter-spacing: .12em; font-weight: 700; }
+.auth-form .sub { margin: 10px 0 28px; color: var(--muted); font-size: 14px; line-height: 1.7; text-align: left; }
+.uf { display: block; margin: 0 0 20px; } .uf span { display: block; font-size: 12px; color: var(--muted); letter-spacing: .1em; margin-bottom: 2px; }
+.uf input { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; padding: 12px 0; font-size: 18px; transition: border-color .2s; }
+.uf input:focus { border-bottom-color: var(--accent); }
+.au-msg { min-height: 22px; margin: 12px 0 0; color: var(--danger); font-size: 14px; text-align: center; }
+.au-alt { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; color: var(--muted); font-size: 14px; }
+.auth-form .net { margin: 26px auto 0; }
+
+/* 多人入口 */
+.mp .s-top { margin-bottom: 4px; }
+.tabs2 { display: grid; grid-template-columns: 1fr 1fr; margin: 10px 0 20px; border-bottom: 1px solid var(--line); }
+.tabs2 button { padding: 14px 0; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--muted); font-family: var(--serif); font-size: 17px; letter-spacing: .14em; transition: color .2s, border-color .2s; }
+.tabs2 button.on { color: var(--accent); border-bottom-color: var(--accent); }
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 0 10px; } .mp .sec-h h3 { margin: 0; font-family: var(--serif); font-size: 15px; letter-spacing: .12em; color: #d8cfdf; font-weight: 600; }
+.room-list { display: block; margin: 0; }
+.room-list .empty, #mpScripts .empty { margin: 8px 0 22px; padding: 30px 16px; text-align: center; color: var(--muted); font-size: 14px; border: 1px dashed var(--line); border-radius: 16px; line-height: 1.8; }
+.room-row { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; text-align: left; overflow: visible; animation: rowin .35s both; }
+.room-row:hover, .room-row:active { background: rgba(217, 184, 111, .05); transform: none; border-color: var(--line); }
+.rr-img { flex: none; width: 68px; height: 68px; border-radius: 14px; overflow: hidden; position: relative; box-shadow: 0 0 0 1px var(--hair); } .rr-img .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.rr-tx { padding: 0; } .rr-tx b { font-size: 18px; letter-spacing: .1em; } .rr-tx small { font-size: 12.5px; }
+.rr-n { background: none; padding: 0; min-width: 0; flex-direction: column; align-items: flex-end; gap: 4px; color: var(--accent); }
+.rr-n b { font-size: 18px; font-family: var(--serif); } .rr-n i { font-style: normal; font-size: 12px; opacity: .9; }
+.code-join { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); } .code-join > span { display: block; margin-bottom: 10px; color: var(--muted); font-size: 13px; }
+.join-row input { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; font-size: 20px; letter-spacing: .5em; }
+.join-row .btn { min-width: 92px; border-radius: 12px; }
+.mp .sc-list { gap: 12px; margin: 0 0 8px; }
+.mp .sc-card { flex-direction: column; border-radius: 16px; background: #0e0c14; border: 1px solid var(--line); }
+.mp .sc-img { width: 100%; height: 118px; min-height: 0; } .mp .sc-tx { padding: 12px 16px 14px; }
+.mp .sc-card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 10px 30px rgba(217, 184, 111, .16); }
+.mp .sc-check { background: var(--foil); }
+.mp .cap-row { background: transparent; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; padding: 14px 0; margin: 14px 0 22px; }
+.mp #createBtn { margin-top: 6px; }
+.stepper b { font-family: var(--serif); }
+.stepper .btn { border-radius: 50%; width: 40px; height: 40px; border: 1px solid var(--hair); background: transparent; color: var(--accent); }
+
+/* 开屏 logo */
+.splash-logo { background: radial-gradient(70% 55% at 50% 44%, #231629 0%, #0a0810 62%, #050409 100%); overflow: hidden; }
+.sl-inner { display: flex; flex-direction: column; align-items: center; animation: none; }
+.sl-emblem .emblem { width: 132px; height: 132px; filter: drop-shadow(0 0 18px rgba(217, 184, 111, .35)); }
+.e-ring, .e-ring2, .e-lens circle { stroke-dasharray: 100; stroke-dashoffset: 100; animation: draw 1.5s cubic-bezier(.6, .1, .2, 1) forwards; }
+.e-ring2 { animation-delay: .25s; } .e-lens circle:first-child { animation-delay: .6s; } .e-lens circle:last-child { animation-delay: .8s; }
+.e-gem { transform-box: fill-box; transform-origin: center; opacity: 0; animation: gem .9s 1.7s cubic-bezier(.2, .9, .3, 1.3) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes gem { from { opacity: 0; transform: scale(.2) rotate(-40deg); } to { opacity: 1; transform: none; } }
+.sl-word { margin-top: 26px; display: flex; gap: .22em; font-family: var(--serif); font-size: 58px; font-weight: 600; line-height: 1; }
+.sl-word span { background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0; transform: translateY(14px); animation: letter .9s cubic-bezier(.2, .8, .2, 1) forwards; }
+.sl-word span:nth-child(1) { animation-delay: 1.5s; } .sl-word span:nth-child(2) { animation-delay: 1.62s; } .sl-word span:nth-child(3) { animation-delay: 1.74s; } .sl-word span:nth-child(4) { animation-delay: 1.86s; }
+@keyframes letter { to { opacity: 1; transform: none; } }
+.sl-rule { height: 1px; width: 0; margin: 20px 0 14px; background: linear-gradient(90deg, transparent, #d6b062, transparent); animation: rule 1.2s 2.1s ease-out forwards; }
+@keyframes rule { to { width: 190px; } }
+.sl-sub { font-size: 12px; letter-spacing: .72em; padding-left: .72em; color: #b3a58a; opacity: 0; animation: fade 1s 2.4s ease forwards; }
+@keyframes fade { to { opacity: 1; } }
+.sl-sweep { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 42%, rgba(255, 238, 190, .14) 50%, transparent 58%); transform: translateX(-110%); animation: sweep 1.5s 2.5s ease-in-out forwards; }
+@keyframes sweep { to { transform: translateX(110%); } }
+
+/* 大厅：1–8 号座位，左四右四 */
+#room[data-phase="lobby"] #players, #room[data-phase="lobby"] #tabs, #room[data-phase="lobby"] #tabBody { display: none; }
+.lob-banner { position: relative; height: 112px; margin: 0 0 14px; border-radius: 18px; overflow: hidden; border: 1px solid var(--hair); isolation: isolate; }
+.lob-banner .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.lob-banner::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(9, 8, 14, .92), rgba(9, 8, 14, .35)); }
+.lb-tx { position: absolute; left: 16px; bottom: 12px; display: flex; flex-direction: column; gap: 2px; } .lb-tx small { color: var(--accent); font-size: 11.5px; letter-spacing: .1em; }
+.lb-tx b { font-family: var(--serif); font-size: 24px; letter-spacing: .12em; } .lb-tx span { font-size: 12px; color: #cfc6d8; }
+.lob-banner .btn { position: absolute; right: 12px; top: 12px; background: rgba(9, 8, 14, .6); border-color: var(--hair); color: var(--accent); }
+.board { display: grid; grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1fr); gap: 10px; align-items: stretch; margin: 0 0 14px; }
+.board .col { display: grid; grid-template-rows: repeat(4, 1fr); gap: 10px; }
+.seat { position: relative; min-height: 94px; padding: 10px 6px 8px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, #17131f, #100e18); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; transition: border-color .25s, box-shadow .25s; }
+.seat .no { position: absolute; left: 8px; top: 6px; font: 600 11px var(--serif); color: var(--muted); }
+.seat .av { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 16px; background: #231d2e; color: var(--text); box-shadow: 0 0 0 1px var(--line); overflow: hidden; }
+.seat .nm { max-width: 100%; padding: 0 2px; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seat .st { font-size: 11.5px; color: var(--muted); } .seat .st em { font-style: normal; color: var(--danger); }
+.seat.me { border-color: rgba(217, 184, 111, .55); } .seat.me .av { box-shadow: 0 0 0 1px var(--accent); }
+.seat.host .st { color: var(--accent); } .seat.host .av { background: var(--foil); color: var(--accent-ink); box-shadow: none; }
+.seat.rdy { border-color: rgba(159, 211, 168, .5); box-shadow: 0 0 18px rgba(159, 211, 168, .1); } .seat.rdy .st { color: var(--ok); }
+.seat.off { opacity: .35; } .seat.empty .av { background: transparent; box-shadow: 0 0 0 1px var(--line); border: 1px dashed #4a4258; color: #4a4258; }
+.seat.empty, .seat.closed { background: transparent; border-style: dashed; } .seat.closed { opacity: .28; }
+.board .mid { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.table { width: 112px; height: 112px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--hair); background: radial-gradient(circle at 50% 38%, rgba(217, 184, 111, .16), transparent 70%), #0e0c14; box-shadow: inset 0 0 30px rgba(217, 184, 111, .06), 0 0 0 6px rgba(217, 184, 111, .04); }
+.table .tn { font-family: var(--serif); font-size: 32px; line-height: 1; color: var(--accent); } .table .tn em { font-style: normal; font-size: 16px; color: var(--muted); }
+.table span { margin-top: 6px; font-size: 11.5px; color: var(--muted); }
+.table.go .tn { color: #fff0c0; text-shadow: 0 0 16px rgba(217, 184, 111, .6); }
+.mid .hint { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+.lob-code { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: #0e0c14; margin-bottom: 14px; }
+.lob-code .c1 { flex: 1; min-width: 0; font-size: 13px; color: var(--muted); } .lob-code b { font-family: var(--serif); font-size: 22px; letter-spacing: .3em; color: var(--accent); margin-left: 6px; }
+.lob-code .pw { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); } .lob-code .pw b { font-size: 14px; letter-spacing: .12em; margin-left: 4px; }
+.lob-act { display: grid; gap: 10px; } .lob-act .btn { width: 100%; }
+.lob-act .btn.ready-on { background: transparent; border: 1px solid var(--ok); color: var(--ok); box-shadow: none; }
+.lob-act .rdy-note { margin: 0; text-align: center; font-size: 12.5px; color: var(--muted); }
+.lob-tools { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; } .lob-tools .cap-row { flex: 1; margin: 0; padding: 8px 12px; }
+html.lite .seat, html.lite .table { transition: none; }
+#room[data-phase="lobby"] .phase-card { background: transparent; border: 0; box-shadow: none; padding: 4px 0 0; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -786,73 +929,74 @@ html:not(.lite) body::after { content: ""; position: fixed; inset: 0; z-index: 3
 .topbar { top: env(safe-area-inset-top, 0px); margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .toast { bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
 .home { min-height: 100%; }
-.codebox, .net, #mpSeg, #mpJoin, #acct, #auGuest, .cap-row, #mpCreate > p.fine { display: none !important; }
+.codebox, .lob-code, .net, #mpSeg, #mpJoin, #acct, #auGuest, .cap-row, #mpCreate .uf, #mpCreate > p.fine { display: none !important; }
 
 </style>
 <div id="banner" class="banner" hidden>连接已断开，正在重连…</div>
 <div id="toast" class="toast" hidden></div>
 <canvas id="snow"></canvas>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gf" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e6b4"/><stop offset=".5" stop-color="#d4af5f"/><stop offset="1" stop-color="#8f6a2a"/></linearGradient></defs></svg>
 
-<main id="home" class="home" hidden>
-  <button class="btn small ghost sfx-toggle home-tools" aria-label="声音开关">🔊</button>
-  <div class="home-card">
-    <div class="hero" id="hero">
-      <div class="hero-title">
-        <p class="eyebrow">选剧本 · 约朋友 · 开推理</p>
-        <h1 id="homeTitle">雪夜云栖</h1>
-      </div>
-    </div>
-    <div class="home-body">
-      <p class="sub" id="homeSub">一桩发生在暴风雪山庄里的密室谋杀</p>
-      <div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div>
-      <div class="acct" id="acct" hidden><span class="acct-av" id="acctAv"></span><span class="acct-nm" id="acctNm"></span><button class="btn small ghost" id="logoutBtn">退出登录</button></div>
-      <button id="detBtn" class="btn menu-big" hidden><span class="mb-ic">🔍</span><span class="mb-tx"><b>单人侦探</b><small>13 个案件 · 不用朋友，不用开麦</small></span></button>
-      <button id="mpBtn" class="btn menu-big primary"><span class="mb-ic">👥</span><span class="mb-tx"><b>多人剧本杀</b><small>创建房间，或加入大家的房间</small></span></button>
-      <div class="menu-row"><button class="btn small ghost" id="qualBtn">画质：自动</button></div>
-      <p class="fine ver" id="ver"></p>
-      <p class="fine" id="homeFine">4–8 人 · 约 90–120 分钟 · 需要麦克风（可选）</p>
-    </div>
-  </div>
+<main id="home" class="screen home" hidden>
+  <div class="bg-fade"></div>
+  <header class="s-top"><span class="mini-mark"><svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+<circle class="e-ring" cx="60" cy="60" r="54" fill="none" stroke="url(#gf)" stroke-width="1.6" pathLength="100"/>
+<circle class="e-ring2" cx="60" cy="60" r="49" fill="none" stroke="url(#gf)" stroke-width=".5" opacity=".6" pathLength="100"/>
+<g class="e-lens" fill="none" stroke="url(#gf)" stroke-width="1.5"><circle cx="48" cy="60" r="24" pathLength="100"/><circle cx="72" cy="60" r="24" pathLength="100"/></g>
+<path class="e-gem" d="M60 44l7 16-7 16-7-16z" fill="url(#gf)"/></svg><b>abba</b></span><div class="s-top-r"><div class="acct" id="acct" hidden><span class="acct-av" id="acctAv"></span><span class="acct-nm" id="acctNm"></span><button class="link" id="logoutBtn">退出</button></div><button class="btn small ghost sfx-toggle" aria-label="声音开关">🔊</button></div></header>
+  <section class="s-title"><h1 id="homeTitle">线上剧本杀</h1><p class="sub" id="homeSub">一桩案，一屋人，一个在说谎的</p></section>
+  <section class="doors">
+    <button id="detBtn" class="door" hidden><div class="door-art" id="artSolo"></div><div class="door-tx"><small>独自一人</small><b>单人侦探</b><span>13 桩案件，自己审问、搜证、指认</span></div><i class="door-go"></i></button>
+    <button id="mpBtn" class="door gold"><div class="door-art" id="artMulti"></div><div class="door-tx"><small>和朋友一起</small><b>多人剧本杀</b><span>建房间，或加入正在等人的房间</span></div><i class="door-go"></i></button>
+  </section>
+  <footer class="s-foot"><div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div><button class="link" id="qualBtn">画质：自动</button><p class="fine ver" id="ver"></p><p class="fine" id="homeFine"></p></footer>
 </main>
 
-<main id="auth" class="home auth" hidden>
-  <div class="home-card">
-    <div class="auth-hero"><div class="logo-mark"><i></i></div><p class="eyebrow">ABBA ENTERTAINMENT</p><h2>登录 / 注册</h2></div>
-    <form class="home-body" id="authForm" autocomplete="on">
-      <div class="seg" id="authSeg"><button type="button" class="on" data-m="login">登录</button><button type="button" data-m="register">注册</button></div>
-      <label class="field"><span>邮箱（Gmail 等都可以）</span><input id="auEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@gmail.com"></label>
-      <label class="field" id="auNickRow" hidden><span>昵称（游戏里别人看到的名字）</span><input id="auNick" maxlength="12" autocomplete="nickname" placeholder="例如：阿远"></label>
-      <label class="field"><span>密码（至少 6 位）</span><input id="auPw" type="password" autocomplete="current-password" placeholder="••••••"></label>
-      <button class="btn primary cta" id="auGo" type="submit">登录</button>
-      <p class="fine" id="auMsg"></p>
-      <div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div>
-      <button class="btn small ghost" id="auGuest" type="button">先玩单人侦探（无需登录）</button>
-    </form>
-  </div>
+<main id="auth" class="screen auth" hidden>
+  <div class="bg-fade"></div>
+  <header class="s-top"><span class="mini-mark"><svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+<circle class="e-ring" cx="60" cy="60" r="54" fill="none" stroke="url(#gf)" stroke-width="1.6" pathLength="100"/>
+<circle class="e-ring2" cx="60" cy="60" r="49" fill="none" stroke="url(#gf)" stroke-width=".5" opacity=".6" pathLength="100"/>
+<g class="e-lens" fill="none" stroke="url(#gf)" stroke-width="1.5"><circle cx="48" cy="60" r="24" pathLength="100"/><circle cx="72" cy="60" r="24" pathLength="100"/></g>
+<path class="e-gem" d="M60 44l7 16-7 16-7-16z" fill="url(#gf)"/></svg><b>abba</b></span></header>
+  <form class="auth-form" id="authForm" autocomplete="on">
+    <h2 id="auTitle">欢迎回来</h2><p class="sub" id="auSub">登录后可以创建房间、加入朋友的房间。</p>
+    <label class="uf"><span>邮箱</span><input id="auEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@gmail.com"></label>
+    <label class="uf" id="auNickRow" hidden><span>昵称</span><input id="auNick" maxlength="12" autocomplete="nickname" placeholder="游戏里别人看到的名字"></label>
+    <label class="uf"><span>密码</span><input id="auPw" type="password" autocomplete="current-password" placeholder="至少 6 位"></label>
+    <button class="btn primary cta" id="auGo" type="submit">登录</button>
+    <p class="au-msg" id="auMsg"></p>
+    <div class="au-alt"><span id="auAltTx">还没有账号？</span><button class="link" type="button" id="auSwitch">注册</button></div>
+    <div class="seg" id="authSeg" hidden><button type="button" class="on" data-m="login">登录</button><button type="button" data-m="register">注册</button></div>
+    <button class="link quiet" id="auGuest" type="button">先玩单人侦探，不登录</button>
+    <div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div>
+  </form>
 </main>
 
-<main id="mp" class="home mp" hidden>
-  <div class="home-card">
-    <div class="mp-head"><button class="btn small ghost" id="mpBack">‹ 返回</button><h2>多人剧本杀</h2><span class="net mini" data-s="wait"><i></i><span>连接中</span></span></div>
-    <div class="home-body">
-      <div class="seg" id="mpSeg"><button class="on" data-m="join">加入房间</button><button data-m="create">创建房间</button></div>
-      <label class="field" id="mpNameRow" hidden><span>你的昵称</span><input id="nameInput" maxlength="12" placeholder="例如：阿远" autocomplete="off"></label>
-      <section id="mpJoin">
-        <div class="mp-sec"><h3>等待中的房间 <button class="btn small ghost" id="roomsRefresh">刷新</button></h3><div id="roomList" class="room-list"></div></div>
-        <div class="or">或者输入房间码</div>
-        <div class="join-row"><input id="codeInput" maxlength="4" placeholder="房间码" autocomplete="off" autocapitalize="characters"><button id="joinBtn" class="btn">加入</button></div>
-      </section>
-      <section id="mpCreate" hidden>
-        <h3>选择剧本</h3><div id="mpScripts" class="sc-list"></div>
-        <div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="capMinus">−</button><b id="capNum">4</b><button class="btn small" id="capPlus">+</button></div></div>
-        <p class="fine">人数凑满后自动开始游戏，不需要房主手动点开始。</p>
-        <button id="createBtn" class="btn primary cta">创建房间</button>
-      </section>
-    </div>
-  </div>
+<main id="mp" class="screen mp" hidden>
+  <div class="bg-fade"></div>
+  <header class="s-top"><button class="back" id="mpBack" aria-label="返回">‹</button><h2>多人剧本杀</h2><span class="net mini" data-s="wait"><i></i><span>连接中</span></span></header>
+  <div class="tabs2" id="mpSeg"><button class="on" data-m="join">加入房间</button><button data-m="create">创建房间</button></div>
+  <label class="uf" id="mpNameRow" hidden><span>你的昵称</span><input id="nameInput" maxlength="12" placeholder="例如：阿远" autocomplete="off"></label>
+  <section id="mpJoin">
+    <div class="sec-h"><h3>正在等人的房间</h3><button class="link" id="roomsRefresh">刷新</button></div>
+    <div id="roomList" class="room-list"></div>
+    <div class="code-join"><span>知道房间码？</span><div class="join-row"><input id="codeInput" maxlength="4" placeholder="四位房间码" autocomplete="off" autocapitalize="characters"><button id="joinBtn" class="btn primary">加入</button></div></div>
+  </section>
+  <section id="mpCreate" hidden>
+    <div class="sec-h"><h3>选剧本</h3></div><div id="mpScripts" class="sc-list"></div>
+    <div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="capMinus">−</button><b id="capNum">4</b><button class="btn small" id="capPlus">+</button></div></div>
+    <label class="uf"><span>房间密码（可不填）</span><input id="roomPw" maxlength="12" placeholder="设置后，朋友进房要输入密码" autocomplete="off"></label>
+    <p class="fine">人到齐、并且都点了“准备”，游戏自动开始。</p>
+    <button id="createBtn" class="btn primary cta">创建房间</button>
+  </section>
 </main>
 
-<div id="splash" class="splash-logo"><div class="sl-inner"><div class="logo-mark big"><i></i></div><div class="sl-name">abba</div><div class="sl-sub">ENTERTAINMENT</div></div></div>
+<div id="splash" class="splash-logo"><div class="sl-inner"><div class="sl-emblem"><svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+<circle class="e-ring" cx="60" cy="60" r="54" fill="none" stroke="url(#gf)" stroke-width="1.6" pathLength="100"/>
+<circle class="e-ring2" cx="60" cy="60" r="49" fill="none" stroke="url(#gf)" stroke-width=".5" opacity=".6" pathLength="100"/>
+<g class="e-lens" fill="none" stroke="url(#gf)" stroke-width="1.5"><circle cx="48" cy="60" r="24" pathLength="100"/><circle cx="72" cy="60" r="24" pathLength="100"/></g>
+<path class="e-gem" d="M60 44l7 16-7 16-7-16z" fill="url(#gf)"/></svg></div><div class="sl-word"><span>A</span><span>B</span><span>B</span><span>A</span></div><div class="sl-rule"></div><div class="sl-sub">ENTERTAINMENT</div></div><div class="sl-sweep"></div></div>
 
 <main id="det" class="det" hidden></main>
 
@@ -2426,6 +2570,8 @@ const REQUIRE_AUTH = !!AUTH_SECRET;
 const TEST_EMAILS = String(process.env.TEST_EMAILS || '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
 const isTester = (email) => !!email && TEST_EMAILS.includes(String(email).toLowerCase());
 const AUTO_START_MS = Math.max(30, 5000 / TIME_SCALE);
+const READY_MS = Math.max(300, 60000 / TIME_SCALE); // 入房后一分钟内必须点“准备”，否则自动请出（房主除外）
+const allReady = (room) => room.players.every((p) => p.id === room.hostId || p.rdy || p.isBot);
 function signToken(u) {
   const body = Buffer.from(JSON.stringify({ e: u.email, n: u.nick, x: Date.now() + 90 * 864e5 })).toString('base64url');
   return body + '.' + crypto.createHmac('sha256', AUTH_SECRET).update(body).digest('base64url');
@@ -2496,7 +2642,7 @@ function createRoom(scriptId, cap) {
   const room = {
     code, players: [], hostId: null, phase: 'lobby', phaseEnd: null, timer: null,
     speakerOrder: [], speakerIdx: 0, chat: [], shared: [], voice: new Set(),
-    result: null, scriptId: sc.id, cap: clampCap(sc, cap), autoTimer: null, autoAt: null, touched: Date.now()
+    result: null, scriptId: sc.id, cap: clampCap(sc, cap), password: '', autoTimer: null, autoAt: null, touched: Date.now()
   };
   rooms.set(code, room);
   return room;
@@ -2509,7 +2655,7 @@ function clampCap(sc, cap) {
 // 满员自动开局（只在账号模式启用）：人齐后倒计时几秒，期间有人离开/换剧本就取消
 function checkAutoStart(room) {
   const full = REQUIRE_AUTH && room.phase === 'lobby' && room.players.length >= room.cap &&
-    room.players.length >= scriptOf(room).minPlayers && connectedPlayers(room).length === room.players.length;
+    room.players.length >= scriptOf(room).minPlayers && connectedPlayers(room).length === room.players.length && allReady(room);
   if (!full) { if (room.autoTimer) { clearTimeout(room.autoTimer); room.autoTimer = null; } room.autoAt = null; return; }
   if (room.autoTimer) return;
   room.autoAt = Date.now() + AUTO_START_MS;
@@ -2523,7 +2669,7 @@ function checkAutoStart(room) {
 
 function addPlayer(room, name, ws, email) {
   const p = {
-    id: uid(), token: crypto.randomBytes(16).toString('hex'), name, email: email || null,
+    id: uid(), token: crypto.randomBytes(16).toString('hex'), name, email: email || null, rdy: false, rdyBy: Date.now() + READY_MS,
     ws, connected: true, charId: null, ready: false, searched: false,
     clues: [], vote: null
   };
@@ -2568,7 +2714,7 @@ function snapshot(room, me) {
     phaseEnd: room.phaseEnd,
     hostId: room.hostId,
     scriptId: script.id,
-    cap: room.cap, autoAt: room.autoAt || null, requireAuth: REQUIRE_AUTH, botsAllowed: botsAllowed(room),
+    cap: room.cap, autoAt: room.autoAt || null, locked: !!room.password, password: room.password || '', readyMs: READY_MS, requireAuth: REQUIRE_AUTH, botsAllowed: botsAllowed(room),
     manualStart: !REQUIRE_AUTH || !!script.internal,
     scripts: SCRIPTS.list.filter((sc) => scriptAllowed(sc, me && me.ws)).map(scriptMeta),
     speakerId: currentSpeakerId(room),
@@ -2581,6 +2727,7 @@ function snapshot(room, me) {
     },
     players: room.players.map((p) => ({
       id: p.id, name: p.name, connected: p.connected, ready: p.ready, bot: !!p.isBot,
+      rdy: p.id === room.hostId || !!p.rdy || !!p.isBot, rdyBy: (p.id === room.hostId || p.rdy || p.isBot) ? null : p.rdyBy,
       searched: p.searched, voted: p.vote !== null,
       voice: room.voice.has(p.id),
       char: inGame && p.charId ? publicChar(script.characters[p.charId]) : null
@@ -2770,7 +2917,7 @@ function resetToLobby(room) {
   room.shared = [];
   room.speakerOrder = [];
   room.players.forEach((p) => {
-    p.charId = null; p.clues = []; p.vote = null; p.ready = false; p.searched = false;
+    p.charId = null; p.clues = []; p.vote = null; p.ready = false; p.searched = false; p.rdy = false; p.rdyBy = Date.now() + READY_MS;
   });
   // 清理掉线玩家
   room.players = room.players.filter((p) => p.connected);
@@ -2804,7 +2951,7 @@ function onMessage(ws, raw) {
       const sc = scriptOf(r);
       if (!scriptAllowed(sc, ws)) continue;
       const host = r.players.find((x) => x.id === r.hostId);
-      list.push({ code: r.code, title: sc.title, cover: sc.cover || 'cover', host: host ? host.name : '', n: r.players.length, cap: r.cap });
+      list.push({ code: r.code, locked: !!r.password, title: sc.title, cover: sc.cover || 'cover', host: host ? host.name : '', n: r.players.length, cap: r.cap });
     }
     send(ws, { type: 'rooms', rooms: list.slice(0, 50) });
     return;
@@ -2816,6 +2963,7 @@ function onMessage(ws, raw) {
     const want = SCRIPTS.byId(String(msg.script || ''));
     if (want && !scriptAllowed(want, ws)) return err('没有这个剧本');
     const room = createRoom(want && want.id, msg.cap);
+    room.password = String(msg.password || '').trim().slice(0, 12);
     const p = addPlayer(room, name, ws, ws.user && ws.user.email);
     ws.ctx = { room, player: p };
     send(ws, { type: 'joined', code: room.code, token: p.token, id: p.id });
@@ -2830,6 +2978,7 @@ function onMessage(ws, raw) {
     if (!room) return err('没有这个房间');
     if (room.phase !== 'lobby') return err('游戏已经开始，不能加入');
     if (!scriptAllowed(scriptOf(room), ws)) return err('没有这个房间');
+    if (room.password && String(msg.password || '').trim() !== room.password) return send(ws, { type: msg.password ? 'error' : 'need-password', code: room.code, message: '房间密码不对' });
     if (room.players.length >= Math.min(room.cap, scriptOf(room).maxPlayers)) return err('房间已满');
     if (room.players.some((p) => p.name === name)) return err('这个昵称已被占用');
     const p = addPlayer(room, name, ws, ws.user && ws.user.email);
@@ -2877,6 +3026,13 @@ function onMessage(ws, raw) {
       if (room.players.length > sc.maxPlayers) return err(`《${sc.title}》最多 ${sc.maxPlayers} 人，请先移除多余的玩家`);
       room.scriptId = sc.id;
       room.cap = clampCap(sc, Math.max(room.cap, room.players.length));
+      broadcastState(room);
+      break;
+    }
+    case 'lobbyready': {
+      if (room.phase !== 'lobby') return;
+      me.rdy = !!msg.on;
+      if (!me.rdy) me.rdyBy = Date.now() + READY_MS;
       broadcastState(room);
       break;
     }
@@ -5282,7 +5438,17 @@ function onMsg(m) {
     case 'searchResult':
       showSearch(m.loc, m.clue);
       break;
+    case 'need-password':
+      askPassword(m.code, false);
+      break;
+    case 'kicked':
+      toast(m.reason || '你已被请出房间'); clearSession();
+      try { if (voice.on) voiceOff(); } catch (e) {}
+      closeAllOverlays(); S = null; lastPhase = null; chatLog.length = 0; $('#phaseCard')._h = null; $('#players')._h = null;
+      showHome();
+      break;
     case 'error':
+      if (pendingJoin && /密码/.test(m.message || '')) { askPassword(pendingJoin, true); break; }
       toast(m.message);
       break;
     case 'voice-peers':
@@ -5318,7 +5484,7 @@ function showHome() {
   delete document.body.dataset.tone;
   try { SFX.music('menu', 'menu'); SFX.tension(false); SFX.amb('snow'); } catch (e) {}
   FX.ambient('snow');
-  if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#mpBtn'), 6, { min: 5, max: 7 }); }
+  if (!heroDone) { heroDone = true; $('#artSolo').innerHTML = ART.scene('study'); $('#artMulti').innerHTML = ART.scene('coverTheater'); }
   if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80, global: true });
   $('#home').hidden = false; $('#mp').hidden = true; $('#auth').hidden = true;
   $('#room').hidden = true;
@@ -5356,7 +5522,7 @@ function stateSounds() {
 function onState() {
   document.body.dataset.tone = S.script.tone || 'none';
   $('#home').hidden = true; $('#mp').hidden = true; $('#auth').hidden = true;
-  $('#room').hidden = false;
+  $('#room').hidden = false; $('#room').dataset.phase = S.phase;
   stateSounds();
   if (S.phase !== lastPhase) {
     // 新阶段时回到合适的页签
@@ -5398,6 +5564,7 @@ function renderPlayers() {
   }).join(''));
 }
 
+let lobPick = false;
 function scriptPicker() {
   const host = isHost();
   const dots = (n) => '●'.repeat(n) + '○'.repeat(5 - n);
@@ -5415,19 +5582,38 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
-    const auto = !!S.requireAuth, cap = S.cap || S.script.maxPlayers;
-    const capRow = isHost() && auto ? `<div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="lobCapMinus" ${cap <= Math.max(S.script.minPlayers, n) ? 'disabled' : ''}>−</button><b>${cap}</b><button class="btn small" id="lobCapPlus" ${cap >= S.script.maxPlayers ? 'disabled' : ''}>+</button></div></div>` : '';
-    const autoTx = !auto ? '' : S.autoAt ? `<p class="auto-cd">人齐了！<b id="autoCd"></b> 秒后自动开始…</p>`
-      : `<p class="auto-cd">凑满 <b>${cap}</b> 人（还差 ${Math.max(0, cap - n)} 人）会自动开始游戏。${isHost() ? '人没满之前，你可以换剧本或调整人数。' : '等待人齐。'}</p>`;
-    body = `<div class="codebox"><div class="crow"><span>房间码：</span><b>${esc(S.code)}</b></div>
-        <div class="actions"><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">分享给朋友</button></div>
-        <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
-      ${scriptPicker()}${capRow}<h3>等待玩家（${n}/${auto ? cap : S.script.maxPlayers}）</h3>${autoTx}
-      ${auto ? '' : `<p>试玩版已替你加了机器人。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>`}
-      <div class="actions">${isHost() && S.manualStart ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>` : ''}${isHost() && S.botsAllowed ? `
-        <button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>
-        ${S.players.some((p) => p.bot) ? '<button class="btn ghost" id="rmBotBtn">移除机器人</button>' : ''}` : ''}</div>
-      ${isHost() && S.botsAllowed ? '<p style="margin:10px 0 0;font-size:13px">机器人只会自动读完、搜证、投票，仅用于内部测试流程。</p>' : ''}`;
+    const auto = !!S.requireAuth, cap = S.cap || S.script.maxPlayers, host = isHost();
+    const nowS = Date.now() + clockOffset;
+    const rdyN = S.players.filter((p) => p.rdy).length, allRdy = rdyN === n;
+    const seat = (i) => {
+      const p = S.players[i];
+      if (!p) return i < cap ? `<div class="seat empty"><span class="no">${i + 1}</span><div class="av">+</div><div class="nm">空位</div><div class="st">等待加入</div></div>`
+        : `<div class="seat closed"><span class="no">${i + 1}</span><div class="av"></div><div class="nm">未开放</div><div class="st">&nbsp;</div></div>`;
+      const isH = p.id === S.hostId;
+      let st = isH ? '房主' : p.bot ? '机器人' : !auto ? '在房间' : p.rdy ? '已准备' : `未准备 <em data-by="${p.rdyBy || 0}">${Math.max(0, Math.ceil(((p.rdyBy || 0) - nowS) / 1000))}</em>`;
+      if (auto && isH) st = '房主 · 已就绪';
+      const cls = ['seat', isH ? 'host' : '', p.id === myId ? 'me' : '', auto && p.rdy && !isH ? 'rdy' : '', p.connected ? '' : 'off'].join(' ');
+      return `<div class="${cls}"><span class="no">${i + 1}</span><div class="av">${p.bot ? '🤖' : esc(p.name.slice(0, 1))}</div><div class="nm">${esc(p.name)}${p.id === myId ? '（你）' : ''}</div><div class="st">${st}</div></div>`;
+    };
+    const col = (a, b) => `<div class="col">${[0, 1, 2, 3].map((k) => seat(a + k)).join('')}</div>`;
+    const midTx = !auto ? `${n} 人在房间` : S.autoAt ? '即将开始' : n < cap ? `还差 ${cap - n} 人` : '等待全员准备';
+    const mid = `<div class="mid"><div class="table ${S.autoAt ? 'go' : ''}">${S.autoAt ? '<b class="tn" id="autoCd"></b>' : `<b class="tn">${n}<em>/${auto ? cap : S.script.maxPlayers}</em></b>`}<span>${midTx}</span></div>
+      <div class="hint">${auto ? `已准备 ${rdyN}/${n}` : ''}</div></div>`;
+    const me0 = me();
+    const capRow = host && auto ? `<div class="lob-tools"><div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="lobCapMinus" ${cap <= Math.max(S.script.minPlayers, n) ? 'disabled' : ''}>−</button><b>${cap}</b><button class="btn small" id="lobCapPlus" ${cap >= S.script.maxPlayers ? 'disabled' : ''}>+</button></div></div></div>` : '';
+    let act = '';
+    if (auto && !host) act = `<button class="btn ${me0 && me0.rdy ? 'ready-on' : 'primary cta'}" id="rdyBtn">${me0 && me0.rdy ? '已准备 · 点击取消' : '准备'}</button><p class="rdy-note">${me0 && me0.rdy ? '等其他人准备，满员后自动开始。' : '请在一分钟内点“准备”，否则会被请出房间。'}</p>`;
+    else if (auto) act = `<p class="rdy-note">你是房主，不用点准备。人满并且大家都准备好，游戏自动开始。${n < cap ? '' : allRdy ? '' : ' 有人还没准备。'}</p>`;
+    else if (host) act = `<button class="btn primary ${ok ? 'cta' : ''}" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>`;
+    else act = '<p class="rdy-note">等待房主开始。</p>';
+    const legacy = auto ? '' : `<p class="rdy-note">试玩版已替你加了机器人。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${host ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>`;
+    const bots = host && S.botsAllowed ? `<div class="actions"><button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>${S.players.some((p) => p.bot) ? '<button class="btn ghost" id="rmBotBtn">移除机器人</button>' : ''}</div><p class="rdy-note">机器人只会自动读完、搜证、投票，仅用于内部测试流程。</p>` : '';
+    body = `<div class="lob-banner">${ART.scene(S.script.cover)}<div class="lb-tx"><small>本局剧本</small><b>${esc(S.script.title)}</b><span>${esc(S.script.duration)} · ${S.script.minPlayers}–${S.script.maxPlayers} 人</span></div>${host ? `<button class="btn small" id="lobChange">${lobPick ? '收起' : '换剧本'}</button>` : ''}</div>
+      ${host && lobPick ? scriptPicker() : ''}
+      <div class="board">${col(0)}${mid}${col(4)}</div>
+      ${capRow}
+      <div class="lob-code"><div class="c1">房间码<b>${esc(S.code)}</b>${S.locked ? `<span class="pw">🔒 房间密码<b>${esc(S.password)}</b></span>` : ''}</div><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">邀请朋友</button></div>
+      <div class="lob-act">${act}${legacy}${bots}</div>`;
   } else if (S.phase === 'reveal') {
     body = revealCard();
   } else {
@@ -5458,11 +5644,13 @@ function renderPhaseCard() {
   if (!setHTML(el, body)) return;
 
   const on = (sel, ev, fn) => { const x = el.querySelector(sel); if (x) x.addEventListener(ev, fn); };
-  el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) send({ type: 'setscript', id: b.dataset.script }); }));
+  el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) { send({ type: 'setscript', id: b.dataset.script }); lobPick = false; } }));
   on('#startBtn', 'click', () => { snd('start'); send({ type: 'start' }); });
+  on('#rdyBtn', 'click', () => { const mm = me(); snd(mm && mm.rdy ? 'click' : 'pick'); send({ type: 'lobbyready', on: !(mm && mm.rdy) }); });
+  on('#lobChange', 'click', () => { lobPick = !lobPick; el._h = null; renderPhaseCard(); });
   on('#copyCode', 'click', async () => { try { await navigator.clipboard.writeText(S.code); toast('房间码 ' + S.code + ' 已复制，发给朋友吧'); } catch (e) { toast('房间码：' + S.code); } });
   on('#shareCode', 'click', async () => {
-    const text = `来玩线上剧本杀！房间码：${S.code}。打开 App，输入昵称和房间码，点“加入”。`;
+    const text = `来玩线上剧本杀！房间码：${S.code}${S.locked ? '，房间密码：' + S.password : ''}。打开 App，进“多人剧本杀”，在列表里找到房间，或输入房间码加入。`;
     try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { return; }
     try { await navigator.clipboard.writeText(text); toast('邀请文字已复制，粘贴给朋友即可'); } catch (e) { toast(text); }
   });
@@ -5764,6 +5952,7 @@ function updateTimer() {
 }
 setInterval(() => {
   if (S) updateTimer();
+  document.querySelectorAll('[data-by]').forEach((x) => { const left = Math.max(0, Math.ceil((Number(x.dataset.by) - (Date.now() + clockOffset)) / 1000)); if (x.textContent !== String(left)) x.textContent = left; });
   const cd = document.getElementById('autoCd');
   if (cd && S && S.autoAt) { const left = Math.max(0, Math.ceil((S.autoAt - (Date.now() + clockOffset)) / 1000)); if (cd.textContent !== String(left)) { cd.textContent = left; if (left > 0) snd('tab'); } }
 }, 500);
@@ -5956,7 +6145,7 @@ function startSplash() {
   const done = () => { if (splashDone) return; splashDone = true; sp.classList.add('out'); setTimeout(() => sp.remove(), 500); route(true); };
   sp.addEventListener('click', () => { snd('click'); done(); });
   setTimeout(() => snd('logo'), 250);
-  setTimeout(done, 2400);
+  setTimeout(done, 4000);
 }
 function visibleScreen() { return ['#home', '#mp', '#auth', '#room', '#det'].find((s) => !$(s).hidden); }
 function route(first) {
@@ -5989,6 +6178,10 @@ function setAuthMode(m) {
   document.querySelectorAll('#authSeg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
   $('#auNickRow').hidden = m !== 'register';
   $('#auGo').textContent = m === 'login' ? '登录' : '注册并进入';
+  $('#auTitle').textContent = m === 'login' ? '欢迎回来' : '创建账号';
+  $('#auSub').textContent = m === 'login' ? '登录后可以创建房间、加入朋友的房间。' : '邮箱和密码就够了，Gmail 等任何邮箱都可以。';
+  $('#auAltTx').textContent = m === 'login' ? '还没有账号？' : '已经有账号？';
+  $('#auSwitch').textContent = m === 'login' ? '注册' : '登录';
   $('#auPw').autocomplete = m === 'login' ? 'current-password' : 'new-password';
   $('#auMsg').textContent = '';
 }
@@ -6014,6 +6207,7 @@ function initAccountUI() {
   $('#authForm').addEventListener('submit', submitAuth);
   $('#authSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setAuthMode(b.dataset.m); });
   $('#auGuest').addEventListener('click', () => { guest = true; showHome(); });
+  $('#auSwitch').addEventListener('click', () => setAuthMode(authMode === 'login' ? 'register' : 'login'));
   $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
   $('#mpBtn').addEventListener('click', () => {
     if (needAuth && !account) { toast('多人游戏需要先登录'); return showAuth(); }
@@ -6033,9 +6227,9 @@ function initAccountUI() {
   $('#createBtn').addEventListener('click', () => {
     const name = mpName(); if (!name) return toast('先输入昵称');
     if (!connected()) return toast(NOT_CONN);
-    send({ type: 'create', name, script: mpScript, cap: mpCap });
+    send({ type: 'create', name, script: mpScript, cap: mpCap, password: $('#roomPw').value.trim() });
   });
-  $('#roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-code]'); if (b) joinRoom(b.dataset.code); });
+  $('#roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-code]'); if (!b) return; if (b.dataset.lock === '1') { if (!mpName()) return toast('先输入昵称'); askPassword(b.dataset.code); } else joinRoom(b.dataset.code); });
   $('#mpScripts').addEventListener('click', (e) => { const b = e.target.closest('[data-script]'); if (b) { mpScript = b.dataset.script; renderMpScripts(); } });
   try { $('#nameInput').value = localStorage.getItem('jbs_name') || ''; } catch (e) {}
   renderAcct();
@@ -6046,10 +6240,25 @@ const mpName = () => {
   const n = $('#nameInput').value.trim(); try { localStorage.setItem('jbs_name', n); } catch (e) {}
   return n;
 };
-function joinRoom(code) {
+let pendingJoin = null;
+function joinRoom(code, password) {
   const name = mpName(); if (!name) return toast('先输入昵称');
   if (!connected()) return toast(NOT_CONN);
-  send({ type: 'join', code, name });
+  pendingJoin = code;
+  send({ type: 'join', code, name, password: password || '' });
+}
+function askPassword(code, wrong) {
+  const old = $('#pwOv'); if (old) old.remove();
+  const el = document.createElement('div');
+  el.id = 'pwOv'; el.className = 'leave-ov';
+  el.innerHTML = `<div class="leave-card"><h3>这个房间有密码</h3><p>${wrong ? '密码不对，请再试一次。' : '向房主要密码，输入后就能进房间。'}</p>
+    <label class="uf"><span>房间密码</span><input id="pwIn" maxlength="12" autocomplete="off" autofocus></label>
+    <div class="actions"><button class="btn" data-x="no">取消</button><button class="btn primary" data-x="ok" style="width:auto">进入房间</button></div></div>`;
+  document.body.appendChild(el);
+  const go = () => { const v = el.querySelector('#pwIn').value.trim(); if (!v) return; el.remove(); joinRoom(code, v); };
+  el.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) { if (e.target === el) el.remove(); return; } if (b.dataset.x === 'ok') go(); else el.remove(); });
+  el.querySelector('#pwIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  setTimeout(() => { try { el.querySelector('#pwIn').focus(); } catch (e) {} }, 60);
 }
 let mpTab = 'create', mpScript = null, mpCap = 4, roomPoll = null;
 function showMp() {
@@ -6070,8 +6279,8 @@ function stopRoomPoll() { clearInterval(roomPoll); roomPoll = null; }
 function renderRooms(list) {
   const el = $('#roomList');
   if (list === null) { setHTML(el, `<p class="empty">${connected() ? '正在查找房间…' : '正在连接服务器…'}</p>`); return; }
-  setHTML(el, list.length ? list.map((r) => `<button class="room-row" data-code="${esc(r.code)}"><span class="rr-img">${ART.scene(r.cover)}</span>
-    <span class="rr-tx"><b>${esc(r.title)}</b><small>房主：${esc(r.host)} · 房间码 ${esc(r.code)}</small></span><span class="rr-n"><b>${r.n}/${r.cap}</b>加入</span></button>`).join('')
+  setHTML(el, list.length ? list.map((r) => `<button class="room-row" data-code="${esc(r.code)}" data-lock="${r.locked ? 1 : 0}"><span class="rr-img">${ART.scene(r.cover)}</span>
+    <span class="rr-tx"><b>${esc(r.title)}</b><small>房主 ${esc(r.host)}　房间码 ${esc(r.code)}</small></span><span class="rr-n"><b>${r.n}/${r.cap}</b><i>${r.locked ? '有密码' : '可直接加入'}</i></span></button>`).join('')
     : '<p class="empty">暂时没有在等人的房间。<br>去“创建房间”开一个吧！</p>');
 }
 function renderMpScripts() {
@@ -6146,6 +6355,7 @@ function askLeave() {
 }
 // 返回上一页：返回 true 表示已处理（安卓手机的系统返回键也调用它）
 function goBack() {
+  const pw = $('#pwOv'); if (pw) { pw.remove(); return true; }
   const lv = $('#leaveOv'); if (lv) { lv.remove(); return true; }
   if (modal) {
     if (modal.classList.contains('searchov')) { const b = modal.querySelector('.result .btn'); if (b) b.click(); else modal.click(); return true; }

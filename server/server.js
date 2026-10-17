@@ -25,6 +25,8 @@ const REQUIRE_AUTH = !!AUTH_SECRET;
 const TEST_EMAILS = String(process.env.TEST_EMAILS || '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
 const isTester = (email) => !!email && TEST_EMAILS.includes(String(email).toLowerCase());
 const AUTO_START_MS = Math.max(30, 5000 / TIME_SCALE);
+const READY_MS = Math.max(300, 60000 / TIME_SCALE); // 入房后一分钟内必须点“准备”，否则自动请出（房主除外）
+const allReady = (room) => room.players.every((p) => p.id === room.hostId || p.rdy || p.isBot);
 function signToken(u) {
   const body = Buffer.from(JSON.stringify({ e: u.email, n: u.nick, x: Date.now() + 90 * 864e5 })).toString('base64url');
   return body + '.' + crypto.createHmac('sha256', AUTH_SECRET).update(body).digest('base64url');
@@ -95,7 +97,7 @@ function createRoom(scriptId, cap) {
   const room = {
     code, players: [], hostId: null, phase: 'lobby', phaseEnd: null, timer: null,
     speakerOrder: [], speakerIdx: 0, chat: [], shared: [], voice: new Set(),
-    result: null, scriptId: sc.id, cap: clampCap(sc, cap), autoTimer: null, autoAt: null, touched: Date.now()
+    result: null, scriptId: sc.id, cap: clampCap(sc, cap), password: '', autoTimer: null, autoAt: null, touched: Date.now()
   };
   rooms.set(code, room);
   return room;
@@ -108,7 +110,7 @@ function clampCap(sc, cap) {
 // 满员自动开局（只在账号模式启用）：人齐后倒计时几秒，期间有人离开/换剧本就取消
 function checkAutoStart(room) {
   const full = REQUIRE_AUTH && room.phase === 'lobby' && room.players.length >= room.cap &&
-    room.players.length >= scriptOf(room).minPlayers && connectedPlayers(room).length === room.players.length;
+    room.players.length >= scriptOf(room).minPlayers && connectedPlayers(room).length === room.players.length && allReady(room);
   if (!full) { if (room.autoTimer) { clearTimeout(room.autoTimer); room.autoTimer = null; } room.autoAt = null; return; }
   if (room.autoTimer) return;
   room.autoAt = Date.now() + AUTO_START_MS;
@@ -122,7 +124,7 @@ function checkAutoStart(room) {
 
 function addPlayer(room, name, ws, email) {
   const p = {
-    id: uid(), token: crypto.randomBytes(16).toString('hex'), name, email: email || null,
+    id: uid(), token: crypto.randomBytes(16).toString('hex'), name, email: email || null, rdy: false, rdyBy: Date.now() + READY_MS,
     ws, connected: true, charId: null, ready: false, searched: false,
     clues: [], vote: null
   };
@@ -167,7 +169,7 @@ function snapshot(room, me) {
     phaseEnd: room.phaseEnd,
     hostId: room.hostId,
     scriptId: script.id,
-    cap: room.cap, autoAt: room.autoAt || null, requireAuth: REQUIRE_AUTH, botsAllowed: botsAllowed(room),
+    cap: room.cap, autoAt: room.autoAt || null, locked: !!room.password, password: room.password || '', readyMs: READY_MS, requireAuth: REQUIRE_AUTH, botsAllowed: botsAllowed(room),
     manualStart: !REQUIRE_AUTH || !!script.internal,
     scripts: SCRIPTS.list.filter((sc) => scriptAllowed(sc, me && me.ws)).map(scriptMeta),
     speakerId: currentSpeakerId(room),
@@ -180,6 +182,7 @@ function snapshot(room, me) {
     },
     players: room.players.map((p) => ({
       id: p.id, name: p.name, connected: p.connected, ready: p.ready, bot: !!p.isBot,
+      rdy: p.id === room.hostId || !!p.rdy || !!p.isBot, rdyBy: (p.id === room.hostId || p.rdy || p.isBot) ? null : p.rdyBy,
       searched: p.searched, voted: p.vote !== null,
       voice: room.voice.has(p.id),
       char: inGame && p.charId ? publicChar(script.characters[p.charId]) : null
@@ -369,7 +372,7 @@ function resetToLobby(room) {
   room.shared = [];
   room.speakerOrder = [];
   room.players.forEach((p) => {
-    p.charId = null; p.clues = []; p.vote = null; p.ready = false; p.searched = false;
+    p.charId = null; p.clues = []; p.vote = null; p.ready = false; p.searched = false; p.rdy = false; p.rdyBy = Date.now() + READY_MS;
   });
   // 清理掉线玩家
   room.players = room.players.filter((p) => p.connected);
@@ -403,7 +406,7 @@ function onMessage(ws, raw) {
       const sc = scriptOf(r);
       if (!scriptAllowed(sc, ws)) continue;
       const host = r.players.find((x) => x.id === r.hostId);
-      list.push({ code: r.code, title: sc.title, cover: sc.cover || 'cover', host: host ? host.name : '', n: r.players.length, cap: r.cap });
+      list.push({ code: r.code, locked: !!r.password, title: sc.title, cover: sc.cover || 'cover', host: host ? host.name : '', n: r.players.length, cap: r.cap });
     }
     send(ws, { type: 'rooms', rooms: list.slice(0, 50) });
     return;
@@ -415,6 +418,7 @@ function onMessage(ws, raw) {
     const want = SCRIPTS.byId(String(msg.script || ''));
     if (want && !scriptAllowed(want, ws)) return err('没有这个剧本');
     const room = createRoom(want && want.id, msg.cap);
+    room.password = String(msg.password || '').trim().slice(0, 12);
     const p = addPlayer(room, name, ws, ws.user && ws.user.email);
     ws.ctx = { room, player: p };
     send(ws, { type: 'joined', code: room.code, token: p.token, id: p.id });
@@ -429,6 +433,7 @@ function onMessage(ws, raw) {
     if (!room) return err('没有这个房间');
     if (room.phase !== 'lobby') return err('游戏已经开始，不能加入');
     if (!scriptAllowed(scriptOf(room), ws)) return err('没有这个房间');
+    if (room.password && String(msg.password || '').trim() !== room.password) return send(ws, { type: msg.password ? 'error' : 'need-password', code: room.code, message: '房间密码不对' });
     if (room.players.length >= Math.min(room.cap, scriptOf(room).maxPlayers)) return err('房间已满');
     if (room.players.some((p) => p.name === name)) return err('这个昵称已被占用');
     const p = addPlayer(room, name, ws, ws.user && ws.user.email);
@@ -476,6 +481,13 @@ function onMessage(ws, raw) {
       if (room.players.length > sc.maxPlayers) return err(`《${sc.title}》最多 ${sc.maxPlayers} 人，请先移除多余的玩家`);
       room.scriptId = sc.id;
       room.cap = clampCap(sc, Math.max(room.cap, room.players.length));
+      broadcastState(room);
+      break;
+    }
+    case 'lobbyready': {
+      if (room.phase !== 'lobby') return;
+      me.rdy = !!msg.on;
+      if (!me.rdy) me.rdyBy = Date.now() + READY_MS;
       broadcastState(room);
       break;
     }
@@ -702,6 +714,25 @@ async function handleApi(req, res, url) {
     return out(404, { error: 'not found' });
   } catch (e) { return out(400, { error: '请求出错' }); }
 }
+
+// 大厅里超过一分钟没点“准备”的玩家会被请出房间（房主和机器人除外；只在账号模式启用）
+function sweepReady() {
+  if (!REQUIRE_AUTH) return;
+  const now = Date.now();
+  for (const room of rooms.values()) {
+    if (room.phase !== 'lobby') continue;
+    for (const p of room.players.slice()) {
+      if (p.id === room.hostId || p.isBot || p.rdy || !p.connected || p.rdyBy > now) continue;
+      const i = room.players.indexOf(p); if (i < 0) continue;
+      room.players.splice(i, 1);
+      room.voice.delete(p.id);
+      if (p.ws) { try { send(p.ws, { type: 'kicked', reason: '你超过一分钟没有点“准备”，已被请出房间' }); p.ws.ctx = null; } catch {} }
+      broadcast(room, { type: 'sys', text: `${p.name} 一直没有准备，已被请出房间` });
+      ensureHost(room); broadcastState(room);
+    }
+  }
+}
+setInterval(sweepReady, Math.min(1000, READY_MS / 4)).unref();
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');

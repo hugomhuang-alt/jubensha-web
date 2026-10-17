@@ -167,7 +167,17 @@ function onMsg(m) {
     case 'searchResult':
       showSearch(m.loc, m.clue);
       break;
+    case 'need-password':
+      askPassword(m.code, false);
+      break;
+    case 'kicked':
+      toast(m.reason || '你已被请出房间'); clearSession();
+      try { if (voice.on) voiceOff(); } catch (e) {}
+      closeAllOverlays(); S = null; lastPhase = null; chatLog.length = 0; $('#phaseCard')._h = null; $('#players')._h = null;
+      showHome();
+      break;
     case 'error':
+      if (pendingJoin && /密码/.test(m.message || '')) { askPassword(pendingJoin, true); break; }
       toast(m.message);
       break;
     case 'voice-peers':
@@ -203,7 +213,7 @@ function showHome() {
   delete document.body.dataset.tone;
   try { SFX.music('menu', 'menu'); SFX.tension(false); SFX.amb('snow'); } catch (e) {}
   FX.ambient('snow');
-  if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#mpBtn'), 6, { min: 5, max: 7 }); }
+  if (!heroDone) { heroDone = true; $('#artSolo').innerHTML = ART.scene('study'); $('#artMulti').innerHTML = ART.scene('coverTheater'); }
   if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80, global: true });
   $('#home').hidden = false; $('#mp').hidden = true; $('#auth').hidden = true;
   $('#room').hidden = true;
@@ -241,7 +251,7 @@ function stateSounds() {
 function onState() {
   document.body.dataset.tone = S.script.tone || 'none';
   $('#home').hidden = true; $('#mp').hidden = true; $('#auth').hidden = true;
-  $('#room').hidden = false;
+  $('#room').hidden = false; $('#room').dataset.phase = S.phase;
   stateSounds();
   if (S.phase !== lastPhase) {
     // 新阶段时回到合适的页签
@@ -283,6 +293,7 @@ function renderPlayers() {
   }).join(''));
 }
 
+let lobPick = false;
 function scriptPicker() {
   const host = isHost();
   const dots = (n) => '●'.repeat(n) + '○'.repeat(5 - n);
@@ -300,19 +311,38 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
-    const auto = !!S.requireAuth, cap = S.cap || S.script.maxPlayers;
-    const capRow = isHost() && auto ? `<div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="lobCapMinus" ${cap <= Math.max(S.script.minPlayers, n) ? 'disabled' : ''}>−</button><b>${cap}</b><button class="btn small" id="lobCapPlus" ${cap >= S.script.maxPlayers ? 'disabled' : ''}>+</button></div></div>` : '';
-    const autoTx = !auto ? '' : S.autoAt ? `<p class="auto-cd">人齐了！<b id="autoCd"></b> 秒后自动开始…</p>`
-      : `<p class="auto-cd">凑满 <b>${cap}</b> 人（还差 ${Math.max(0, cap - n)} 人）会自动开始游戏。${isHost() ? '人没满之前，你可以换剧本或调整人数。' : '等待人齐。'}</p>`;
-    body = `<div class="codebox"><div class="crow"><span>房间码：</span><b>${esc(S.code)}</b></div>
-        <div class="actions"><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">分享给朋友</button></div>
-        <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
-      ${scriptPicker()}${capRow}<h3>等待玩家（${n}/${auto ? cap : S.script.maxPlayers}）</h3>${autoTx}
-      ${auto ? '' : `<p>把房间码 <b>${esc(S.code)}</b> 发给朋友。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>`}
-      <div class="actions">${isHost() && S.manualStart ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>` : ''}${isHost() && S.botsAllowed ? `
-        <button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>
-        ${S.players.some((p) => p.bot) ? '<button class="btn ghost" id="rmBotBtn">移除机器人</button>' : ''}` : ''}</div>
-      ${isHost() && S.botsAllowed ? '<p style="margin:10px 0 0;font-size:13px">机器人只会自动读完、搜证、投票，仅用于内部测试流程。</p>' : ''}`;
+    const auto = !!S.requireAuth, cap = S.cap || S.script.maxPlayers, host = isHost();
+    const nowS = Date.now() + clockOffset;
+    const rdyN = S.players.filter((p) => p.rdy).length, allRdy = rdyN === n;
+    const seat = (i) => {
+      const p = S.players[i];
+      if (!p) return i < cap ? `<div class="seat empty"><span class="no">${i + 1}</span><div class="av">+</div><div class="nm">空位</div><div class="st">等待加入</div></div>`
+        : `<div class="seat closed"><span class="no">${i + 1}</span><div class="av"></div><div class="nm">未开放</div><div class="st">&nbsp;</div></div>`;
+      const isH = p.id === S.hostId;
+      let st = isH ? '房主' : p.bot ? '机器人' : !auto ? '在房间' : p.rdy ? '已准备' : `未准备 <em data-by="${p.rdyBy || 0}">${Math.max(0, Math.ceil(((p.rdyBy || 0) - nowS) / 1000))}</em>`;
+      if (auto && isH) st = '房主 · 已就绪';
+      const cls = ['seat', isH ? 'host' : '', p.id === myId ? 'me' : '', auto && p.rdy && !isH ? 'rdy' : '', p.connected ? '' : 'off'].join(' ');
+      return `<div class="${cls}"><span class="no">${i + 1}</span><div class="av">${p.bot ? '🤖' : esc(p.name.slice(0, 1))}</div><div class="nm">${esc(p.name)}${p.id === myId ? '（你）' : ''}</div><div class="st">${st}</div></div>`;
+    };
+    const col = (a, b) => `<div class="col">${[0, 1, 2, 3].map((k) => seat(a + k)).join('')}</div>`;
+    const midTx = !auto ? `${n} 人在房间` : S.autoAt ? '即将开始' : n < cap ? `还差 ${cap - n} 人` : '等待全员准备';
+    const mid = `<div class="mid"><div class="table ${S.autoAt ? 'go' : ''}">${S.autoAt ? '<b class="tn" id="autoCd"></b>' : `<b class="tn">${n}<em>/${auto ? cap : S.script.maxPlayers}</em></b>`}<span>${midTx}</span></div>
+      <div class="hint">${auto ? `已准备 ${rdyN}/${n}` : ''}</div></div>`;
+    const me0 = me();
+    const capRow = host && auto ? `<div class="lob-tools"><div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="lobCapMinus" ${cap <= Math.max(S.script.minPlayers, n) ? 'disabled' : ''}>−</button><b>${cap}</b><button class="btn small" id="lobCapPlus" ${cap >= S.script.maxPlayers ? 'disabled' : ''}>+</button></div></div></div>` : '';
+    let act = '';
+    if (auto && !host) act = `<button class="btn ${me0 && me0.rdy ? 'ready-on' : 'primary cta'}" id="rdyBtn">${me0 && me0.rdy ? '已准备 · 点击取消' : '准备'}</button><p class="rdy-note">${me0 && me0.rdy ? '等其他人准备，满员后自动开始。' : '请在一分钟内点“准备”，否则会被请出房间。'}</p>`;
+    else if (auto) act = `<p class="rdy-note">你是房主，不用点准备。人满并且大家都准备好，游戏自动开始。${n < cap ? '' : allRdy ? '' : ' 有人还没准备。'}</p>`;
+    else if (host) act = `<button class="btn primary ${ok ? 'cta' : ''}" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>`;
+    else act = '<p class="rdy-note">等待房主开始。</p>';
+    const legacy = auto ? '' : `<p class="rdy-note">把房间码 <b>${esc(S.code)}</b> 发给朋友。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${host ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>`;
+    const bots = host && S.botsAllowed ? `<div class="actions"><button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>${S.players.some((p) => p.bot) ? '<button class="btn ghost" id="rmBotBtn">移除机器人</button>' : ''}</div><p class="rdy-note">机器人只会自动读完、搜证、投票，仅用于内部测试流程。</p>` : '';
+    body = `<div class="lob-banner">${ART.scene(S.script.cover)}<div class="lb-tx"><small>本局剧本</small><b>${esc(S.script.title)}</b><span>${esc(S.script.duration)} · ${S.script.minPlayers}–${S.script.maxPlayers} 人</span></div>${host ? `<button class="btn small" id="lobChange">${lobPick ? '收起' : '换剧本'}</button>` : ''}</div>
+      ${host && lobPick ? scriptPicker() : ''}
+      <div class="board">${col(0)}${mid}${col(4)}</div>
+      ${capRow}
+      <div class="lob-code"><div class="c1">房间码<b>${esc(S.code)}</b>${S.locked ? `<span class="pw">🔒 房间密码<b>${esc(S.password)}</b></span>` : ''}</div><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">邀请朋友</button></div>
+      <div class="lob-act">${act}${legacy}${bots}</div>`;
   } else if (S.phase === 'reveal') {
     body = revealCard();
   } else {
@@ -343,11 +373,13 @@ function renderPhaseCard() {
   if (!setHTML(el, body)) return;
 
   const on = (sel, ev, fn) => { const x = el.querySelector(sel); if (x) x.addEventListener(ev, fn); };
-  el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) send({ type: 'setscript', id: b.dataset.script }); }));
+  el.querySelectorAll('[data-script]').forEach((b) => b.addEventListener('click', () => { if (isHost()) { send({ type: 'setscript', id: b.dataset.script }); lobPick = false; } }));
   on('#startBtn', 'click', () => { snd('start'); send({ type: 'start' }); });
+  on('#rdyBtn', 'click', () => { const mm = me(); snd(mm && mm.rdy ? 'click' : 'pick'); send({ type: 'lobbyready', on: !(mm && mm.rdy) }); });
+  on('#lobChange', 'click', () => { lobPick = !lobPick; el._h = null; renderPhaseCard(); });
   on('#copyCode', 'click', async () => { try { await navigator.clipboard.writeText(S.code); toast('房间码 ' + S.code + ' 已复制，发给朋友吧'); } catch (e) { toast('房间码：' + S.code); } });
   on('#shareCode', 'click', async () => {
-    const text = `来玩线上剧本杀！房间码：${S.code}。打开 App，输入昵称和房间码，点“加入”。`;
+    const text = `来玩线上剧本杀！房间码：${S.code}${S.locked ? '，房间密码：' + S.password : ''}。打开 App，进“多人剧本杀”，在列表里找到房间，或输入房间码加入。`;
     try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { return; }
     try { await navigator.clipboard.writeText(text); toast('邀请文字已复制，粘贴给朋友即可'); } catch (e) { toast(text); }
   });
@@ -649,6 +681,7 @@ function updateTimer() {
 }
 setInterval(() => {
   if (S) updateTimer();
+  document.querySelectorAll('[data-by]').forEach((x) => { const left = Math.max(0, Math.ceil((Number(x.dataset.by) - (Date.now() + clockOffset)) / 1000)); if (x.textContent !== String(left)) x.textContent = left; });
   const cd = document.getElementById('autoCd');
   if (cd && S && S.autoAt) { const left = Math.max(0, Math.ceil((S.autoAt - (Date.now() + clockOffset)) / 1000)); if (cd.textContent !== String(left)) { cd.textContent = left; if (left > 0) snd('tab'); } }
 }, 500);
@@ -841,7 +874,7 @@ function startSplash() {
   const done = () => { if (splashDone) return; splashDone = true; sp.classList.add('out'); setTimeout(() => sp.remove(), 500); route(true); };
   sp.addEventListener('click', () => { snd('click'); done(); });
   setTimeout(() => snd('logo'), 250);
-  setTimeout(done, 2400);
+  setTimeout(done, 4000);
 }
 function visibleScreen() { return ['#home', '#mp', '#auth', '#room', '#det'].find((s) => !$(s).hidden); }
 function route(first) {
@@ -874,6 +907,10 @@ function setAuthMode(m) {
   document.querySelectorAll('#authSeg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
   $('#auNickRow').hidden = m !== 'register';
   $('#auGo').textContent = m === 'login' ? '登录' : '注册并进入';
+  $('#auTitle').textContent = m === 'login' ? '欢迎回来' : '创建账号';
+  $('#auSub').textContent = m === 'login' ? '登录后可以创建房间、加入朋友的房间。' : '邮箱和密码就够了，Gmail 等任何邮箱都可以。';
+  $('#auAltTx').textContent = m === 'login' ? '还没有账号？' : '已经有账号？';
+  $('#auSwitch').textContent = m === 'login' ? '注册' : '登录';
   $('#auPw').autocomplete = m === 'login' ? 'current-password' : 'new-password';
   $('#auMsg').textContent = '';
 }
@@ -899,6 +936,7 @@ function initAccountUI() {
   $('#authForm').addEventListener('submit', submitAuth);
   $('#authSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setAuthMode(b.dataset.m); });
   $('#auGuest').addEventListener('click', () => { guest = true; showHome(); });
+  $('#auSwitch').addEventListener('click', () => setAuthMode(authMode === 'login' ? 'register' : 'login'));
   $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
   $('#mpBtn').addEventListener('click', () => {
     if (needAuth && !account) { toast('多人游戏需要先登录'); return showAuth(); }
@@ -918,9 +956,9 @@ function initAccountUI() {
   $('#createBtn').addEventListener('click', () => {
     const name = mpName(); if (!name) return toast('先输入昵称');
     if (!connected()) return toast(NOT_CONN);
-    send({ type: 'create', name, script: mpScript, cap: mpCap });
+    send({ type: 'create', name, script: mpScript, cap: mpCap, password: $('#roomPw').value.trim() });
   });
-  $('#roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-code]'); if (b) joinRoom(b.dataset.code); });
+  $('#roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-code]'); if (!b) return; if (b.dataset.lock === '1') { if (!mpName()) return toast('先输入昵称'); askPassword(b.dataset.code); } else joinRoom(b.dataset.code); });
   $('#mpScripts').addEventListener('click', (e) => { const b = e.target.closest('[data-script]'); if (b) { mpScript = b.dataset.script; renderMpScripts(); } });
   try { $('#nameInput').value = localStorage.getItem('jbs_name') || ''; } catch (e) {}
   renderAcct();
@@ -931,10 +969,25 @@ const mpName = () => {
   const n = $('#nameInput').value.trim(); try { localStorage.setItem('jbs_name', n); } catch (e) {}
   return n;
 };
-function joinRoom(code) {
+let pendingJoin = null;
+function joinRoom(code, password) {
   const name = mpName(); if (!name) return toast('先输入昵称');
   if (!connected()) return toast(NOT_CONN);
-  send({ type: 'join', code, name });
+  pendingJoin = code;
+  send({ type: 'join', code, name, password: password || '' });
+}
+function askPassword(code, wrong) {
+  const old = $('#pwOv'); if (old) old.remove();
+  const el = document.createElement('div');
+  el.id = 'pwOv'; el.className = 'leave-ov';
+  el.innerHTML = `<div class="leave-card"><h3>这个房间有密码</h3><p>${wrong ? '密码不对，请再试一次。' : '向房主要密码，输入后就能进房间。'}</p>
+    <label class="uf"><span>房间密码</span><input id="pwIn" maxlength="12" autocomplete="off" autofocus></label>
+    <div class="actions"><button class="btn" data-x="no">取消</button><button class="btn primary" data-x="ok" style="width:auto">进入房间</button></div></div>`;
+  document.body.appendChild(el);
+  const go = () => { const v = el.querySelector('#pwIn').value.trim(); if (!v) return; el.remove(); joinRoom(code, v); };
+  el.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) { if (e.target === el) el.remove(); return; } if (b.dataset.x === 'ok') go(); else el.remove(); });
+  el.querySelector('#pwIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  setTimeout(() => { try { el.querySelector('#pwIn').focus(); } catch (e) {} }, 60);
 }
 let mpTab = 'join', mpScript = null, mpCap = 4, roomPoll = null;
 function showMp() {
@@ -955,8 +1008,8 @@ function stopRoomPoll() { clearInterval(roomPoll); roomPoll = null; }
 function renderRooms(list) {
   const el = $('#roomList');
   if (list === null) { setHTML(el, `<p class="empty">${connected() ? '正在查找房间…' : '正在连接服务器…'}</p>`); return; }
-  setHTML(el, list.length ? list.map((r) => `<button class="room-row" data-code="${esc(r.code)}"><span class="rr-img">${ART.scene(r.cover)}</span>
-    <span class="rr-tx"><b>${esc(r.title)}</b><small>房主：${esc(r.host)} · 房间码 ${esc(r.code)}</small></span><span class="rr-n"><b>${r.n}/${r.cap}</b>加入</span></button>`).join('')
+  setHTML(el, list.length ? list.map((r) => `<button class="room-row" data-code="${esc(r.code)}" data-lock="${r.locked ? 1 : 0}"><span class="rr-img">${ART.scene(r.cover)}</span>
+    <span class="rr-tx"><b>${esc(r.title)}</b><small>房主 ${esc(r.host)}　房间码 ${esc(r.code)}</small></span><span class="rr-n"><b>${r.n}/${r.cap}</b><i>${r.locked ? '有密码' : '可直接加入'}</i></span></button>`).join('')
     : '<p class="empty">暂时没有在等人的房间。<br>去“创建房间”开一个吧！</p>');
 }
 function renderMpScripts() {
@@ -1031,6 +1084,7 @@ function askLeave() {
 }
 // 返回上一页：返回 true 表示已处理（安卓手机的系统返回键也调用它）
 function goBack() {
+  const pw = $('#pwOv'); if (pw) { pw.remove(); return true; }
   const lv = $('#leaveOv'); if (lv) { lv.remove(); return true; }
   if (modal) {
     if (modal.classList.contains('searchov')) { const b = modal.querySelector('.result .btn'); if (b) b.click(); else modal.click(); return true; }
