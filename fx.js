@@ -1,20 +1,41 @@
 'use strict';
 // 视觉特效：飘雪、点击涟漪、打字机、火花/彩带、卡片倾斜
 const FX = (() => {
-  // 手机/低配设备：关掉闪烁、发光、火花等持续特效，只留轻微飘雪，避免卡顿和闪烁
-  const LITE = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) || (navigator.hardwareConcurrency || 8) <= 4;
-  try { if (LITE) document.documentElement.classList.add('lite'); } catch (e) {}
+  // 画质：auto（按设备和实时帧率自动）/ high（全部特效）/ low（省电，几乎静止）
+  const DEVLITE = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) || (navigator.hardwareConcurrency || 8) <= 4;
+  let quality = 'auto', degraded = false;
+  try { quality = localStorage.getItem('jbs_q') || 'auto'; } catch (e) {}
+  const isLite = () => quality === 'low' || (quality === 'auto' && (DEVLITE || degraded));
+  const applyQ = () => { try { document.documentElement.classList.toggle('lite', isLite()); document.documentElement.dataset.q = quality; } catch (e) {} };
+  applyQ();
+  const LITE = DEVLITE; // 兼容旧代码
   const reduce = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function setQuality(q) { quality = q; degraded = false; try { localStorage.setItem('jbs_q', q); } catch (e) {} applyQ(); }
+  const QNAME = { auto: '自动', high: '高', low: '省电' };
 
-  // 飘雪画布。返回 stop()
+  // 柔光雪花精灵：先画好再 drawImage，比每帧画圆路径快得多
+  const sprites = {};
+  function sprite(r) {
+    if (sprites[r]) return sprites[r];
+    const c = document.createElement('canvas'), n = Math.ceil(r * 2 + 2); c.width = c.height = n;
+    const x = c.getContext('2d'), g = x.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, r);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.45, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, n, n);
+    return (sprites[r] = c);
+  }
+  // 当前环境：fire / rain 时全局雪花暂停（由 body[data-amb] 决定）
+  const ambOff = () => { const a = document.body && document.body.dataset.amb; return a === 'fire' || a === 'rain'; };
+
+  // 飘雪画布（三层景深 + 阵风）。返回 stop()
   function snow(canvas, o = {}) {
     if (!canvas || reduce()) return () => {};
     const ctx = canvas.getContext('2d');
-    const count = LITE ? Math.min(o.count || 70, 22) : (o.count || 70), speed = o.speed || 1, alpha = o.alpha == null ? 0.7 : o.alpha;
-    let w = 0, h = 0, raf = 0, flakes = [], dead = false;
+    const want = o.count || 70, speed = o.speed || 1, alpha = o.alpha == null ? 0.8 : o.alpha;
+    let w = 0, h = 0, raf = 0, flakes = [], dead = false, shrink = 1;
+    const target = () => Math.max(8, Math.round((isLite() ? Math.min(want, 36) : want) * shrink));
     const fit = () => {
       const r = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, isLite() ? 1.5 : 2);
       w = Math.max(1, r.width); h = Math.max(1, r.height);
       canvas.width = w * dpr; canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -24,25 +45,40 @@ const FX = (() => {
     const onFocusIn = (e) => { if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) canvas.style.visibility = 'hidden'; };
     const onFocusOut = () => { setTimeout(() => { if (!isTyping()) canvas.style.visibility = ''; }, 150); };
     document.addEventListener('focusin', onFocusIn); document.addEventListener('focusout', onFocusOut);
-    const mk = (top) => ({ x: Math.random() * w, y: top ? -10 : Math.random() * h, r: 0.6 + Math.random() * 2, v: 14 + Math.random() * 34, s: Math.random() * 6.28, a: 0.25 + Math.random() * 0.6 });
+    // z：0 远（小、慢、淡）/ 1 中 / 2 近（大、快、虚）
+    const mk = (top) => {
+      const z = Math.random() < 0.55 ? 0 : Math.random() < 0.7 ? 1 : 2;
+      const r = [1.6, 2.8, 6][z] * (0.8 + Math.random() * 0.5);
+      return { x: Math.random() * (w + 60) - 30, y: top ? -12 : Math.random() * h, z, r, spr: sprite(Math.round(r)), v: [16, 30, 62][z] * (0.8 + Math.random() * 0.5), s: Math.random() * 6.28, a: [0.5, 0.8, 0.45][z] * (0.7 + Math.random() * 0.3) };
+    };
     fit();
-    flakes = Array.from({ length: count }, () => mk(false));
-    let last = performance.now(), lastDraw = 0;
+    flakes = Array.from({ length: target() }, () => mk(false));
+    let last = performance.now(), lastDraw = 0, ema = 0.016, slow = 0, frames = 0, gust = 0;
     const tick = (t) => {
       if (dead) return;
       raf = requestAnimationFrame(tick);
-      const dt = Math.min(0.05, (t - last) / 1000); last = t;
-      if (document.hidden) return;
-      if (isTyping()) return;
-      if (LITE && t - lastDraw < 40) return;
+      const dtRaw = (t - last) / 1000; last = t;
+      const dt = Math.min(0.05, dtRaw);
+      if (document.hidden || isTyping()) return;
+      if (o.global && ambOff()) { if (canvas._on) { ctx.clearRect(0, 0, w, h); canvas._on = false; } return; }
+      canvas._on = true;
+      const lite = isLite();
+      if (lite && t - lastDraw < 33) return;
       lastDraw = t;
+      // 帧率监测：自动画质下，连续卡顿就降级，绝不让特效拖慢操作
+      ema += (dtRaw - ema) * 0.05; frames++;
+      if (frames > 40 && ema > (lite ? 0.05 : 0.036)) { slow++; } else slow = Math.max(0, slow - 1);
+      if (slow > 60) { slow = 0; if (quality === 'auto' && !lite) { degraded = true; applyQ(); } else shrink = Math.max(0.35, shrink * 0.7); }
+      if (frames % 90 === 0) { const n = target(); while (flakes.length > n) flakes.pop(); while (flakes.length < n) flakes.push(mk(true)); }
+      gust = Math.sin(t / 3400) * 0.6 + Math.sin(t / 1300) * 0.4;
       ctx.clearRect(0, 0, w, h);
       for (const f of flakes) {
-        f.y += f.v * dt * speed; f.s += dt * 0.8; f.x += Math.sin(f.s) * 10 * dt + 4 * dt;
-        if (f.y > h + 6 || f.x > w + 6) Object.assign(f, mk(true));
+        f.y += f.v * dt * speed; f.s += dt * (0.5 + f.z * 0.3);
+        f.x += (Math.sin(f.s) * (8 + f.z * 6) + (6 + gust * 18) * (0.5 + f.z * 0.5)) * dt;
+        if (f.y > h + 12) Object.assign(f, mk(true));
+        if (f.x > w + 30) f.x = -20; else if (f.x < -40) f.x = w + 20;
         ctx.globalAlpha = f.a * alpha;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill();
+        const d = f.spr.width; ctx.drawImage(f.spr, f.x - d / 2, f.y - d / 2);
       }
       ctx.globalAlpha = 1;
     };
@@ -51,6 +87,17 @@ const FX = (() => {
     const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { if (!isTyping()) fit(); }, 250); };
     window.addEventListener('resize', onResize);
     return () => { dead = true; cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener('resize', onResize); document.removeEventListener('focusin', onFocusIn); document.removeEventListener('focusout', onFocusOut); };
+  }
+
+  // 环境光层：火光 / 雨（纯 CSS，只动 transform 和 opacity，GPU 合成，不占主线程）
+  function ambient(kind) {
+    try { document.body.dataset.amb = kind || 'snow'; } catch (e) {}
+    let el = document.getElementById('amb');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'amb';
+      el.innerHTML = '<div class="fire-glow fx-loop"></div><div class="fire-glow2 fx-loop"></div>' + Array.from({ length: 12 }, (_, i) => `<i class="ember fx-loop" style="--x:${(8 + i * 7.6 + (i % 3) * 3).toFixed(0)}%;--d:${(3.2 + (i * 0.7) % 3.4).toFixed(1)}s;--w:-${(i * 1.3) % 4}s"></i>`).join('') + '<div class="rain r1 fx-loop"></div><div class="rain r2 fx-loop"></div>';
+      document.body.insertBefore(el, document.body.firstChild);
+    }
   }
 
   // 点击涟漪
@@ -138,6 +185,6 @@ const FX = (() => {
       setTimeout(() => s.remove(), 750);
     }
   }
-  return { snow, typewriter, burst, tilt, sparkle, pop, reduce };
+  return { snow, typewriter, burst, tilt, sparkle, pop, reduce, ambient, setQuality, quality: () => quality, qname: () => QNAME[quality], isLite };
 })();
 if (typeof window !== 'undefined') window.FX = FX;

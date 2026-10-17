@@ -691,6 +691,93 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .codebox .crow b { display: inline; margin: 0; font-size: 34px; letter-spacing: .24em; padding-left: .24em; }
 .fine.ver { margin: 6px 0 0; font-size: 11px; opacity: .6; text-align: center; }
 
+/* ===== v3：开屏 logo / 登录 / 多人大厅 / 氛围特效 ===== */
+.splash-logo { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: radial-gradient(70% 60% at 50% 45%, #1b2742 0%, #0a0f1b 70%); transition: opacity .5s ease; cursor: pointer; }
+.splash-logo.out { opacity: 0; pointer-events: none; }
+.sl-inner { text-align: center; animation: slin 1.2s cubic-bezier(.2, .8, .2, 1) both; }
+.sl-name { margin-top: 18px; font-family: var(--serif); font-size: 54px; letter-spacing: .28em; padding-left: .28em; font-weight: 700; background: linear-gradient(180deg, #fff6dc 10%, #e2b86f 55%, #b9873a); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 4px 18px rgba(226, 184, 111, .35)); }
+.sl-sub { margin-top: 4px; font-size: 13px; letter-spacing: .6em; padding-left: .6em; color: var(--muted); animation: slsub 1.4s .5s ease both; }
+.logo-mark { position: relative; width: 74px; height: 74px; margin: 0 auto; border-radius: 50%; border: 2px solid var(--accent); background: radial-gradient(circle at 35% 30%, #34476f, #121a2c 70%); box-shadow: 0 0 0 6px rgba(226, 184, 111, .1), 0 0 40px rgba(226, 184, 111, .35); overflow: hidden; }
+.logo-mark::before { content: "ab"; position: absolute; inset: 0; display: grid; place-items: center; font: 700 34px/1 var(--serif); letter-spacing: -.04em; color: var(--accent); text-shadow: 0 0 14px rgba(226, 184, 111, .6); }
+.logo-mark i { position: absolute; top: -20%; bottom: -20%; width: 30%; left: -50%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent); transform: skewX(-20deg); animation: lglint 1.6s .6s ease-out both; }
+.logo-mark.big { width: 116px; height: 116px; border-width: 3px; }
+.logo-mark.big::before { font-size: 54px; }
+@keyframes slin { from { opacity: 0; transform: scale(.88) translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes slsub { from { opacity: 0; letter-spacing: .1em; } to { opacity: 1; } }
+@keyframes lglint { from { left: -50%; } to { left: 130%; } }
+
+.auth .auth-hero { padding: 26px 24px 6px; text-align: center; }
+.auth-hero .logo-mark { width: 62px; height: 62px; } .auth-hero .logo-mark::before { font-size: 28px; }
+.auth-hero .eyebrow { margin-top: 12px; letter-spacing: .4em; }
+.auth-hero h2, .mp-head h2 { margin: 4px 0 0; font-family: var(--serif); font-size: 24px; letter-spacing: .12em; }
+.auth .home-body, .mp .home-body { padding-top: 14px; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; margin-bottom: 14px; border-radius: 12px; background: #0f1626; border: 1px solid var(--line); }
+.seg button { padding: 10px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; transition: background .2s, color .2s; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+#auMsg { min-height: 20px; margin: 10px 0 6px; text-align: center; color: var(--danger); }
+#auGuest { display: block; margin: 12px auto 0; }
+.auth .net { margin: 8px 0 0; }
+
+.acct { display: flex; align-items: center; gap: 10px; margin: 2px 0 14px; padding: 8px 10px; border-radius: 12px; background: #0f1626; border: 1px solid var(--line); }
+.acct-av { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), #b9873a); color: var(--accent-ink); font-weight: 800; }
+.acct-nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.menu-big { width: 100%; display: flex; align-items: center; gap: 14px; margin: 0 0 12px; padding: 16px 16px; text-align: left; border-radius: 16px; background: linear-gradient(135deg, #1b2740, #131b2e); border: 1px solid #33415f; transition: transform .15s, border-color .15s, box-shadow .25s; }
+.menu-big:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 10px 28px rgba(226, 184, 111, .15); }
+.menu-big.primary { background: linear-gradient(135deg, #e9c27d, #c18f43); color: var(--accent-ink); border-color: #f1d49a; }
+.menu-big .mb-ic { flex: none; font-size: 30px; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 13px; background: rgba(255, 255, 255, .08); }
+.menu-big .mb-tx b { display: block; font-family: var(--serif); font-size: 20px; letter-spacing: .12em; }
+.menu-big .mb-tx small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 400; opacity: .75; }
+.menu-big.primary .mb-ic { background: rgba(0, 0, 0, .12); }
+.menu-row { display: flex; justify-content: center; gap: 8px; margin-top: 4px; }
+
+.mp-head { display: flex; align-items: center; gap: 10px; padding: 18px 18px 0; }
+.mp-head h2 { flex: 1; margin: 0; font-size: 20px; }
+.mp h3 { margin: 4px 0 10px; font-family: var(--serif); letter-spacing: .08em; font-size: 16px; display: flex; align-items: center; justify-content: space-between; }
+.room-list { display: grid; gap: 10px; margin-bottom: 4px; }
+.room-list .empty, #mpScripts .empty { margin: 8px 0; padding: 18px; text-align: center; color: var(--muted); font-size: 14px; border: 1px dashed var(--line); border-radius: 12px; line-height: 1.7; }
+.room-row { display: flex; align-items: stretch; gap: 0; padding: 0; text-align: left; border-radius: 14px; border: 1px solid var(--line); background: #131b2e; overflow: hidden; transition: transform .15s, border-color .15s; animation: rowin .4s both; }
+.room-row:hover, .room-row:active { border-color: var(--accent); transform: translateY(-1px); }
+.rr-img { flex: none; width: 84px; position: relative; } .rr-img .scene { position: absolute; inset: 0; }
+.rr-tx { flex: 1; min-width: 0; padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.rr-tx b { font-family: var(--serif); font-size: 17px; letter-spacing: .08em; } .rr-tx small { color: var(--muted); font-size: 12px; }
+.rr-n { flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0 14px; min-width: 66px; font-size: 12px; color: var(--accent-ink); background: var(--accent); font-weight: 700; }
+.rr-n b { font-size: 17px; }
+@keyframes rowin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.cap-row { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 6px; padding: 10px 12px; border-radius: 12px; background: #0f1626; border: 1px solid var(--line); }
+.stepper { display: flex; align-items: center; gap: 12px; } .stepper b { min-width: 28px; text-align: center; font-size: 20px; color: var(--accent); }
+.stepper .btn { width: 38px; padding: 6px 0; font-size: 18px; line-height: 1; }
+.auto-cd { margin: 6px 0; color: var(--accent); } .auto-cd b { font-size: 1.15em; }
+#mpCreate .cta { margin-top: 10px; }
+
+/* 氛围层：火光 / 雨 / 灰尘，只用 transform + opacity，不触发重排 */
+#amb { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+#amb > * { display: none; }
+body[data-amb="fire"] #amb .fire-glow, body[data-amb="fire"] #amb .fire-glow2, body[data-amb="fire"] #amb .ember { display: block; }
+body[data-amb="rain"] #amb .rain { display: block; }
+.fire-glow { position: absolute; left: -20%; right: -20%; bottom: -30%; height: 75%; background: radial-gradient(50% 50% at 50% 60%, rgba(255, 150, 60, .30), rgba(255, 100, 30, .10) 55%, transparent 75%); transform-origin: 50% 100%; animation: fireflick 2.7s ease-in-out infinite; will-change: opacity, transform; }
+.fire-glow2 { position: absolute; left: -10%; top: -12%; width: 60%; height: 50%; background: radial-gradient(closest-side, rgba(255, 190, 110, .13), transparent); animation: fireflick2 3.9s ease-in-out infinite; will-change: opacity; }
+@keyframes fireflick { 0%, 100% { opacity: .82; transform: scale(1); } 12% { opacity: 1; transform: scale(1.04, 1.07); } 27% { opacity: .7; transform: scale(.98, .96); } 41% { opacity: .95; transform: scale(1.03, 1.05); } 63% { opacity: .75; transform: scale(1, .98); } 82% { opacity: 1; transform: scale(1.02, 1.06); } }
+@keyframes fireflick2 { 0%, 100% { opacity: .7; } 20% { opacity: 1; } 35% { opacity: .55; } 60% { opacity: .95; } 80% { opacity: .65; } }
+.ember { position: absolute; bottom: -12px; left: var(--x); width: 4px; height: 4px; border-radius: 50%; background: #ffb764; box-shadow: 0 0 8px 2px rgba(255, 150, 60, .8); opacity: 0; animation: emberrise var(--d) var(--w) linear infinite; will-change: transform, opacity; }
+.ember:nth-of-type(n+8) { display: none !important; }
+html:not(.lite) .ember:nth-of-type(n+8) { display: block !important; }
+@keyframes emberrise { 0% { transform: translate(0, 0) scale(1); opacity: 0; } 12% { opacity: .95; } 100% { transform: translate(28px, -62vh) scale(.3); opacity: 0; } }
+.rain { position: absolute; inset: -20% -10%; background-image: repeating-linear-gradient(105deg, transparent 0 14px, rgba(190, 210, 235, .20) 14px 15px, transparent 15px 31px); animation: rainfall .55s linear infinite; will-change: transform; opacity: .6; }
+.rain.r2 { background-image: repeating-linear-gradient(105deg, transparent 0 23px, rgba(190, 210, 235, .13) 23px 24px, transparent 24px 47px); animation-duration: .9s; opacity: .8; }
+@keyframes rainfall { from { transform: translate3d(0, -60px, 0); } to { transform: translate3d(-24px, 60px, 0); } }
+/* 省电/低配模式默认会把无限动画关掉；这几个环境层是专门做成轻量的，所以放行 */
+html.lite #amb .fx-loop { animation-iteration-count: infinite !important; }
+html[data-q="low"] #amb .fx-loop { animation-play-state: paused !important; }
+html[data-q="low"] #amb .ember { display: none !important; }
+
+/* 画质：暗角 + 微颗粒（静态图层，不耗性能），场景图加一点对比和饱和 */
+html:not(.lite) .scene { filter: saturate(1.1) contrast(1.05); }
+html:not(.lite) body::after { content: ""; position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: .07; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+.home-card, .menu-big, .room-row, .sc-card { will-change: auto; }
+.home > .home-card { width: min(440px, calc(100vw - 32px)); }
+.join-row .btn { white-space: nowrap; min-width: 84px; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -699,7 +786,7 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
 .topbar { top: env(safe-area-inset-top, 0px); margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .toast { bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
 .home { min-height: 100%; }
-.codebox, .net { display: none !important; }
+.codebox, .net, #mpSeg, #mpJoin, #acct, #auGuest, .cap-row, #mpCreate > p.fine { display: none !important; }
 
 </style>
 <div id="banner" class="banner" hidden>连接已断开，正在重连…</div>
@@ -718,22 +805,54 @@ html.lite .di-bg { animation-duration: 16s !important; animation-iteration-count
     <div class="home-body">
       <p class="sub" id="homeSub">一桩发生在暴风雪山庄里的密室谋杀</p>
       <div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div>
-      <label class="field">
-        <span>你的昵称</span>
-        <input id="nameInput" maxlength="12" placeholder="例如：阿远" autocomplete="off">
-      </label>
-      <button id="createBtn" class="btn primary cta">创建房间</button>
-      <button id="detBtn" class="btn det-entry" hidden>🔍 单人侦探模式 <small>不用朋友，不用开麦</small></button>
-      <div class="or">或者加入朋友的房间</div>
-      <div class="join-row">
-        <input id="codeInput" maxlength="4" placeholder="房间码" autocomplete="off" autocapitalize="characters">
-        <button id="joinBtn" class="btn">加入</button>
-      </div>
+      <div class="acct" id="acct" hidden><span class="acct-av" id="acctAv"></span><span class="acct-nm" id="acctNm"></span><button class="btn small ghost" id="logoutBtn">退出登录</button></div>
+      <button id="detBtn" class="btn menu-big" hidden><span class="mb-ic">🔍</span><span class="mb-tx"><b>单人侦探</b><small>13 个案件 · 不用朋友，不用开麦</small></span></button>
+      <button id="mpBtn" class="btn menu-big primary"><span class="mb-ic">👥</span><span class="mb-tx"><b>多人剧本杀</b><small>创建房间，或加入大家的房间</small></span></button>
+      <div class="menu-row"><button class="btn small ghost" id="qualBtn">画质：自动</button></div>
       <p class="fine ver" id="ver"></p>
       <p class="fine" id="homeFine">4–8 人 · 约 90–120 分钟 · 需要麦克风（可选）</p>
     </div>
   </div>
 </main>
+
+<main id="auth" class="home auth" hidden>
+  <div class="home-card">
+    <div class="auth-hero"><div class="logo-mark"><i></i></div><p class="eyebrow">ABBA ENTERTAINMENT</p><h2>登录 / 注册</h2></div>
+    <form class="home-body" id="authForm" autocomplete="on">
+      <div class="seg" id="authSeg"><button type="button" class="on" data-m="login">登录</button><button type="button" data-m="register">注册</button></div>
+      <label class="field"><span>邮箱（Gmail 等都可以）</span><input id="auEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@gmail.com"></label>
+      <label class="field" id="auNickRow" hidden><span>昵称（游戏里别人看到的名字）</span><input id="auNick" maxlength="12" autocomplete="nickname" placeholder="例如：阿远"></label>
+      <label class="field"><span>密码（至少 6 位）</span><input id="auPw" type="password" autocomplete="current-password" placeholder="••••••"></label>
+      <button class="btn primary cta" id="auGo" type="submit">登录</button>
+      <p class="fine" id="auMsg"></p>
+      <div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div>
+      <button class="btn small ghost" id="auGuest" type="button">先玩单人侦探（无需登录）</button>
+    </form>
+  </div>
+</main>
+
+<main id="mp" class="home mp" hidden>
+  <div class="home-card">
+    <div class="mp-head"><button class="btn small ghost" id="mpBack">‹ 返回</button><h2>多人剧本杀</h2><span class="net mini" data-s="wait"><i></i><span>连接中</span></span></div>
+    <div class="home-body">
+      <div class="seg" id="mpSeg"><button class="on" data-m="join">加入房间</button><button data-m="create">创建房间</button></div>
+      <label class="field" id="mpNameRow" hidden><span>你的昵称</span><input id="nameInput" maxlength="12" placeholder="例如：阿远" autocomplete="off"></label>
+      <section id="mpJoin">
+        <div class="mp-sec"><h3>等待中的房间 <button class="btn small ghost" id="roomsRefresh">刷新</button></h3><div id="roomList" class="room-list"></div></div>
+        <div class="or">或者输入房间码</div>
+        <div class="join-row"><input id="codeInput" maxlength="4" placeholder="房间码" autocomplete="off" autocapitalize="characters"><button id="joinBtn" class="btn">加入</button></div>
+      </section>
+      <section id="mpCreate" hidden>
+        <h3>选择剧本</h3><div id="mpScripts" class="sc-list"></div>
+        <div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="capMinus">−</button><b id="capNum">4</b><button class="btn small" id="capPlus">+</button></div></div>
+        <p class="fine">人数凑满后自动开始游戏，不需要房主手动点开始。</p>
+        <button id="createBtn" class="btn primary cta">创建房间</button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div id="splash" class="splash-logo"><div class="sl-inner"><div class="logo-mark big"><i></i></div><div class="sl-name">abba</div><div class="sl-sub">ENTERTAINMENT</div></div></div>
 
 <main id="det" class="det" hidden></main>
 
@@ -2300,6 +2419,33 @@ const ICE_SERVERS = process.env.ICE_SERVERS
   ? JSON.parse(process.env.ICE_SERVERS)
   : [{ urls: 'stun:stun.l.google.com:19302' }];
 
+// ---------- 账号 ----------
+// 设置了 AUTH_SECRET 才启用账号体系（正式服务器）；没设置时保持“无账号”模式（本地测试 / 离线试玩版）。
+const AUTH_SECRET = process.env.AUTH_SECRET || '';
+const REQUIRE_AUTH = !!AUTH_SECRET;
+const TEST_EMAILS = String(process.env.TEST_EMAILS || '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
+const isTester = (email) => !!email && TEST_EMAILS.includes(String(email).toLowerCase());
+const AUTO_START_MS = Math.max(30, 5000 / TIME_SCALE);
+function signToken(u) {
+  const body = Buffer.from(JSON.stringify({ e: u.email, n: u.nick, x: Date.now() + 90 * 864e5 })).toString('base64url');
+  return body + '.' + crypto.createHmac('sha256', AUTH_SECRET).update(body).digest('base64url');
+}
+function verifyToken(t) {
+  try {
+    const [body, sig] = String(t || '').split('.');
+    if (!body || !sig) return null;
+    const want = crypto.createHmac('sha256', AUTH_SECRET).update(body).digest('base64url');
+    const a = Buffer.from(sig), b = Buffer.from(want);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+    const j = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (!j.e || j.x < Date.now()) return null;
+    return { email: j.e, nick: j.n };
+  } catch { return null; }
+}
+// 内部测试剧本（internal）：只有测试账号看得到，也只有这种剧本里能加机器人
+const scriptAllowed = (sc, ws) => !sc.internal || !REQUIRE_AUTH || !!(ws && ws.user && isTester(ws.user.email));
+const botsAllowed = (room) => !REQUIRE_AUTH || !!scriptOf(room).internal;
+
 const PHASE_SECONDS = {
   reading: 480, turns: 60, search1: 180, discuss1: 420,
   search2: 150, discuss2: 420, search3: 120, discuss3: 480, vote: 180
@@ -2343,21 +2489,41 @@ function cleanName(s) {
 }
 
 // ---------- 房间 ----------
-function createRoom() {
+function createRoom(scriptId, cap) {
   let code;
   do { code = rid(4); } while (rooms.has(code));
+  const sc = SCRIPTS.byId(scriptId) || SCRIPTS.list.find((s) => !s.internal) || SCRIPTS.list[0];
   const room = {
     code, players: [], hostId: null, phase: 'lobby', phaseEnd: null, timer: null,
     speakerOrder: [], speakerIdx: 0, chat: [], shared: [], voice: new Set(),
-    result: null, scriptId: SCRIPTS.list[0].id, touched: Date.now()
+    result: null, scriptId: sc.id, cap: clampCap(sc, cap), autoTimer: null, autoAt: null, touched: Date.now()
   };
   rooms.set(code, room);
   return room;
 }
+// 目标人数：在剧本允许的范围内；不指定就取上限（老接口不会因为凑够人数而自动开局）
+function clampCap(sc, cap) {
+  const n = Math.round(Number(cap));
+  return Math.max(sc.minPlayers, Math.min(sc.maxPlayers, Number.isFinite(n) && n > 0 ? n : sc.maxPlayers));
+}
+// 满员自动开局（只在账号模式启用）：人齐后倒计时几秒，期间有人离开/换剧本就取消
+function checkAutoStart(room) {
+  const full = REQUIRE_AUTH && room.phase === 'lobby' && room.players.length >= room.cap &&
+    room.players.length >= scriptOf(room).minPlayers && connectedPlayers(room).length === room.players.length;
+  if (!full) { if (room.autoTimer) { clearTimeout(room.autoTimer); room.autoTimer = null; } room.autoAt = null; return; }
+  if (room.autoTimer) return;
+  room.autoAt = Date.now() + AUTO_START_MS;
+  room.autoTimer = setTimeout(() => {
+    room.autoTimer = null; room.autoAt = null;
+    if (room.phase !== 'lobby') return;
+    checkAutoStart(room);
+    if (room.autoTimer) { clearTimeout(room.autoTimer); room.autoTimer = null; room.autoAt = null; startGame(room); }
+  }, AUTO_START_MS);
+}
 
-function addPlayer(room, name, ws) {
+function addPlayer(room, name, ws, email) {
   const p = {
-    id: uid(), token: crypto.randomBytes(16).toString('hex'), name,
+    id: uid(), token: crypto.randomBytes(16).toString('hex'), name, email: email || null,
     ws, connected: true, charId: null, ready: false, searched: false,
     clues: [], vote: null
   };
@@ -2386,7 +2552,7 @@ function scriptMeta(sc) {
   return {
     id: sc.id, title: sc.title, subtitle: sc.subtitle, tagline: sc.tagline || '', difficulty: sc.difficulty || 3,
     duration: sc.duration, minPlayers: sc.minPlayers, maxPlayers: sc.maxPlayers,
-    cover: sc.cover || 'cover', tone: sc.tone || 'none'
+    cover: sc.cover || 'cover', tone: sc.tone || 'none', internal: !!sc.internal
   };
 }
 
@@ -2402,7 +2568,9 @@ function snapshot(room, me) {
     phaseEnd: room.phaseEnd,
     hostId: room.hostId,
     scriptId: script.id,
-    scripts: SCRIPTS.list.map(scriptMeta),
+    cap: room.cap, autoAt: room.autoAt || null, requireAuth: REQUIRE_AUTH, botsAllowed: botsAllowed(room),
+    manualStart: !REQUIRE_AUTH || !!script.internal,
+    scripts: SCRIPTS.list.filter((sc) => scriptAllowed(sc, me && me.ws)).map(scriptMeta),
     speakerId: currentSpeakerId(room),
     speakerOrder: room.speakerOrder,
     script: {
@@ -2452,6 +2620,7 @@ function snapshot(room, me) {
 
 function broadcastState(room) {
   room.touched = Date.now();
+  checkAutoStart(room);
   for (const p of room.players) if (p.connected) send(p.ws, snapshot(room, p));
 }
 
@@ -2619,25 +2788,51 @@ function onMessage(ws, raw) {
   const err = (m) => send(ws, { type: 'error', message: m });
 
   // 加入前的消息
+  if (msg.type === 'auth') {
+    const u = verifyToken(msg.token);
+    if (!u) return send(ws, { type: 'auth-failed' });
+    ws.user = u;
+    send(ws, { type: 'auth-ok', nick: u.nick, tester: isTester(u.email) });
+    send(ws, { type: 'scripts', scripts: SCRIPTS.list.filter((sc) => scriptAllowed(sc, ws)).map(scriptMeta) });
+    return;
+  }
+  if (msg.type === 'listrooms') {
+    if (REQUIRE_AUTH && !ws.user) return;
+    const list = [];
+    for (const r of rooms.values()) {
+      if (r.phase !== 'lobby' || r.players.length >= r.cap) continue;
+      const sc = scriptOf(r);
+      if (!scriptAllowed(sc, ws)) continue;
+      const host = r.players.find((x) => x.id === r.hostId);
+      list.push({ code: r.code, title: sc.title, cover: sc.cover || 'cover', host: host ? host.name : '', n: r.players.length, cap: r.cap });
+    }
+    send(ws, { type: 'rooms', rooms: list.slice(0, 50) });
+    return;
+  }
   if (msg.type === 'create') {
-    const name = cleanName(msg.name);
+    if (REQUIRE_AUTH && !ws.user) return send(ws, { type: 'auth-failed' });
+    const name = REQUIRE_AUTH ? cleanName(ws.user.nick) : cleanName(msg.name);
     if (!name) return err('请输入昵称');
-    const room = createRoom();
-    const p = addPlayer(room, name, ws);
+    const want = SCRIPTS.byId(String(msg.script || ''));
+    if (want && !scriptAllowed(want, ws)) return err('没有这个剧本');
+    const room = createRoom(want && want.id, msg.cap);
+    const p = addPlayer(room, name, ws, ws.user && ws.user.email);
     ws.ctx = { room, player: p };
     send(ws, { type: 'joined', code: room.code, token: p.token, id: p.id });
     broadcastState(room);
     return;
   }
   if (msg.type === 'join') {
-    const name = cleanName(msg.name);
+    if (REQUIRE_AUTH && !ws.user) return send(ws, { type: 'auth-failed' });
+    const name = REQUIRE_AUTH ? cleanName(ws.user.nick) : cleanName(msg.name);
     const room = rooms.get(String(msg.code || '').toUpperCase());
     if (!name) return err('请输入昵称');
     if (!room) return err('没有这个房间');
     if (room.phase !== 'lobby') return err('游戏已经开始，不能加入');
-    if (room.players.length >= scriptOf(room).maxPlayers) return err('房间已满');
+    if (!scriptAllowed(scriptOf(room), ws)) return err('没有这个房间');
+    if (room.players.length >= Math.min(room.cap, scriptOf(room).maxPlayers)) return err('房间已满');
     if (room.players.some((p) => p.name === name)) return err('这个昵称已被占用');
-    const p = addPlayer(room, name, ws);
+    const p = addPlayer(room, name, ws, ws.user && ws.user.email);
     ws.ctx = { room, player: p };
     send(ws, { type: 'joined', code: room.code, token: p.token, id: p.id });
     broadcast(room, { type: 'sys', text: `${name} 加入了房间` });
@@ -2667,6 +2862,7 @@ function onMessage(ws, raw) {
     case 'start': {
       if (me.id !== room.hostId) return err('只有房主可以开始');
       if (room.phase !== 'lobby') return;
+      if (REQUIRE_AUTH && !scriptOf(room).internal) return err('人满后会自动开始');
       const alive = connectedPlayers(room).length;
       if (room.players.length < scriptOf(room).minPlayers) return err(`至少需要 ${scriptOf(room).minPlayers} 人`);
       if (alive < room.players.length) return err('有人处于离线状态，请等他回来');
@@ -2677,13 +2873,23 @@ function onMessage(ws, raw) {
       if (me.id !== room.hostId || room.phase !== 'lobby') return;
       const sc = SCRIPTS.byId(String(msg.id || ''));
       if (!sc) return err('没有这个剧本');
-      if (room.players.length > sc.maxPlayers) return err(`《${sc.title}》最多 ${sc.maxPlayers} 人，请先移除多余的玩家或机器人`);
+      if (!scriptAllowed(sc, ws)) return err('没有这个剧本');
+      if (room.players.length > sc.maxPlayers) return err(`《${sc.title}》最多 ${sc.maxPlayers} 人，请先移除多余的玩家`);
       room.scriptId = sc.id;
+      room.cap = clampCap(sc, Math.max(room.cap, room.players.length));
+      broadcastState(room);
+      break;
+    }
+    case 'setcap': {
+      if (me.id !== room.hostId || room.phase !== 'lobby') return;
+      const sc = scriptOf(room);
+      room.cap = Math.max(clampCap(sc, msg.cap), Math.min(room.players.length, sc.maxPlayers));
       broadcastState(room);
       break;
     }
     case 'addbot': {
       if (me.id !== room.hostId || room.phase !== 'lobby') return;
+      if (!botsAllowed(room)) return err('真人房间不能加机器人');
       if (room.players.length >= scriptOf(room).maxPlayers) return err('房间已满');
       const used = new Set(room.players.map((p) => p.name));
       const name = BOT_NAMES.find((n) => !used.has(n));
@@ -2838,7 +3044,7 @@ function onClose(ws) {
       setTimeout(() => {
         self.readyState = 1;
         if (self.onopen) self.onopen();
-        L.send(srv, { type: 'hello', ice: [], meta: { title: '线上剧本杀', subtitle: '选一个剧本，和朋友一起破案', scripts: L.SCRIPTS.list.map(L.scriptMeta) } });
+        L.send(srv, { type: 'hello', ice: [], auth: false, meta: { title: '线上剧本杀', subtitle: '选一个剧本，和朋友一起破案', scripts: L.SCRIPTS.list.map(L.scriptMeta) } });
       }, 0);
     }
     send(s) {
@@ -3085,7 +3291,7 @@ const ART = (() => {
     `<g class="${o.cls || ''}"><rect x="${x - 3}" y="${y - 3}" width="${w + 6}" height="${h + 6}" rx="3" fill="#ffc861" opacity=".16"/>
       <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="${o.fill || '#ffd27a'}"/>
       <path d="M${x + w / 2} ${y}v${h}M${x} ${y + h / 2}h${w}" stroke="#3a2412" stroke-width=".9"/></g>`;
-  const vignette = (u) => `<defs><radialGradient id="vn${u}" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></radialGradient></defs><rect width="400" height="240" fill="url(#vn${u})"/>`;
+  const vignette = (u) => `<defs><radialGradient id="vn${u}" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></radialGradient></defs><rect width="400" height="240" fill="url(#vn${u})"/><radialGradient id="bl${u}" cx=".5" cy=".38" r=".6"><stop offset="0" stop-color="#ffe9c0" stop-opacity=".16"/><stop offset="1" stop-color="#ffe9c0" stop-opacity="0"/></radialGradient><rect width="400" height="240" fill="url(#bl${u})"/>`;
 
   const SCENES = {
     cover(u) {
@@ -3924,20 +4130,41 @@ if (typeof window !== 'undefined') window.ART = ART;
 'use strict';
 // 视觉特效：飘雪、点击涟漪、打字机、火花/彩带、卡片倾斜
 const FX = (() => {
-  // 手机/低配设备：关掉闪烁、发光、火花等持续特效，只留轻微飘雪，避免卡顿和闪烁
-  const LITE = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) || (navigator.hardwareConcurrency || 8) <= 4;
-  try { if (LITE) document.documentElement.classList.add('lite'); } catch (e) {}
+  // 画质：auto（按设备和实时帧率自动）/ high（全部特效）/ low（省电，几乎静止）
+  const DEVLITE = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) || (navigator.hardwareConcurrency || 8) <= 4;
+  let quality = 'auto', degraded = false;
+  try { quality = localStorage.getItem('jbs_q') || 'auto'; } catch (e) {}
+  const isLite = () => quality === 'low' || (quality === 'auto' && (DEVLITE || degraded));
+  const applyQ = () => { try { document.documentElement.classList.toggle('lite', isLite()); document.documentElement.dataset.q = quality; } catch (e) {} };
+  applyQ();
+  const LITE = DEVLITE; // 兼容旧代码
   const reduce = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function setQuality(q) { quality = q; degraded = false; try { localStorage.setItem('jbs_q', q); } catch (e) {} applyQ(); }
+  const QNAME = { auto: '自动', high: '高', low: '省电' };
 
-  // 飘雪画布。返回 stop()
+  // 柔光雪花精灵：先画好再 drawImage，比每帧画圆路径快得多
+  const sprites = {};
+  function sprite(r) {
+    if (sprites[r]) return sprites[r];
+    const c = document.createElement('canvas'), n = Math.ceil(r * 2 + 2); c.width = c.height = n;
+    const x = c.getContext('2d'), g = x.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, r);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.45, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, n, n);
+    return (sprites[r] = c);
+  }
+  // 当前环境：fire / rain 时全局雪花暂停（由 body[data-amb] 决定）
+  const ambOff = () => { const a = document.body && document.body.dataset.amb; return a === 'fire' || a === 'rain'; };
+
+  // 飘雪画布（三层景深 + 阵风）。返回 stop()
   function snow(canvas, o = {}) {
     if (!canvas || reduce()) return () => {};
     const ctx = canvas.getContext('2d');
-    const count = LITE ? Math.min(o.count || 70, 22) : (o.count || 70), speed = o.speed || 1, alpha = o.alpha == null ? 0.7 : o.alpha;
-    let w = 0, h = 0, raf = 0, flakes = [], dead = false;
+    const want = o.count || 70, speed = o.speed || 1, alpha = o.alpha == null ? 0.8 : o.alpha;
+    let w = 0, h = 0, raf = 0, flakes = [], dead = false, shrink = 1;
+    const target = () => Math.max(8, Math.round((isLite() ? Math.min(want, 36) : want) * shrink));
     const fit = () => {
       const r = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, isLite() ? 1.5 : 2);
       w = Math.max(1, r.width); h = Math.max(1, r.height);
       canvas.width = w * dpr; canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -3947,25 +4174,40 @@ const FX = (() => {
     const onFocusIn = (e) => { if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) canvas.style.visibility = 'hidden'; };
     const onFocusOut = () => { setTimeout(() => { if (!isTyping()) canvas.style.visibility = ''; }, 150); };
     document.addEventListener('focusin', onFocusIn); document.addEventListener('focusout', onFocusOut);
-    const mk = (top) => ({ x: Math.random() * w, y: top ? -10 : Math.random() * h, r: 0.6 + Math.random() * 2, v: 14 + Math.random() * 34, s: Math.random() * 6.28, a: 0.25 + Math.random() * 0.6 });
+    // z：0 远（小、慢、淡）/ 1 中 / 2 近（大、快、虚）
+    const mk = (top) => {
+      const z = Math.random() < 0.55 ? 0 : Math.random() < 0.7 ? 1 : 2;
+      const r = [1.6, 2.8, 6][z] * (0.8 + Math.random() * 0.5);
+      return { x: Math.random() * (w + 60) - 30, y: top ? -12 : Math.random() * h, z, r, spr: sprite(Math.round(r)), v: [16, 30, 62][z] * (0.8 + Math.random() * 0.5), s: Math.random() * 6.28, a: [0.5, 0.8, 0.45][z] * (0.7 + Math.random() * 0.3) };
+    };
     fit();
-    flakes = Array.from({ length: count }, () => mk(false));
-    let last = performance.now(), lastDraw = 0;
+    flakes = Array.from({ length: target() }, () => mk(false));
+    let last = performance.now(), lastDraw = 0, ema = 0.016, slow = 0, frames = 0, gust = 0;
     const tick = (t) => {
       if (dead) return;
       raf = requestAnimationFrame(tick);
-      const dt = Math.min(0.05, (t - last) / 1000); last = t;
-      if (document.hidden) return;
-      if (isTyping()) return;
-      if (LITE && t - lastDraw < 40) return;
+      const dtRaw = (t - last) / 1000; last = t;
+      const dt = Math.min(0.05, dtRaw);
+      if (document.hidden || isTyping()) return;
+      if (o.global && ambOff()) { if (canvas._on) { ctx.clearRect(0, 0, w, h); canvas._on = false; } return; }
+      canvas._on = true;
+      const lite = isLite();
+      if (lite && t - lastDraw < 33) return;
       lastDraw = t;
+      // 帧率监测：自动画质下，连续卡顿就降级，绝不让特效拖慢操作
+      ema += (dtRaw - ema) * 0.05; frames++;
+      if (frames > 40 && ema > (lite ? 0.05 : 0.036)) { slow++; } else slow = Math.max(0, slow - 1);
+      if (slow > 60) { slow = 0; if (quality === 'auto' && !lite) { degraded = true; applyQ(); } else shrink = Math.max(0.35, shrink * 0.7); }
+      if (frames % 90 === 0) { const n = target(); while (flakes.length > n) flakes.pop(); while (flakes.length < n) flakes.push(mk(true)); }
+      gust = Math.sin(t / 3400) * 0.6 + Math.sin(t / 1300) * 0.4;
       ctx.clearRect(0, 0, w, h);
       for (const f of flakes) {
-        f.y += f.v * dt * speed; f.s += dt * 0.8; f.x += Math.sin(f.s) * 10 * dt + 4 * dt;
-        if (f.y > h + 6 || f.x > w + 6) Object.assign(f, mk(true));
+        f.y += f.v * dt * speed; f.s += dt * (0.5 + f.z * 0.3);
+        f.x += (Math.sin(f.s) * (8 + f.z * 6) + (6 + gust * 18) * (0.5 + f.z * 0.5)) * dt;
+        if (f.y > h + 12) Object.assign(f, mk(true));
+        if (f.x > w + 30) f.x = -20; else if (f.x < -40) f.x = w + 20;
         ctx.globalAlpha = f.a * alpha;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill();
+        const d = f.spr.width; ctx.drawImage(f.spr, f.x - d / 2, f.y - d / 2);
       }
       ctx.globalAlpha = 1;
     };
@@ -3974,6 +4216,17 @@ const FX = (() => {
     const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { if (!isTyping()) fit(); }, 250); };
     window.addEventListener('resize', onResize);
     return () => { dead = true; cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener('resize', onResize); document.removeEventListener('focusin', onFocusIn); document.removeEventListener('focusout', onFocusOut); };
+  }
+
+  // 环境光层：火光 / 雨（纯 CSS，只动 transform 和 opacity，GPU 合成，不占主线程）
+  function ambient(kind) {
+    try { document.body.dataset.amb = kind || 'snow'; } catch (e) {}
+    let el = document.getElementById('amb');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'amb';
+      el.innerHTML = '<div class="fire-glow fx-loop"></div><div class="fire-glow2 fx-loop"></div>' + Array.from({ length: 12 }, (_, i) => `<i class="ember fx-loop" style="--x:${(8 + i * 7.6 + (i % 3) * 3).toFixed(0)}%;--d:${(3.2 + (i * 0.7) % 3.4).toFixed(1)}s;--w:-${(i * 1.3) % 4}s"></i>`).join('') + '<div class="rain r1 fx-loop"></div><div class="rain r2 fx-loop"></div>';
+      document.body.insertBefore(el, document.body.firstChild);
+    }
   }
 
   // 点击涟漪
@@ -4061,7 +4314,7 @@ const FX = (() => {
       setTimeout(() => s.remove(), 750);
     }
   }
-  return { snow, typewriter, burst, tilt, sparkle, pop, reduce };
+  return { snow, typewriter, burst, tilt, sparkle, pop, reduce, ambient, setQuality, quality: () => quality, qname: () => QNAME[quality], isLite };
 })();
 if (typeof window !== 'undefined') window.FX = FX;
 
@@ -4141,6 +4394,31 @@ const SFX = (() => {
 
   // ---------- 音效 ----------
   const fx = {
+    // ---------- 场景音效 ----------
+    // 公司 logo：柔和的上行音 + 闪光
+    logo: (t) => { [392, 587, 784, 1175].forEach((f, i) => { tone(f, t + i * 0.12, 1.6, { gain: 0.1 }); tone(f * 2, t + i * 0.12, 0.8, { gain: 0.03 }); }); tone(98, t, 2.2, { gain: 0.16, attack: 0.3 }); noise(t + 0.3, 0.9, { f: 2000, to: 7000, gain: 0.04, attack: 0.5, type: 'highpass' }); },
+    // 拆开信封：撕开封蜡的脆响 + 纸张摩擦 + 抽出信纸
+    envelope: (t) => {
+      noise(t, 0.07, { f: 3200, q: 2, gain: 0.3 }); tone(2400, t, 0.04, { type: 'square', gain: 0.03, lp: 3000 });
+      noise(t + 0.08, 0.35, { f: 1800, to: 4200, q: 0.7, gain: 0.12, attack: 0.05 });
+      noise(t + 0.45, 0.5, { f: 900, to: 2600, q: 0.6, gain: 0.1, attack: 0.15 });
+      tone(660, t + 0.95, 1.1, { gain: 0.05 }); tone(990, t + 1.0, 1.1, { gain: 0.04 });
+    },
+    // 翻纸 / 收起线索
+    paper: (t) => { noise(t, 0.22, { f: 2600, to: 1200, q: 0.6, gain: 0.12, attack: 0.03 }); noise(t + 0.12, 0.2, { f: 3400, to: 1600, q: 0.6, gain: 0.08, attack: 0.03 }); },
+    rustle: (t) => { for (let i = 0; i < 6; i++) noise(t + i * 0.09 + Math.random() * 0.04, 0.08, { f: 2200 + Math.random() * 2400, q: 0.9, gain: 0.06 + Math.random() * 0.04 }); },
+    // 门轴吱呀
+    creak: (t) => { tone(180, t, 0.9, { type: 'sawtooth', to: 340, gain: 0.05, lp: 900, attack: 0.2 }); tone(190, t + 0.1, 0.8, { type: 'sawtooth', to: 280, gain: 0.04, lp: 700, attack: 0.2 }); noise(t, 0.8, { f: 700, to: 1500, q: 3, gain: 0.04, attack: 0.3 }); },
+    knock: (t) => { [0, 0.19, 0.38].forEach((d) => { tone(150, t + d, 0.12, { to: 70, gain: 0.5 }); noise(t + d, 0.05, { f: 500, gain: 0.25 }); }); },
+    footsteps: (t) => { for (let i = 0; i < 5; i++) { const tt = t + i * 0.34; tone(95 - (i % 2) * 12, tt, 0.14, { to: 55, gain: 0.22 }); noise(tt, 0.06, { f: 400, gain: 0.1 }); } },
+    // 划火柴
+    match: (t) => { noise(t, 0.28, { f: 4200, to: 1500, q: 0.7, gain: 0.16, attack: 0.02 }); noise(t + 0.27, 0.9, { f: 2800, to: 600, q: 0.5, gain: 0.1, attack: 0.05 }); tone(900, t + 0.27, 0.1, { type: 'square', gain: 0.02, lp: 2000 }); },
+    clink: (t) => { [2093, 3136, 4186].forEach((f, i) => tone(f * (1 + i * 0.003), t + i * 0.01, 0.9 - i * 0.2, { gain: 0.07 })); },
+    keys: (t) => { for (let i = 0; i < 7; i++) tone(2600 + Math.random() * 2400, t + i * 0.045 + Math.random() * 0.02, 0.18, { gain: 0.045 }); },
+    // 灯 / 煤油灯点亮
+    lamp: (t) => { noise(t, 0.2, { f: 3000, to: 800, gain: 0.1 }); tone(180, t + 0.15, 0.5, { type: 'triangle', gain: 0.05, attack: 0.15 }); },
+    // 门铃 / 房间满员提示
+    bell: (t) => { [880, 1320, 1760].forEach((f, i) => tone(f, t + i * 0.01, 1.8, { gain: 0.1 / (i + 1) })); },
     click: (t) => tone(1100, t, 0.05, { type: 'triangle', gain: 0.08 }),
     tab: (t) => { noise(t, 0.12, { f: 2200, to: 800, gain: 0.07 }); tone(520, t, 0.08, { type: 'triangle', gain: 0.05 }); },
     ask: (t) => { tone(260, t, 0.16, { to: 130, gain: 0.18 }); tone(780, t + 0.02, 0.1, { type: 'triangle', gain: 0.05 }); },
@@ -4259,8 +4537,39 @@ const SFX = (() => {
     bar = seed % 4; tense = false;
     ensure(); start();
   };
+
+  // ---------- 环境声（风 / 火 / 雨）：循环噪声 + 随机爆裂，音量很低 ----------
+  let amb = null, ambKind = null;
+  function ambStop() {
+    if (!amb) return; const a = amb; amb = null; ambKind = null;
+    try { a.g.gain.setTargetAtTime(0, ac.currentTime, 0.4); setTimeout(() => { try { a.src.stop(); } catch (e) {} }, 1500); } catch (e) {}
+    clearInterval(a.iv);
+  }
+  api.amb = (kind) => {
+    kind = kind || null;
+    if (kind === ambKind) return;
+    ambStop(); ambKind = kind;
+    if (!kind || !ensure()) return;
+    try {
+      const src = ac.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = ac.createBiquadFilter(); f.type = 'lowpass';
+      const g = ac.createGain(); g.gain.value = 0;
+      f.frequency.value = kind === 'rain' ? 5200 : kind === 'fire' ? 260 : 520;
+      src.connect(f); f.connect(g); g.connect(musicBus); src.start();
+      const base = kind === 'rain' ? 0.1 : kind === 'fire' ? 0.05 : 0.07;
+      g.gain.setTargetAtTime(base, ac.currentTime, 1.2);
+      amb = { src, g, iv: 0 };
+      amb.iv = setInterval(() => {
+        if (!ac || muted || document.hidden || ac.state !== 'running') return;
+        const t = ac.currentTime + 0.02;
+        if (kind === 'fire' && Math.random() < 0.7) noise(t, 0.03 + Math.random() * 0.05, { f: 1800 + Math.random() * 3000, q: 1, gain: 0.05 + Math.random() * 0.06, bus: musicBus });
+        if (kind === 'snow') { f.frequency.setTargetAtTime(380 + Math.random() * 420, t, 1.5); g.gain.setTargetAtTime(0.04 + Math.random() * 0.06, t, 1.5); }
+        if (kind === 'rain') g.gain.setTargetAtTime(0.08 + Math.random() * 0.04, t, 0.8);
+      }, kind === 'fire' ? 160 : 1800);
+    } catch (e) { amb = null; ambKind = null; }
+  };
   api.tension = (on) => { tense = !!on; };
-  api.stop = () => { mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
+  api.stop = () => { ambStop(); mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
   return api;
 })();
 if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener('DOMContentLoaded', () => SFX.sync()); setTimeout(() => SFX.sync(), 0); }
@@ -4776,6 +5085,8 @@ function connect() {
   ws.onopen = () => {
     everConnected = true; tries = 0; updateNet();
     $('#banner').hidden = true;
+    authedWs = false;
+    if (account) send({ type: 'auth', token: account.token });
     const s = session();
     if (s) send({ type: 'rejoin', code: s.code, token: s.token });
   };
@@ -4795,10 +5106,28 @@ function onMsg(m) {
       $('#homeTitle').textContent = m.meta.title;
       $('#homeSub').textContent = m.meta.subtitle;
       $('#homeFine').textContent = `${(m.meta.scripts || []).length} 个剧本 · 试玩版：自动加 3 个机器人 · 不含语音`;
-      if (!session() && $('#home').hidden && $('#room').hidden && $('#det').hidden) showHome();
+      scriptsList = m.meta.scripts || [];
+      needAuth = m.auth === true;
+      gotHello = true;
+      afterHello();
+      break;
+    case 'auth-ok':
+      authedWs = true;
+      if (account) { account.tester = !!m.tester; saveAcct(); }
+      break;
+    case 'auth-failed':
+      authedWs = false;
+      if (needAuth) { clearAcct(); toast('登录已过期，请重新登录'); if (S) doLeave(); showAuth(); }
+      break;
+    case 'scripts':
+      scriptsList = m.scripts || scriptsList;
+      if (!$('#mp').hidden) renderMpScripts();
+      break;
+    case 'rooms':
+      renderRooms(m.rooms || []);
       break;
     case 'joined':
-      myId = m.id;
+      myId = m.id; try { window.scrollTo(0, 0); } catch (e) {}
       saveSession({ code: m.code, token: m.token });
       break;
     case 'rejoin-failed':
@@ -4861,11 +5190,13 @@ function phaseInfo(phase) {
 function showHome() {
   S = null; prevIds = null; prevCode = null; lastPhase = null; lastSpeaker = null;
   delete document.body.dataset.tone;
-  try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
-  if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#createBtn'), 6, { min: 5, max: 7 }); }
-  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80 });
-  $('#home').hidden = false;
+  try { SFX.music('menu', 'menu'); SFX.tension(false); SFX.amb('snow'); } catch (e) {}
+  FX.ambient('snow');
+  if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#mpBtn'), 6, { min: 5, max: 7 }); }
+  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80, global: true });
+  $('#home').hidden = false; $('#mp').hidden = true; $('#auth').hidden = true;
   $('#room').hidden = true;
+  renderAcct();
 }
 function me() { return S && S.players.find((p) => p.id === myId); }
 function isHost() { return S && S.hostId === myId; }
@@ -4876,6 +5207,7 @@ function fmt(sec) {
 function playerName(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : '?'; }
 
 // ================= 状态变化 =================
+const ambOf = (tone) => (tone === 'sepia' ? 'fire' : tone === 'green' ? 'rain' : 'snow');
 function stateSounds() {
   try {
     const ids = S.players.map((p) => p.id + ':' + (p.connected ? 1 : 0));
@@ -4886,6 +5218,7 @@ function stateSounds() {
     }
     prevIds = ids; prevCode = S.code;
     const tone = S.script.tone;
+    try { SFX.amb(ambOf(tone)); FX.ambient(ambOf(tone)); } catch (e) {}
     if (S.phase === 'lobby') SFX.music('menu', 'lobby:' + S.scriptId, tone);
     else SFX.music('case', S.scriptId || S.script.id || 'game', tone);
     const last = (S.script.rounds || 3);
@@ -4896,7 +5229,7 @@ function stateSounds() {
 }
 function onState() {
   document.body.dataset.tone = S.script.tone || 'none';
-  $('#home').hidden = true;
+  $('#home').hidden = true; $('#mp').hidden = true; $('#auth').hidden = true;
   $('#room').hidden = false;
   stateSounds();
   if (S.phase !== lastPhase) {
@@ -4956,15 +5289,19 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
+    const auto = !!S.requireAuth, cap = S.cap || S.script.maxPlayers;
+    const capRow = isHost() && auto ? `<div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="lobCapMinus" ${cap <= Math.max(S.script.minPlayers, n) ? 'disabled' : ''}>−</button><b>${cap}</b><button class="btn small" id="lobCapPlus" ${cap >= S.script.maxPlayers ? 'disabled' : ''}>+</button></div></div>` : '';
+    const autoTx = !auto ? '' : S.autoAt ? `<p class="auto-cd">人齐了！<b id="autoCd"></b> 秒后自动开始…</p>`
+      : `<p class="auto-cd">凑满 <b>${cap}</b> 人（还差 ${Math.max(0, cap - n)} 人）会自动开始游戏。${isHost() ? '人没满之前，你可以换剧本或调整人数。' : '等待人齐。'}</p>`;
     body = `<div class="codebox"><div class="crow"><span>房间码：</span><b>${esc(S.code)}</b></div>
         <div class="actions"><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">分享给朋友</button></div>
         <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
-      ${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
-      <p>试玩版已替你加了机器人。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>
-      <div class="actions">${isHost() ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>
+      ${scriptPicker()}${capRow}<h3>等待玩家（${n}/${auto ? cap : S.script.maxPlayers}）</h3>${autoTx}
+      ${auto ? '' : `<p>试玩版已替你加了机器人。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>`}
+      <div class="actions">${isHost() && S.manualStart ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>` : ''}${isHost() && S.botsAllowed ? `
         <button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>
         ${S.players.some((p) => p.bot) ? '<button class="btn ghost" id="rmBotBtn">移除机器人</button>' : ''}` : ''}</div>
-      ${isHost() ? '<p style="margin:10px 0 0;font-size:13px">机器人只会自动读完、搜证、投票，用来一个人测试流程。</p>' : ''}`;
+      ${isHost() && S.botsAllowed ? '<p style="margin:10px 0 0;font-size:13px">机器人只会自动读完、搜证、投票，仅用于内部测试流程。</p>' : ''}`;
   } else if (S.phase === 'reveal') {
     body = revealCard();
   } else {
@@ -5004,11 +5341,13 @@ function renderPhaseCard() {
     try { await navigator.clipboard.writeText(text); toast('邀请文字已复制，粘贴给朋友即可'); } catch (e) { toast(text); }
   });
   on('#addBotBtn', 'click', () => send({ type: 'addbot' }));
+  on('#lobCapMinus', 'click', () => send({ type: 'setcap', cap: (S.cap || 4) - 1 }));
+  on('#lobCapPlus', 'click', () => send({ type: 'setcap', cap: (S.cap || 4) + 1 }));
   on('#rmBotBtn', 'click', () => send({ type: 'removebot' }));
   on('#readyBtn', 'click', () => { snd('clue'); send({ type: 'ready' }); });
   on('#doneBtn', 'click', () => send({ type: 'speakdone' }));
   on('#skipBtn', 'click', () => send({ type: 'next' }));
-  el.querySelectorAll('[data-loc]').forEach((b) => b.addEventListener('click', () => { snd('pick'); pendingLoc = b.dataset.loc; send({ type: 'search', loc: b.dataset.loc }); }));
+  el.querySelectorAll('[data-loc]').forEach((b) => b.addEventListener('click', () => { snd('pick'); snd('creak'); pendingLoc = b.dataset.loc; send({ type: 'search', loc: b.dataset.loc }); }));
   el.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', () => { snd('vote'); send({ type: 'vote', target: b.dataset.vote }); }));
   const rs = el.querySelector('#restartBtn');
   if (rs) rs.addEventListener('click', () => { snd('whoosh'); send({ type: 'restart' }); });
@@ -5046,7 +5385,7 @@ function renderTabs() {
   if (!setHTML(el, html)) return;
   if (tab === 'role') {
     const open = el.querySelector('[data-open]');
-    if (open) open.addEventListener('click', () => { roleOpened = true; renderTabs(); });
+    if (open) open.addEventListener('click', () => { roleOpened = true; snd('envelope'); renderTabs(); });
     FX.tilt(el.querySelector('.frame'));
     FX.sparkle(el.querySelector('.frame'), 6);
     FX.sparkle(el.querySelector('.role-hero'), 10);
@@ -5143,6 +5482,7 @@ function onPhaseEnter(phase, prev) {
 
 function showSplash(phase) {
   snd('splash');
+  if (isSearchPhase(phase)) setTimeout(() => snd('footsteps'), 400); else if (/^discuss/.test(phase)) setTimeout(() => snd('match'), 500); else if (phase === 'vote') setTimeout(() => snd('knock'), 400);
   const i = phaseOrder().indexOf(phase) + 1;
   const el = document.createElement('div');
   el.className = 'splash';
@@ -5199,7 +5539,7 @@ function showSearch(locName, clue) {
   pendingLoc = null;
   const el = mountOverlay('searchov', `<div class="bgscene">${ART.scene(loc.scene || loc.id)}</div><div class="shade" style="opacity:.55"></div>
     <div class="darkmask"></div><div class="lens"></div><div class="locname">${esc(loc.name)}</div><div class="result"><div></div></div>`);
-  setModal(el); snd('search');
+  setModal(el); snd('search'); setTimeout(() => snd('rustle'), 500);
   const W = () => el.clientWidth, H = () => el.clientHeight;
   const path = [[.2, .7], [.78, .35], [.35, .45], [.62, .68], [.5, .5]];
   const T = 2300, t0 = performance.now();
@@ -5214,7 +5554,7 @@ function showSearch(locName, clue) {
     res.innerHTML = clue
       ? `<div class="clue-reveal"><span class="new">新线索</span><h3>${esc(clue.title)}</h3><p>${esc(clue.text)}</p><button class="btn primary">收入线索</button></div>`
       : `<div class="clue-reveal empty"><h3 style="color:var(--text)">什么也没有</h3><p>你翻遍了这里，没有新的发现。</p><button class="btn primary">继续</button></div>`;
-    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('clue'); } else snd('nothing');
+    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('paper'); snd('clue'); } else snd('nothing');
     res.querySelector('.btn').addEventListener('click', () => closeModal(el, () => { if (clue) { tab = 'clues'; if (S) renderTabs(); } }));
   };
   const tick = (now) => {
@@ -5296,7 +5636,11 @@ function updateTimer() {
   const sec = Math.ceil(left);
   if (left > 0 && sec <= 10 && sec !== lastWarn && !$('#room').hidden) { lastWarn = sec; snd('warn'); } else if (sec > 10) lastWarn = -1;
 }
-setInterval(() => { if (S) updateTimer(); }, 500);
+setInterval(() => {
+  if (S) updateTimer();
+  const cd = document.getElementById('autoCd');
+  if (cd && S && S.autoAt) { const left = Math.max(0, Math.ceil((S.autoAt - (Date.now() + clockOffset)) / 1000)); if (cd.textContent !== String(left)) { cd.textContent = left; if (left > 0) snd('tab'); } }
+}, 500);
 
 // ================= 语音（WebRTC 网状） =================
 const voice = { stream: null, on: false, muted: false, pcs: new Map(), pending: new Map(), analysers: new Map() };
@@ -5466,22 +5810,162 @@ function renderVoiceBar() {
   $('#voiceOffBtn').addEventListener('click', voiceOff);
 }
 
-// ================= 页面事件 =================
-if (window.DET && DET.available()) { $('#detBtn').hidden = false; $('#detBtn').addEventListener('click', () => DET.open()); }
-$('#createBtn').addEventListener('click', () => {
-  const name = $('#nameInput').value.trim();
-  if (!name) return toast('先输入昵称');
-  if (!connected()) return toast('还没连上联机服务器，请稍等几秒再点（免费服务器睡醒要约 30–60 秒）');
-  send({ type: 'create', name });
-});
-$('#joinBtn').addEventListener('click', () => {
-  const name = $('#nameInput').value.trim();
-  const code = $('#codeInput').value.trim().toUpperCase();
-  if (!name) return toast('先输入昵称');
-  if (code.length !== 4) return toast('房间码是 4 个字母');
-  if (!connected()) return toast('还没连上联机服务器，请稍等几秒再点（免费服务器睡醒要约 30–60 秒）');
+// ================= 开屏 / 账号 / 多人大厅 =================
+let account = null, guest = false, needAuth = false, gotHello = false, authedWs = false, scriptsList = [], splashDone = false;
+try { account = JSON.parse(localStorage.getItem('jbs_acct') || 'null'); } catch (e) {}
+function saveAcct() { try { localStorage.setItem('jbs_acct', JSON.stringify(account)); } catch (e) {} }
+function clearAcct() { account = null; try { localStorage.removeItem('jbs_acct'); } catch (e) {} renderAcct(); }
+const API = SERVER;
+async function apiPost(path, body) {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 75000);
+  try {
+    const r = await fetch(API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || '服务器出错了');
+    return j;
+  } finally { clearTimeout(t); }
+}
+function startSplash() {
+  const sp = $('#splash');
+  const done = () => { if (splashDone) return; splashDone = true; sp.classList.add('out'); setTimeout(() => sp.remove(), 500); route(true); };
+  sp.addEventListener('click', () => { snd('click'); done(); });
+  setTimeout(() => snd('logo'), 250);
+  setTimeout(done, 2400);
+}
+function visibleScreen() { return ['#home', '#mp', '#auth', '#room', '#det'].find((s) => !$(s).hidden); }
+function route(first) {
+  const v = visibleScreen();
+  if (first) {
+    if (session()) return; // 正在重连房间，等 state；超时后由兜底定时器显示首页
+    if (account || guest) return showHome();
+    if (gotHello) return needAuth ? showAuth() : showHome();
+    if (SERVER) return showAuth(); // 服务器还在睡，先让用户填登录信息
+    return; // 等 hello
+  }
+  if (!v) { if (session()) return; return (needAuth && !account && !guest) ? showAuth() : showHome(); }
+  if (v === '#auth' && (!needAuth || account)) showHome();
+}
+function afterHello() { if (splashDone) route(false); }
+function showAuth() {
+  S = null; FX.ambient('snow'); try { SFX.music('menu', 'menu'); } catch (e) {}
+  ['#home', '#mp', '#room'].forEach((s) => ($(s).hidden = true));
+  $('#auth').hidden = false;
+  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 60, global: true });
+}
+function renderAcct() {
+  const a = $('#acct'); if (!a) return;
+  a.hidden = !account;
+  if (account) { $('#acctNm').textContent = account.nick; $('#acctAv').textContent = account.nick.slice(0, 1); }
+}
+let authMode = 'login';
+function setAuthMode(m) {
+  authMode = m;
+  document.querySelectorAll('#authSeg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+  $('#auNickRow').hidden = m !== 'register';
+  $('#auGo').textContent = m === 'login' ? '登录' : '注册并进入';
+  $('#auPw').autocomplete = m === 'login' ? 'current-password' : 'new-password';
+  $('#auMsg').textContent = '';
+}
+async function submitAuth(e) {
+  e.preventDefault();
+  const email = $('#auEmail').value.trim(), password = $('#auPw').value, nick = $('#auNick').value.trim();
+  const msg = $('#auMsg'), go = $('#auGo');
+  if (!email || !password) { msg.textContent = '请填写邮箱和密码'; return; }
+  if (authMode === 'register' && !nick) { msg.textContent = '请起一个昵称'; return; }
+  go.disabled = true; msg.textContent = connected() ? '请稍候…' : '正在叫醒服务器（免费服务器要 30–60 秒），请稍候…';
+  try {
+    const j = await apiPost(authMode === 'login' ? '/api/login' : '/api/register', { email, password, nick });
+    account = { token: j.token, nick: j.nick, email: j.email, tester: !!j.tester }; saveAcct();
+    snd('win'); guest = false;
+    if (connected()) send({ type: 'auth', token: account.token });
+    msg.textContent = ''; showHome();
+  } catch (err) {
+    msg.textContent = err.name === 'AbortError' ? '服务器没有响应，稍后再试' : (err.message === 'Failed to fetch' ? '连不上服务器，请检查网络后重试' : err.message);
+    snd('lose');
+  } finally { go.disabled = false; }
+}
+function initAccountUI() {
+  $('#authForm').addEventListener('submit', submitAuth);
+  $('#authSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setAuthMode(b.dataset.m); });
+  $('#auGuest').addEventListener('click', () => { guest = true; showHome(); });
+  $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
+  $('#mpBtn').addEventListener('click', () => {
+    if (needAuth && !account) { toast('多人游戏需要先登录'); return showAuth(); }
+    showMp();
+  });
+  $('#mpBack').addEventListener('click', () => { snd('click'); goBack(); });
+  $('#mpSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setMpTab(b.dataset.m); });
+  $('#roomsRefresh').addEventListener('click', pollRooms);
+  $('#capMinus').addEventListener('click', () => { mpCap--; renderMpScripts(); });
+  $('#capPlus').addEventListener('click', () => { mpCap++; renderMpScripts(); });
+  $('#codeInput').addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); });
+  $('#joinBtn').addEventListener('click', () => {
+    const code = $('#codeInput').value.trim().toUpperCase();
+    if (code.length !== 4) return toast('房间码是 4 个字母');
+    joinRoom(code);
+  });
+  $('#createBtn').addEventListener('click', () => {
+    const name = mpName(); if (!name) return toast('先输入昵称');
+    if (!connected()) return toast(NOT_CONN);
+    send({ type: 'create', name, script: mpScript, cap: mpCap });
+  });
+  $('#roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-code]'); if (b) joinRoom(b.dataset.code); });
+  $('#mpScripts').addEventListener('click', (e) => { const b = e.target.closest('[data-script]'); if (b) { mpScript = b.dataset.script; renderMpScripts(); } });
+  try { $('#nameInput').value = localStorage.getItem('jbs_name') || ''; } catch (e) {}
+  renderAcct();
+}
+const NOT_CONN = '还没连上联机服务器，请稍等几秒再点（免费服务器睡醒要约 30–60 秒）';
+const mpName = () => {
+  if (account && needAuth) return account.nick;
+  const n = $('#nameInput').value.trim(); try { localStorage.setItem('jbs_name', n); } catch (e) {}
+  return n;
+};
+function joinRoom(code) {
+  const name = mpName(); if (!name) return toast('先输入昵称');
+  if (!connected()) return toast(NOT_CONN);
   send({ type: 'join', code, name });
-});
+}
+let mpTab = 'create', mpScript = null, mpCap = 4, roomPoll = null;
+function showMp() {
+  ['#home', '#auth', '#room'].forEach((s) => ($(s).hidden = true));
+  $('#mp').hidden = false;
+  $('#mpNameRow').hidden = !!(account && needAuth);
+  setMpTab(mpTab);
+}
+function setMpTab(m) {
+  mpTab = m;
+  document.querySelectorAll('#mpSeg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+  $('#mpJoin').hidden = m !== 'join'; $('#mpCreate').hidden = m !== 'create';
+  if (m === 'create') { renderMpScripts(); stopRoomPoll(); } else { renderRooms(null); pollRooms(); startRoomPoll(); }
+}
+function pollRooms() { if (connected()) send({ type: 'listrooms' }); }
+function startRoomPoll() { stopRoomPoll(); roomPoll = setInterval(() => { if ($('#mp').hidden || mpTab !== 'join') return stopRoomPoll(); pollRooms(); }, 3000); }
+function stopRoomPoll() { clearInterval(roomPoll); roomPoll = null; }
+function renderRooms(list) {
+  const el = $('#roomList');
+  if (list === null) { setHTML(el, `<p class="empty">${connected() ? '正在查找房间…' : '正在连接服务器…'}</p>`); return; }
+  setHTML(el, list.length ? list.map((r) => `<button class="room-row" data-code="${esc(r.code)}"><span class="rr-img">${ART.scene(r.cover)}</span>
+    <span class="rr-tx"><b>${esc(r.title)}</b><small>房主：${esc(r.host)} · 房间码 ${esc(r.code)}</small></span><span class="rr-n"><b>${r.n}/${r.cap}</b>加入</span></button>`).join('')
+    : '<p class="empty">暂时没有在等人的房间。<br>去“创建房间”开一个吧！</p>');
+}
+function renderMpScripts() {
+  const list = scriptsList;
+  if (!list.length) { setHTML($('#mpScripts'), '<p class="empty">正在连接服务器获取剧本…</p>'); return; }
+  if (!list.some((x) => x.id === mpScript)) mpScript = list[0].id;
+  const sc = list.find((x) => x.id === mpScript);
+  mpCap = Math.max(sc.minPlayers, Math.min(sc.maxPlayers, mpCap));
+  const dots = (n) => '●'.repeat(n) + '○'.repeat(5 - n);
+  setHTML($('#mpScripts'), list.map((s) => `<button class="sc-card ${s.id === mpScript ? 'sel' : ''}" data-tone="${s.tone}" data-script="${s.id}"><div class="sc-img">${ART.scene(s.cover)}</div>
+    <div class="sc-tx"><b>${esc(s.title)}</b><span class="sc-tag">${esc(s.tagline)}</span><span class="sc-meta"><em>难度 ${dots(s.difficulty)}</em> · ${s.minPlayers}–${s.maxPlayers} 人 · ${esc(s.duration)}</span></div>${s.id === mpScript ? '<i class="sc-check">已选</i>' : ''}</button>`).join(''));
+  $('#capNum').textContent = mpCap;
+  $('#capMinus').disabled = mpCap <= sc.minPlayers; $('#capPlus').disabled = mpCap >= sc.maxPlayers;
+}
+
+// ================= 页面事件 =================
+if (window.DET && DET.available()) { $('#detBtn').hidden = false; $('#detBtn').addEventListener('click', () => { FX.ambient('fire'); try { SFX.amb('fire'); } catch (e) {} DET.open(); }); }
+$('#qualBtn').addEventListener('click', () => { const n = { auto: 'high', high: 'low', low: 'auto' }[FX.quality()]; FX.setQuality(n); $('#qualBtn').textContent = '画质：' + FX.qname(); toast(n === 'low' ? '省电画质：减少动画，更流畅' : n === 'high' ? '高画质：全部特效' : '自动画质：卡顿时会自动降低特效'); });
+$('#qualBtn').textContent = '画质：' + FX.qname();
+initAccountUI();
 $('#codeInput').addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); });
 $('#tabs').addEventListener('click', (e) => {
   const b = e.target.closest('button');
@@ -5543,6 +6027,7 @@ function goBack() {
     closeModal(modal); return true;
   }
   if (!$('#det').hidden) return !!(window.DET && DET.back && DET.back());
+  if (!$('#mp').hidden) { stopRoomPoll(); showHome(); return true; }
   if (!$('#room').hidden) { askLeave(); return true; }
   return false;
 }
@@ -5552,7 +6037,8 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') goBack(); 
 
 
 // 先把首页显示出来（单人侦探不需要服务器）；联机服务器在后台连接，连上之前提示“正在连接”
-if (!session()) showHome(); else setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden) showHome(); }, 2500);
+startSplash();
+if (session()) setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden && splashDone) showHome(); }, 3500);
 try { $('#ver').textContent = window.__BUILD ? '版本 ' + window.__BUILD : ''; } catch (e) {}
 wakeServer();
 connect();

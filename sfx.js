@@ -72,6 +72,31 @@ const SFX = (() => {
 
   // ---------- 音效 ----------
   const fx = {
+    // ---------- 场景音效 ----------
+    // 公司 logo：柔和的上行音 + 闪光
+    logo: (t) => { [392, 587, 784, 1175].forEach((f, i) => { tone(f, t + i * 0.12, 1.6, { gain: 0.1 }); tone(f * 2, t + i * 0.12, 0.8, { gain: 0.03 }); }); tone(98, t, 2.2, { gain: 0.16, attack: 0.3 }); noise(t + 0.3, 0.9, { f: 2000, to: 7000, gain: 0.04, attack: 0.5, type: 'highpass' }); },
+    // 拆开信封：撕开封蜡的脆响 + 纸张摩擦 + 抽出信纸
+    envelope: (t) => {
+      noise(t, 0.07, { f: 3200, q: 2, gain: 0.3 }); tone(2400, t, 0.04, { type: 'square', gain: 0.03, lp: 3000 });
+      noise(t + 0.08, 0.35, { f: 1800, to: 4200, q: 0.7, gain: 0.12, attack: 0.05 });
+      noise(t + 0.45, 0.5, { f: 900, to: 2600, q: 0.6, gain: 0.1, attack: 0.15 });
+      tone(660, t + 0.95, 1.1, { gain: 0.05 }); tone(990, t + 1.0, 1.1, { gain: 0.04 });
+    },
+    // 翻纸 / 收起线索
+    paper: (t) => { noise(t, 0.22, { f: 2600, to: 1200, q: 0.6, gain: 0.12, attack: 0.03 }); noise(t + 0.12, 0.2, { f: 3400, to: 1600, q: 0.6, gain: 0.08, attack: 0.03 }); },
+    rustle: (t) => { for (let i = 0; i < 6; i++) noise(t + i * 0.09 + Math.random() * 0.04, 0.08, { f: 2200 + Math.random() * 2400, q: 0.9, gain: 0.06 + Math.random() * 0.04 }); },
+    // 门轴吱呀
+    creak: (t) => { tone(180, t, 0.9, { type: 'sawtooth', to: 340, gain: 0.05, lp: 900, attack: 0.2 }); tone(190, t + 0.1, 0.8, { type: 'sawtooth', to: 280, gain: 0.04, lp: 700, attack: 0.2 }); noise(t, 0.8, { f: 700, to: 1500, q: 3, gain: 0.04, attack: 0.3 }); },
+    knock: (t) => { [0, 0.19, 0.38].forEach((d) => { tone(150, t + d, 0.12, { to: 70, gain: 0.5 }); noise(t + d, 0.05, { f: 500, gain: 0.25 }); }); },
+    footsteps: (t) => { for (let i = 0; i < 5; i++) { const tt = t + i * 0.34; tone(95 - (i % 2) * 12, tt, 0.14, { to: 55, gain: 0.22 }); noise(tt, 0.06, { f: 400, gain: 0.1 }); } },
+    // 划火柴
+    match: (t) => { noise(t, 0.28, { f: 4200, to: 1500, q: 0.7, gain: 0.16, attack: 0.02 }); noise(t + 0.27, 0.9, { f: 2800, to: 600, q: 0.5, gain: 0.1, attack: 0.05 }); tone(900, t + 0.27, 0.1, { type: 'square', gain: 0.02, lp: 2000 }); },
+    clink: (t) => { [2093, 3136, 4186].forEach((f, i) => tone(f * (1 + i * 0.003), t + i * 0.01, 0.9 - i * 0.2, { gain: 0.07 })); },
+    keys: (t) => { for (let i = 0; i < 7; i++) tone(2600 + Math.random() * 2400, t + i * 0.045 + Math.random() * 0.02, 0.18, { gain: 0.045 }); },
+    // 灯 / 煤油灯点亮
+    lamp: (t) => { noise(t, 0.2, { f: 3000, to: 800, gain: 0.1 }); tone(180, t + 0.15, 0.5, { type: 'triangle', gain: 0.05, attack: 0.15 }); },
+    // 门铃 / 房间满员提示
+    bell: (t) => { [880, 1320, 1760].forEach((f, i) => tone(f, t + i * 0.01, 1.8, { gain: 0.1 / (i + 1) })); },
     click: (t) => tone(1100, t, 0.05, { type: 'triangle', gain: 0.08 }),
     tab: (t) => { noise(t, 0.12, { f: 2200, to: 800, gain: 0.07 }); tone(520, t, 0.08, { type: 'triangle', gain: 0.05 }); },
     ask: (t) => { tone(260, t, 0.16, { to: 130, gain: 0.18 }); tone(780, t + 0.02, 0.1, { type: 'triangle', gain: 0.05 }); },
@@ -190,8 +215,39 @@ const SFX = (() => {
     bar = seed % 4; tense = false;
     ensure(); start();
   };
+
+  // ---------- 环境声（风 / 火 / 雨）：循环噪声 + 随机爆裂，音量很低 ----------
+  let amb = null, ambKind = null;
+  function ambStop() {
+    if (!amb) return; const a = amb; amb = null; ambKind = null;
+    try { a.g.gain.setTargetAtTime(0, ac.currentTime, 0.4); setTimeout(() => { try { a.src.stop(); } catch (e) {} }, 1500); } catch (e) {}
+    clearInterval(a.iv);
+  }
+  api.amb = (kind) => {
+    kind = kind || null;
+    if (kind === ambKind) return;
+    ambStop(); ambKind = kind;
+    if (!kind || !ensure()) return;
+    try {
+      const src = ac.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = ac.createBiquadFilter(); f.type = 'lowpass';
+      const g = ac.createGain(); g.gain.value = 0;
+      f.frequency.value = kind === 'rain' ? 5200 : kind === 'fire' ? 260 : 520;
+      src.connect(f); f.connect(g); g.connect(musicBus); src.start();
+      const base = kind === 'rain' ? 0.1 : kind === 'fire' ? 0.05 : 0.07;
+      g.gain.setTargetAtTime(base, ac.currentTime, 1.2);
+      amb = { src, g, iv: 0 };
+      amb.iv = setInterval(() => {
+        if (!ac || muted || document.hidden || ac.state !== 'running') return;
+        const t = ac.currentTime + 0.02;
+        if (kind === 'fire' && Math.random() < 0.7) noise(t, 0.03 + Math.random() * 0.05, { f: 1800 + Math.random() * 3000, q: 1, gain: 0.05 + Math.random() * 0.06, bus: musicBus });
+        if (kind === 'snow') { f.frequency.setTargetAtTime(380 + Math.random() * 420, t, 1.5); g.gain.setTargetAtTime(0.04 + Math.random() * 0.06, t, 1.5); }
+        if (kind === 'rain') g.gain.setTargetAtTime(0.08 + Math.random() * 0.04, t, 0.8);
+      }, kind === 'fire' ? 160 : 1800);
+    } catch (e) { amb = null; ambKind = null; }
+  };
   api.tension = (on) => { tense = !!on; };
-  api.stop = () => { mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
+  api.stop = () => { ambStop(); mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
   return api;
 })();
 if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener('DOMContentLoaded', () => SFX.sync()); setTimeout(() => SFX.sync(), 0); }

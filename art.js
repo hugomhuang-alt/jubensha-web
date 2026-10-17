@@ -223,7 +223,7 @@ const ART = (() => {
     `<g class="${o.cls || ''}"><rect x="${x - 3}" y="${y - 3}" width="${w + 6}" height="${h + 6}" rx="3" fill="#ffc861" opacity=".16"/>
       <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="${o.fill || '#ffd27a'}"/>
       <path d="M${x + w / 2} ${y}v${h}M${x} ${y + h / 2}h${w}" stroke="#3a2412" stroke-width=".9"/></g>`;
-  const vignette = (u) => `<defs><radialGradient id="vn${u}" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></radialGradient></defs><rect width="400" height="240" fill="url(#vn${u})"/>`;
+  const vignette = (u) => `<defs><radialGradient id="vn${u}" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></radialGradient></defs><rect width="400" height="240" fill="url(#vn${u})"/><radialGradient id="bl${u}" cx=".5" cy=".38" r=".6"><stop offset="0" stop-color="#ffe9c0" stop-opacity=".16"/><stop offset="1" stop-color="#ffe9c0" stop-opacity="0"/></radialGradient><rect width="400" height="240" fill="url(#bl${u})"/>`;
 
   const SCENES = {
     cover(u) {

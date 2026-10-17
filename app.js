@@ -96,6 +96,8 @@ function connect() {
   ws.onopen = () => {
     everConnected = true; tries = 0; updateNet();
     $('#banner').hidden = true;
+    authedWs = false;
+    if (account) send({ type: 'auth', token: account.token });
     const s = session();
     if (s) send({ type: 'rejoin', code: s.code, token: s.token });
   };
@@ -115,10 +117,28 @@ function onMsg(m) {
       $('#homeTitle').textContent = m.meta.title;
       $('#homeSub').textContent = m.meta.subtitle;
       $('#homeFine').textContent = `${(m.meta.scripts || []).length} 个剧本 · 4–8 人 · 需要麦克风（可选）`;
-      if (!session() && $('#home').hidden && $('#room').hidden && $('#det').hidden) showHome();
+      scriptsList = m.meta.scripts || [];
+      needAuth = m.auth === true;
+      gotHello = true;
+      afterHello();
+      break;
+    case 'auth-ok':
+      authedWs = true;
+      if (account) { account.tester = !!m.tester; saveAcct(); }
+      break;
+    case 'auth-failed':
+      authedWs = false;
+      if (needAuth) { clearAcct(); toast('登录已过期，请重新登录'); if (S) doLeave(); showAuth(); }
+      break;
+    case 'scripts':
+      scriptsList = m.scripts || scriptsList;
+      if (!$('#mp').hidden) renderMpScripts();
+      break;
+    case 'rooms':
+      renderRooms(m.rooms || []);
       break;
     case 'joined':
-      myId = m.id;
+      myId = m.id; try { window.scrollTo(0, 0); } catch (e) {}
       saveSession({ code: m.code, token: m.token });
       break;
     case 'rejoin-failed':
@@ -181,11 +201,13 @@ function phaseInfo(phase) {
 function showHome() {
   S = null; prevIds = null; prevCode = null; lastPhase = null; lastSpeaker = null;
   delete document.body.dataset.tone;
-  try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
-  if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#createBtn'), 6, { min: 5, max: 7 }); }
-  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80 });
-  $('#home').hidden = false;
+  try { SFX.music('menu', 'menu'); SFX.tension(false); SFX.amb('snow'); } catch (e) {}
+  FX.ambient('snow');
+  if (!heroDone) { heroDone = true; $('#hero').insertAdjacentHTML('afterbegin', ART.scene('cover')); FX.sparkle($('#hero'), 16, { min: 7, max: 12 }); FX.sparkle($('#mpBtn'), 6, { min: 5, max: 7 }); }
+  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80, global: true });
+  $('#home').hidden = false; $('#mp').hidden = true; $('#auth').hidden = true;
   $('#room').hidden = true;
+  renderAcct();
 }
 function me() { return S && S.players.find((p) => p.id === myId); }
 function isHost() { return S && S.hostId === myId; }
@@ -196,6 +218,7 @@ function fmt(sec) {
 function playerName(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : '?'; }
 
 // ================= 状态变化 =================
+const ambOf = (tone) => (tone === 'sepia' ? 'fire' : tone === 'green' ? 'rain' : 'snow');
 function stateSounds() {
   try {
     const ids = S.players.map((p) => p.id + ':' + (p.connected ? 1 : 0));
@@ -206,6 +229,7 @@ function stateSounds() {
     }
     prevIds = ids; prevCode = S.code;
     const tone = S.script.tone;
+    try { SFX.amb(ambOf(tone)); FX.ambient(ambOf(tone)); } catch (e) {}
     if (S.phase === 'lobby') SFX.music('menu', 'lobby:' + S.scriptId, tone);
     else SFX.music('case', S.scriptId || S.script.id || 'game', tone);
     const last = (S.script.rounds || 3);
@@ -216,7 +240,7 @@ function stateSounds() {
 }
 function onState() {
   document.body.dataset.tone = S.script.tone || 'none';
-  $('#home').hidden = true;
+  $('#home').hidden = true; $('#mp').hidden = true; $('#auth').hidden = true;
   $('#room').hidden = false;
   stateSounds();
   if (S.phase !== lastPhase) {
@@ -276,15 +300,19 @@ function renderPhaseCard() {
   if (S.phase === 'lobby') {
     const n = S.players.length;
     const ok = n >= S.script.minPlayers && n <= S.script.maxPlayers;
+    const auto = !!S.requireAuth, cap = S.cap || S.script.maxPlayers;
+    const capRow = isHost() && auto ? `<div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="lobCapMinus" ${cap <= Math.max(S.script.minPlayers, n) ? 'disabled' : ''}>−</button><b>${cap}</b><button class="btn small" id="lobCapPlus" ${cap >= S.script.maxPlayers ? 'disabled' : ''}>+</button></div></div>` : '';
+    const autoTx = !auto ? '' : S.autoAt ? `<p class="auto-cd">人齐了！<b id="autoCd"></b> 秒后自动开始…</p>`
+      : `<p class="auto-cd">凑满 <b>${cap}</b> 人（还差 ${Math.max(0, cap - n)} 人）会自动开始游戏。${isHost() ? '人没满之前，你可以换剧本或调整人数。' : '等待人齐。'}</p>`;
     body = `<div class="codebox"><div class="crow"><span>房间码：</span><b>${esc(S.code)}</b></div>
         <div class="actions"><button class="btn small" id="copyCode">复制</button><button class="btn small" id="shareCode">分享给朋友</button></div>
         <p>朋友打开 App → 输入昵称和这 4 个字母 → 点“加入”。</p></div>
-      ${scriptPicker()}<h3>等待玩家（${n}/${S.script.maxPlayers}）</h3>
-      <p>把房间码 <b>${esc(S.code)}</b> 发给朋友。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>
-      <div class="actions">${isHost() ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>
+      ${scriptPicker()}${capRow}<h3>等待玩家（${n}/${auto ? cap : S.script.maxPlayers}）</h3>${autoTx}
+      ${auto ? '' : `<p>把房间码 <b>${esc(S.code)}</b> 发给朋友。需要 ${S.script.minPlayers}–${S.script.maxPlayers} 人。${isHost() ? (ok ? '人齐了就可以开始。' : '人数还不够。') : '等待房主开始。'}</p>`}
+      <div class="actions">${isHost() && S.manualStart ? `<button class="btn primary ${ok ? 'cta' : ''}" style="width:auto" id="startBtn" ${ok ? '' : 'disabled'}>开始游戏</button>` : ''}${isHost() && S.botsAllowed ? `
         <button class="btn" id="addBotBtn" ${n >= S.script.maxPlayers ? 'disabled' : ''}>添加机器人</button>
         ${S.players.some((p) => p.bot) ? '<button class="btn ghost" id="rmBotBtn">移除机器人</button>' : ''}` : ''}</div>
-      ${isHost() ? '<p style="margin:10px 0 0;font-size:13px">机器人只会自动读完、搜证、投票，用来一个人测试流程。</p>' : ''}`;
+      ${isHost() && S.botsAllowed ? '<p style="margin:10px 0 0;font-size:13px">机器人只会自动读完、搜证、投票，仅用于内部测试流程。</p>' : ''}`;
   } else if (S.phase === 'reveal') {
     body = revealCard();
   } else {
@@ -324,11 +352,13 @@ function renderPhaseCard() {
     try { await navigator.clipboard.writeText(text); toast('邀请文字已复制，粘贴给朋友即可'); } catch (e) { toast(text); }
   });
   on('#addBotBtn', 'click', () => send({ type: 'addbot' }));
+  on('#lobCapMinus', 'click', () => send({ type: 'setcap', cap: (S.cap || 4) - 1 }));
+  on('#lobCapPlus', 'click', () => send({ type: 'setcap', cap: (S.cap || 4) + 1 }));
   on('#rmBotBtn', 'click', () => send({ type: 'removebot' }));
   on('#readyBtn', 'click', () => { snd('clue'); send({ type: 'ready' }); });
   on('#doneBtn', 'click', () => send({ type: 'speakdone' }));
   on('#skipBtn', 'click', () => send({ type: 'next' }));
-  el.querySelectorAll('[data-loc]').forEach((b) => b.addEventListener('click', () => { snd('pick'); pendingLoc = b.dataset.loc; send({ type: 'search', loc: b.dataset.loc }); }));
+  el.querySelectorAll('[data-loc]').forEach((b) => b.addEventListener('click', () => { snd('pick'); snd('creak'); pendingLoc = b.dataset.loc; send({ type: 'search', loc: b.dataset.loc }); }));
   el.querySelectorAll('[data-vote]').forEach((b) => b.addEventListener('click', () => { snd('vote'); send({ type: 'vote', target: b.dataset.vote }); }));
   const rs = el.querySelector('#restartBtn');
   if (rs) rs.addEventListener('click', () => { snd('whoosh'); send({ type: 'restart' }); });
@@ -366,7 +396,7 @@ function renderTabs() {
   if (!setHTML(el, html)) return;
   if (tab === 'role') {
     const open = el.querySelector('[data-open]');
-    if (open) open.addEventListener('click', () => { roleOpened = true; renderTabs(); });
+    if (open) open.addEventListener('click', () => { roleOpened = true; snd('envelope'); renderTabs(); });
     FX.tilt(el.querySelector('.frame'));
     FX.sparkle(el.querySelector('.frame'), 6);
     FX.sparkle(el.querySelector('.role-hero'), 10);
@@ -463,6 +493,7 @@ function onPhaseEnter(phase, prev) {
 
 function showSplash(phase) {
   snd('splash');
+  if (isSearchPhase(phase)) setTimeout(() => snd('footsteps'), 400); else if (/^discuss/.test(phase)) setTimeout(() => snd('match'), 500); else if (phase === 'vote') setTimeout(() => snd('knock'), 400);
   const i = phaseOrder().indexOf(phase) + 1;
   const el = document.createElement('div');
   el.className = 'splash';
@@ -519,7 +550,7 @@ function showSearch(locName, clue) {
   pendingLoc = null;
   const el = mountOverlay('searchov', `<div class="bgscene">${ART.scene(loc.scene || loc.id)}</div><div class="shade" style="opacity:.55"></div>
     <div class="darkmask"></div><div class="lens"></div><div class="locname">${esc(loc.name)}</div><div class="result"><div></div></div>`);
-  setModal(el); snd('search');
+  setModal(el); snd('search'); setTimeout(() => snd('rustle'), 500);
   const W = () => el.clientWidth, H = () => el.clientHeight;
   const path = [[.2, .7], [.78, .35], [.35, .45], [.62, .68], [.5, .5]];
   const T = 2300, t0 = performance.now();
@@ -534,7 +565,7 @@ function showSearch(locName, clue) {
     res.innerHTML = clue
       ? `<div class="clue-reveal"><span class="new">新线索</span><h3>${esc(clue.title)}</h3><p>${esc(clue.text)}</p><button class="btn primary">收入线索</button></div>`
       : `<div class="clue-reveal empty"><h3 style="color:var(--text)">什么也没有</h3><p>你翻遍了这里，没有新的发现。</p><button class="btn primary">继续</button></div>`;
-    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('clue'); } else snd('nothing');
+    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('paper'); snd('clue'); } else snd('nothing');
     res.querySelector('.btn').addEventListener('click', () => closeModal(el, () => { if (clue) { tab = 'clues'; if (S) renderTabs(); } }));
   };
   const tick = (now) => {
@@ -616,7 +647,11 @@ function updateTimer() {
   const sec = Math.ceil(left);
   if (left > 0 && sec <= 10 && sec !== lastWarn && !$('#room').hidden) { lastWarn = sec; snd('warn'); } else if (sec > 10) lastWarn = -1;
 }
-setInterval(() => { if (S) updateTimer(); }, 500);
+setInterval(() => {
+  if (S) updateTimer();
+  const cd = document.getElementById('autoCd');
+  if (cd && S && S.autoAt) { const left = Math.max(0, Math.ceil((S.autoAt - (Date.now() + clockOffset)) / 1000)); if (cd.textContent !== String(left)) { cd.textContent = left; if (left > 0) snd('tab'); } }
+}, 500);
 
 // ================= 语音（WebRTC 网状） =================
 const voice = { stream: null, on: false, muted: false, pcs: new Map(), pending: new Map(), analysers: new Map() };
@@ -786,22 +821,162 @@ function renderVoiceBar() {
   $('#voiceOffBtn').addEventListener('click', voiceOff);
 }
 
-// ================= 页面事件 =================
-if (window.DET && DET.available()) { $('#detBtn').hidden = false; $('#detBtn').addEventListener('click', () => DET.open()); }
-$('#createBtn').addEventListener('click', () => {
-  const name = $('#nameInput').value.trim();
-  if (!name) return toast('先输入昵称');
-  if (!connected()) return toast('还没连上联机服务器，请稍等几秒再点（免费服务器睡醒要约 30–60 秒）');
-  send({ type: 'create', name });
-});
-$('#joinBtn').addEventListener('click', () => {
-  const name = $('#nameInput').value.trim();
-  const code = $('#codeInput').value.trim().toUpperCase();
-  if (!name) return toast('先输入昵称');
-  if (code.length !== 4) return toast('房间码是 4 个字母');
-  if (!connected()) return toast('还没连上联机服务器，请稍等几秒再点（免费服务器睡醒要约 30–60 秒）');
+// ================= 开屏 / 账号 / 多人大厅 =================
+let account = null, guest = false, needAuth = false, gotHello = false, authedWs = false, scriptsList = [], splashDone = false;
+try { account = JSON.parse(localStorage.getItem('jbs_acct') || 'null'); } catch (e) {}
+function saveAcct() { try { localStorage.setItem('jbs_acct', JSON.stringify(account)); } catch (e) {} }
+function clearAcct() { account = null; try { localStorage.removeItem('jbs_acct'); } catch (e) {} renderAcct(); }
+const API = SERVER;
+async function apiPost(path, body) {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 75000);
+  try {
+    const r = await fetch(API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || '服务器出错了');
+    return j;
+  } finally { clearTimeout(t); }
+}
+function startSplash() {
+  const sp = $('#splash');
+  const done = () => { if (splashDone) return; splashDone = true; sp.classList.add('out'); setTimeout(() => sp.remove(), 500); route(true); };
+  sp.addEventListener('click', () => { snd('click'); done(); });
+  setTimeout(() => snd('logo'), 250);
+  setTimeout(done, 2400);
+}
+function visibleScreen() { return ['#home', '#mp', '#auth', '#room', '#det'].find((s) => !$(s).hidden); }
+function route(first) {
+  const v = visibleScreen();
+  if (first) {
+    if (session()) return; // 正在重连房间，等 state；超时后由兜底定时器显示首页
+    if (account || guest) return showHome();
+    if (gotHello) return needAuth ? showAuth() : showHome();
+    if (SERVER) return showAuth(); // 服务器还在睡，先让用户填登录信息
+    return; // 等 hello
+  }
+  if (!v) { if (session()) return; return (needAuth && !account && !guest) ? showAuth() : showHome(); }
+  if (v === '#auth' && (!needAuth || account)) showHome();
+}
+function afterHello() { if (splashDone) route(false); }
+function showAuth() {
+  S = null; FX.ambient('snow'); try { SFX.music('menu', 'menu'); } catch (e) {}
+  ['#home', '#mp', '#room'].forEach((s) => ($(s).hidden = true));
+  $('#auth').hidden = false;
+  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 60, global: true });
+}
+function renderAcct() {
+  const a = $('#acct'); if (!a) return;
+  a.hidden = !account;
+  if (account) { $('#acctNm').textContent = account.nick; $('#acctAv').textContent = account.nick.slice(0, 1); }
+}
+let authMode = 'login';
+function setAuthMode(m) {
+  authMode = m;
+  document.querySelectorAll('#authSeg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+  $('#auNickRow').hidden = m !== 'register';
+  $('#auGo').textContent = m === 'login' ? '登录' : '注册并进入';
+  $('#auPw').autocomplete = m === 'login' ? 'current-password' : 'new-password';
+  $('#auMsg').textContent = '';
+}
+async function submitAuth(e) {
+  e.preventDefault();
+  const email = $('#auEmail').value.trim(), password = $('#auPw').value, nick = $('#auNick').value.trim();
+  const msg = $('#auMsg'), go = $('#auGo');
+  if (!email || !password) { msg.textContent = '请填写邮箱和密码'; return; }
+  if (authMode === 'register' && !nick) { msg.textContent = '请起一个昵称'; return; }
+  go.disabled = true; msg.textContent = connected() ? '请稍候…' : '正在叫醒服务器（免费服务器要 30–60 秒），请稍候…';
+  try {
+    const j = await apiPost(authMode === 'login' ? '/api/login' : '/api/register', { email, password, nick });
+    account = { token: j.token, nick: j.nick, email: j.email, tester: !!j.tester }; saveAcct();
+    snd('win'); guest = false;
+    if (connected()) send({ type: 'auth', token: account.token });
+    msg.textContent = ''; showHome();
+  } catch (err) {
+    msg.textContent = err.name === 'AbortError' ? '服务器没有响应，稍后再试' : (err.message === 'Failed to fetch' ? '连不上服务器，请检查网络后重试' : err.message);
+    snd('lose');
+  } finally { go.disabled = false; }
+}
+function initAccountUI() {
+  $('#authForm').addEventListener('submit', submitAuth);
+  $('#authSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setAuthMode(b.dataset.m); });
+  $('#auGuest').addEventListener('click', () => { guest = true; showHome(); });
+  $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
+  $('#mpBtn').addEventListener('click', () => {
+    if (needAuth && !account) { toast('多人游戏需要先登录'); return showAuth(); }
+    showMp();
+  });
+  $('#mpBack').addEventListener('click', () => { snd('click'); goBack(); });
+  $('#mpSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setMpTab(b.dataset.m); });
+  $('#roomsRefresh').addEventListener('click', pollRooms);
+  $('#capMinus').addEventListener('click', () => { mpCap--; renderMpScripts(); });
+  $('#capPlus').addEventListener('click', () => { mpCap++; renderMpScripts(); });
+  $('#codeInput').addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); });
+  $('#joinBtn').addEventListener('click', () => {
+    const code = $('#codeInput').value.trim().toUpperCase();
+    if (code.length !== 4) return toast('房间码是 4 个字母');
+    joinRoom(code);
+  });
+  $('#createBtn').addEventListener('click', () => {
+    const name = mpName(); if (!name) return toast('先输入昵称');
+    if (!connected()) return toast(NOT_CONN);
+    send({ type: 'create', name, script: mpScript, cap: mpCap });
+  });
+  $('#roomList').addEventListener('click', (e) => { const b = e.target.closest('[data-code]'); if (b) joinRoom(b.dataset.code); });
+  $('#mpScripts').addEventListener('click', (e) => { const b = e.target.closest('[data-script]'); if (b) { mpScript = b.dataset.script; renderMpScripts(); } });
+  try { $('#nameInput').value = localStorage.getItem('jbs_name') || ''; } catch (e) {}
+  renderAcct();
+}
+const NOT_CONN = '还没连上联机服务器，请稍等几秒再点（免费服务器睡醒要约 30–60 秒）';
+const mpName = () => {
+  if (account && needAuth) return account.nick;
+  const n = $('#nameInput').value.trim(); try { localStorage.setItem('jbs_name', n); } catch (e) {}
+  return n;
+};
+function joinRoom(code) {
+  const name = mpName(); if (!name) return toast('先输入昵称');
+  if (!connected()) return toast(NOT_CONN);
   send({ type: 'join', code, name });
-});
+}
+let mpTab = 'join', mpScript = null, mpCap = 4, roomPoll = null;
+function showMp() {
+  ['#home', '#auth', '#room'].forEach((s) => ($(s).hidden = true));
+  $('#mp').hidden = false;
+  $('#mpNameRow').hidden = !!(account && needAuth);
+  setMpTab(mpTab);
+}
+function setMpTab(m) {
+  mpTab = m;
+  document.querySelectorAll('#mpSeg button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+  $('#mpJoin').hidden = m !== 'join'; $('#mpCreate').hidden = m !== 'create';
+  if (m === 'create') { renderMpScripts(); stopRoomPoll(); } else { renderRooms(null); pollRooms(); startRoomPoll(); }
+}
+function pollRooms() { if (connected()) send({ type: 'listrooms' }); }
+function startRoomPoll() { stopRoomPoll(); roomPoll = setInterval(() => { if ($('#mp').hidden || mpTab !== 'join') return stopRoomPoll(); pollRooms(); }, 3000); }
+function stopRoomPoll() { clearInterval(roomPoll); roomPoll = null; }
+function renderRooms(list) {
+  const el = $('#roomList');
+  if (list === null) { setHTML(el, `<p class="empty">${connected() ? '正在查找房间…' : '正在连接服务器…'}</p>`); return; }
+  setHTML(el, list.length ? list.map((r) => `<button class="room-row" data-code="${esc(r.code)}"><span class="rr-img">${ART.scene(r.cover)}</span>
+    <span class="rr-tx"><b>${esc(r.title)}</b><small>房主：${esc(r.host)} · 房间码 ${esc(r.code)}</small></span><span class="rr-n"><b>${r.n}/${r.cap}</b>加入</span></button>`).join('')
+    : '<p class="empty">暂时没有在等人的房间。<br>去“创建房间”开一个吧！</p>');
+}
+function renderMpScripts() {
+  const list = scriptsList;
+  if (!list.length) { setHTML($('#mpScripts'), '<p class="empty">正在连接服务器获取剧本…</p>'); return; }
+  if (!list.some((x) => x.id === mpScript)) mpScript = list[0].id;
+  const sc = list.find((x) => x.id === mpScript);
+  mpCap = Math.max(sc.minPlayers, Math.min(sc.maxPlayers, mpCap));
+  const dots = (n) => '●'.repeat(n) + '○'.repeat(5 - n);
+  setHTML($('#mpScripts'), list.map((s) => `<button class="sc-card ${s.id === mpScript ? 'sel' : ''}" data-tone="${s.tone}" data-script="${s.id}"><div class="sc-img">${ART.scene(s.cover)}</div>
+    <div class="sc-tx"><b>${esc(s.title)}</b><span class="sc-tag">${esc(s.tagline)}</span><span class="sc-meta"><em>难度 ${dots(s.difficulty)}</em> · ${s.minPlayers}–${s.maxPlayers} 人 · ${esc(s.duration)}</span></div>${s.id === mpScript ? '<i class="sc-check">已选</i>' : ''}</button>`).join(''));
+  $('#capNum').textContent = mpCap;
+  $('#capMinus').disabled = mpCap <= sc.minPlayers; $('#capPlus').disabled = mpCap >= sc.maxPlayers;
+}
+
+// ================= 页面事件 =================
+if (window.DET && DET.available()) { $('#detBtn').hidden = false; $('#detBtn').addEventListener('click', () => { FX.ambient('fire'); try { SFX.amb('fire'); } catch (e) {} DET.open(); }); }
+$('#qualBtn').addEventListener('click', () => { const n = { auto: 'high', high: 'low', low: 'auto' }[FX.quality()]; FX.setQuality(n); $('#qualBtn').textContent = '画质：' + FX.qname(); toast(n === 'low' ? '省电画质：减少动画，更流畅' : n === 'high' ? '高画质：全部特效' : '自动画质：卡顿时会自动降低特效'); });
+$('#qualBtn').textContent = '画质：' + FX.qname();
+initAccountUI();
 $('#codeInput').addEventListener('input', (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); });
 $('#tabs').addEventListener('click', (e) => {
   const b = e.target.closest('button');
@@ -863,6 +1038,7 @@ function goBack() {
     closeModal(modal); return true;
   }
   if (!$('#det').hidden) return !!(window.DET && DET.back && DET.back());
+  if (!$('#mp').hidden) { stopRoomPoll(); showHome(); return true; }
   if (!$('#room').hidden) { askLeave(); return true; }
   return false;
 }
@@ -872,7 +1048,8 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') goBack(); 
 
 
 // 先把首页显示出来（单人侦探不需要服务器）；联机服务器在后台连接，连上之前提示“正在连接”
-if (!session()) showHome(); else setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden) showHome(); }, 2500);
+startSplash();
+if (session()) setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden && splashDone) showHome(); }, 3500);
 try { $('#ver').textContent = window.__BUILD ? '版本 ' + window.__BUILD : ''; } catch (e) {}
 wakeServer();
 connect();
