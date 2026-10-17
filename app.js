@@ -228,7 +228,7 @@ function fmt(sec) {
 function playerName(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : '?'; }
 
 // ================= 状态变化 =================
-const ambOf = (tone) => (tone === 'sepia' ? 'fire' : tone === 'green' ? 'rain' : 'snow');
+const ambOf = (tone) => FX.caseAmb(S && S.scriptId) || (tone === 'sepia' ? 'fire' : tone === 'green' ? 'rain' : 'snow');
 function stateSounds() {
   try {
     const ids = S.players.map((p) => p.id + ':' + (p.connected ? 1 : 0));
@@ -239,7 +239,7 @@ function stateSounds() {
     }
     prevIds = ids; prevCode = S.code;
     const tone = S.script.tone;
-    try { SFX.amb(ambOf(tone)); FX.ambient(ambOf(tone)); } catch (e) {}
+    try { FX.ambient(ambOf(tone)); } catch (e) {}
     if (S.phase === 'lobby') SFX.music('menu', 'lobby:' + S.scriptId, tone);
     else SFX.music('case', S.scriptId || S.script.id || 'game', tone);
     const last = (S.script.rounds || 3);

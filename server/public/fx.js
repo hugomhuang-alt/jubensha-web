@@ -24,7 +24,7 @@ const FX = (() => {
     return (sprites[r] = c);
   }
   // 当前环境：fire / rain 时全局雪花暂停（由 body[data-amb] 决定）
-  const ambOff = () => { const a = document.body && document.body.dataset.amb; return a === 'fire' || a === 'rain'; };
+  const ambOff = () => { const a = document.body && document.body.dataset.amb; return !!a && a !== 'snow'; };
 
   // 飘雪画布（三层景深 + 阵风）。返回 stop()
   function snow(canvas, o = {}) {
@@ -89,20 +89,38 @@ const FX = (() => {
     return () => { dead = true; cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener('resize', onResize); document.removeEventListener('focusin', onFocusIn); document.removeEventListener('focusout', onFocusOut); };
   }
 
-  // 环境光层：火光 / 雨（纯 CSS，只动 transform 和 opacity，GPU 合成，不占主线程）
+  // 每个案件 / 剧本的专属氛围：snow 飘雪 · fire 烛火炉火 · rain 雨 · storm 暴雨+闪电 · mist 雾气 · dust 灰尘光柱 · petals 花瓣 · spot 追光 · neon 霓虹
+  const CASE_AMB = {
+    ferry: 'mist', lastdish: 'fire', library: 'dust', wedding: 'petals', antique: 'dust', blackout: 'storm', homestay: 'snow',
+    troupe: 'spot', liaoyang: 'storm', paimai: 'spot', zujie: 'neon', mirror: 'mist', twins: 'mist',
+    haishen: 'mist', xizhong: 'spot', jiye: 'snow', shoulingye: 'rain', yunqi: 'snow', test: 'snow'
+  };
+  const AMB_SND = { snow: 'snow', mist: 'snow', fire: 'fire', rain: 'rain', storm: 'rain', neon: 'rain' };
+  const caseAmb = (id) => CASE_AMB[id] || null;
+  // 环境光层：全部是纯 CSS，只动 transform 和 opacity，GPU 合成，不占主线程
   function ambient(kind) {
-    try { document.body.dataset.amb = kind || 'snow'; } catch (e) {}
+    kind = kind || 'snow';
+    try { document.body.dataset.amb = kind; } catch (e) {}
+    try { if (window.SFX) SFX.amb(AMB_SND[kind] || null); } catch (e) {}
     let el = document.getElementById('amb');
     if (!el) {
+      const n = (k, fn) => Array.from({ length: k }, (_, i) => fn(i)).join('');
       el = document.createElement('div'); el.id = 'amb';
-      el.innerHTML = '<div class="fire-glow fx-loop"></div><div class="fire-glow2 fx-loop"></div>' + Array.from({ length: 12 }, (_, i) => `<i class="ember fx-loop" style="--x:${(8 + i * 7.6 + (i % 3) * 3).toFixed(0)}%;--d:${(3.2 + (i * 0.7) % 3.4).toFixed(1)}s;--w:-${(i * 1.3) % 4}s"></i>`).join('') + '<div class="rain r1 fx-loop"></div><div class="rain r2 fx-loop"></div>';
+      el.innerHTML = '<div class="fire-glow fx-loop"></div><div class="fire-glow2 fx-loop"></div>'
+        + n(12, (i) => `<i class="ember fx-loop" style="--x:${(8 + i * 7.6 + (i % 3) * 3).toFixed(0)}%;--d:${(3.2 + (i * 0.7) % 3.4).toFixed(1)}s;--w:-${(i * 1.3) % 4}s"></i>`)
+        + '<div class="rain r1 fx-loop"></div><div class="rain r2 fx-loop"></div><div class="flash fx-loop"></div>'
+        + '<div class="mist m1 fx-loop"></div><div class="mist m2 fx-loop"></div><div class="mist m3 fx-loop"></div>'
+        + '<div class="beam b1 fx-loop"></div><div class="beam b2 fx-loop"></div>'
+        + n(14, (i) => `<i class="mote fx-loop" style="--x:${(4 + i * 7) % 96}%;--y:${(10 + i * 13) % 80}%;--d:${(7 + (i * 1.7) % 6).toFixed(1)}s;--w:-${(i * 1.9) % 7}s;--s:${(2 + (i % 3)).toFixed(0)}px"></i>`)
+        + n(10, (i) => `<i class="petal fx-loop" style="--x:${(i * 10 + 3) % 98}%;--d:${(7 + (i * 1.3) % 5).toFixed(1)}s;--w:-${(i * 2.1) % 9}s;--r:${(i * 47) % 360}deg"></i>`)
+        + '<div class="neon n1 fx-loop"></div><div class="neon n2 fx-loop"></div>';
       document.body.insertBefore(el, document.body.firstChild);
     }
   }
 
   // 点击涟漪
   document.addEventListener('pointerdown', (e) => {
-    const b = e.target.closest && e.target.closest('.btn, .loc, .vote-card, .tabs button, .seal-btn');
+    const b = e.target.closest && e.target.closest('.btn, .loc, .vote-card, .tabs button, .seal-btn, .door, .det-case, .sc-card');
     if (!b || b.disabled) return;
     const r = b.getBoundingClientRect();
     const s = document.createElement('span');
@@ -185,6 +203,6 @@ const FX = (() => {
       setTimeout(() => s.remove(), 750);
     }
   }
-  return { snow, typewriter, burst, tilt, sparkle, pop, reduce, ambient, setQuality, quality: () => quality, qname: () => QNAME[quality], isLite };
+  return { snow, typewriter, burst, tilt, sparkle, pop, reduce, ambient, caseAmb, setQuality, quality: () => quality, qname: () => QNAME[quality], isLite };
 })();
 if (typeof window !== 'undefined') window.FX = FX;

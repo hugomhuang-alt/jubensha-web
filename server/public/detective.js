@@ -130,6 +130,7 @@
     tab = G.result ? 'accuse' : 'brief'; sel = null; pickClue = false; lastClue = null; flash = null;
     clearTimers();
     document.body.dataset.tone = C.tone || 'none';
+    try { FX.ambient(FX.caseAmb(C.id) || 'dust'); } catch (e) {}
     try { SFX.music('case', C.id, C.tone); SFX.tension(false); } catch (e) {}
     window.scrollTo(0, 0);
     if (!G.result && !G.searches && !G.asks && !G.introDone) return showIntro();
@@ -367,7 +368,7 @@
     const d = t.dataset;
     if (d.case) { sfx('click'); return start(d.case); }
     if (d.act === 'home') { sfx('click'); return close(); }
-    if (d.act === 'list') { sfx('click'); clearTimers(); C = null; delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
+    if (d.act === 'list') { sfx('click'); clearTimers(); C = null; try { FX.ambient('fire'); } catch (x) {} delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
     if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
@@ -399,7 +400,7 @@
     if ($('.det-reveal')) { endReveal(); return true; }
     if (C) {
       clearTimers(); C = null; delete document.body.dataset.tone;
-      try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
+      try { FX.ambient('fire'); SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
       renderList(); window.scrollTo(0, 0); return true;
     }
     close(); return true;

@@ -921,6 +921,64 @@ main.screen[hidden] { display: none !important; }
 html.lite .seat, html.lite .table { transition: none; }
 #room[data-phase="lobby"] .phase-card { background: transparent; border: 0; box-shadow: none; padding: 4px 0 0; }
 
+/* ===== v5：每个案件的专属氛围 + 按键动效 ===== */
+body[data-amb="storm"] #amb .rain, body[data-amb="rain"] #amb .rain { display: block; }
+body[data-amb="storm"] #amb .flash { display: block; }
+body[data-amb="mist"] #amb .mist, body[data-amb="dust"] #amb .mote, body[data-amb="petals"] #amb .petal, body[data-amb="spot"] #amb .beam, body[data-amb="neon"] #amb .neon { display: block; }
+body[data-amb="neon"] #amb .rain { display: block; opacity: .35; }
+.flash { position: absolute; inset: 0; background: #dfeaff; opacity: 0; animation: lightning 7s linear infinite; will-change: opacity; }
+@keyframes lightning { 0%, 58%, 64%, 100% { opacity: 0; } 59% { opacity: .5; } 60% { opacity: .08; } 61% { opacity: .38; } 62% { opacity: 0; } 85% { opacity: 0; } 86% { opacity: .22; } 88% { opacity: 0; } }
+.mist { position: absolute; width: 140%; height: 38%; left: -20%; border-radius: 50%; background: radial-gradient(closest-side, rgba(190, 205, 230, .22), transparent); will-change: transform, opacity; animation: mistdrift 26s ease-in-out infinite alternate; }
+.mist.m1 { top: 52%; } .mist.m2 { top: 70%; animation-duration: 34s; animation-direction: alternate-reverse; opacity: .8; } .mist.m3 { top: 28%; animation-duration: 40s; opacity: .55; }
+@keyframes mistdrift { from { transform: translate3d(-8%, 0, 0); } to { transform: translate3d(10%, -6px, 0); } }
+.mote { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: #ffe7b0; box-shadow: 0 0 8px 2px rgba(255, 220, 150, .55); opacity: 0; will-change: transform, opacity; animation: motefloat var(--d) var(--w) ease-in-out infinite; }
+.mote:nth-of-type(n+8) { display: none !important; }
+html:not(.lite) body[data-amb="dust"] .mote:nth-of-type(n+8) { display: block !important; }
+@keyframes motefloat { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 25% { opacity: .85; } 60% { opacity: .5; } 100% { transform: translate3d(26px, -70px, 0); opacity: 0; } }
+.petal { position: absolute; top: -20px; left: var(--x); width: 10px; height: 7px; border-radius: 80% 20% 80% 20%; background: linear-gradient(135deg, #ffe0ea, #f2a8bd); opacity: 0; will-change: transform, opacity; animation: petalfall var(--d) var(--w) linear infinite; }
+.petal:nth-of-type(n+7) { display: none !important; }
+html:not(.lite) body[data-amb="petals"] .petal:nth-of-type(n+7) { display: block !important; }
+@keyframes petalfall { 0% { transform: translate3d(0, 0, 0) rotate(var(--r)); opacity: 0; } 10% { opacity: .9; } 50% { transform: translate3d(34px, 55vh, 0) rotate(calc(var(--r) + 160deg)); } 100% { transform: translate3d(-20px, 110vh, 0) rotate(calc(var(--r) + 340deg)); opacity: .8; } }
+.beam { position: absolute; top: -10%; width: 46%; height: 120%; left: 8%; transform-origin: 50% 0; background: linear-gradient(180deg, rgba(255, 238, 190, .2), rgba(255, 238, 190, .05) 60%, transparent); clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%); will-change: transform; animation: beamswing 9s ease-in-out infinite alternate; }
+.beam.b2 { left: 46%; animation-duration: 12s; animation-direction: alternate-reverse; opacity: .8; }
+@keyframes beamswing { from { transform: rotate(-16deg); } to { transform: rotate(18deg); } }
+.neon { position: absolute; will-change: opacity; }
+.neon.n1 { inset: 0 0 auto 0; height: 32%; background: radial-gradient(70% 100% at 80% 0%, rgba(255, 60, 160, .26), transparent 70%); animation: neonflick 4.2s steps(1) infinite; }
+.neon.n2 { inset: auto 0 0 0; height: 36%; background: radial-gradient(70% 100% at 15% 100%, rgba(60, 220, 255, .18), transparent 70%); animation: neonpulse 3.4s ease-in-out infinite; }
+@keyframes neonflick { 0%, 100% { opacity: 1; } 8% { opacity: .35; } 10% { opacity: 1; } 52% { opacity: .85; } 54% { opacity: .3; } 56% { opacity: 1; } }
+@keyframes neonpulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+html:not(.lite)[data-q] #amb .mist, html.lite #amb .mist { }
+html[data-q="low"] #amb .flash, html[data-q="low"] #amb .mote, html[data-q="low"] #amb .petal { display: none !important; }
+
+/* 按键动效：按下回弹、主按钮流光、入口卡片图放大 */
+.btn, .door, .room-row, .sc-card, .tabs2 button, .seat { -webkit-tap-highlight-color: transparent; }
+.btn { position: relative; overflow: hidden; transition: transform .14s cubic-bezier(.3, 1.4, .5, 1), box-shadow .2s, background-color .2s, border-color .2s; }
+.btn:active:not(:disabled) { transform: scale(.955); }
+.btn.primary::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 46%; pointer-events: none; background: linear-gradient(105deg, transparent, rgba(255, 255, 255, .55), transparent); transform: translateX(-130%) skewX(-18deg); animation: shimmer 4.8s 1.2s ease-in-out infinite; }
+.btn.primary:disabled::after { display: none; }
+@keyframes shimmer { 0% { transform: translateX(-130%) skewX(-18deg); } 28%, 100% { transform: translateX(330%) skewX(-18deg); } }
+.door { animation: doorin .7s cubic-bezier(.2, .8, .2, 1) both; }
+.door:nth-child(2) { animation-delay: .12s; }
+@keyframes doorin { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
+.door-art { transition: transform .7s cubic-bezier(.2, .8, .2, 1); } .door:active .door-art, .door:hover .door-art { transform: scale(1.08); }
+.door-tx b { transition: letter-spacing .35s ease, transform .35s ease; } .door:active .door-tx b, .door:hover .door-tx b { letter-spacing: .2em; transform: translateX(3px); }
+.door-go { transition: transform .25s cubic-bezier(.3, 1.4, .5, 1); } .door:active .door-go { transform: scale(.88) translateX(4px); }
+.door-go::before { animation: nudge 2.2s ease-in-out infinite; } @keyframes nudge { 0%, 60%, 100% { transform: rotate(45deg) translate(0, 0); } 30% { transform: rotate(45deg) translate(3px, -3px); } }
+.door.gold .door-go::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid rgba(217, 184, 111, .8); animation: ringp 2.4s ease-out infinite; }
+@keyframes ringp { from { transform: scale(1); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
+.door.gold::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(105deg, transparent 40%, rgba(255, 232, 170, .16) 50%, transparent 60%); transform: translateX(-120%); animation: doorsweep 6s 2s ease-in-out infinite; }
+@keyframes doorsweep { 0% { transform: translateX(-120%); } 22%, 100% { transform: translateX(120%); } }
+/* 案件列表：依次入场，按下时封面放大、卡片流光 */
+.det-list .det-case { animation: doorin .55s cubic-bezier(.2, .8, .2, 1) both; }
+.det-list .det-case:nth-child(2) { animation-delay: .05s; } .det-list .det-case:nth-child(3) { animation-delay: .1s; } .det-list .det-case:nth-child(4) { animation-delay: .15s; } .det-list .det-case:nth-child(5) { animation-delay: .2s; } .det-list .det-case:nth-child(n+6) { animation-delay: .25s; }
+.det-case .sc-art .scene { transition: transform .6s cubic-bezier(.2, .8, .2, 1); } .det-case:active .sc-art .scene { transform: scale(1.12); }
+.det-case:active { transform: scale(.985); }
+.det-case::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 40%, rgba(255, 232, 170, .14) 50%, transparent 60%); transform: translateX(-120%); }
+.det-case:active::after { transform: translateX(120%); transition: transform .6s ease; }
+.det-badge.go { animation: badgep 2s ease-in-out infinite; } @keyframes badgep { 50% { box-shadow: 0 0 10px rgba(217, 184, 111, .7); } }
+.room-row:active, .tabs2 button:active { transform: scale(.985); }
+html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, html[data-q="low"] .door-go::after { display: none; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row { display: none !important; }
@@ -4435,7 +4493,7 @@ const FX = (() => {
     return (sprites[r] = c);
   }
   // 当前环境：fire / rain 时全局雪花暂停（由 body[data-amb] 决定）
-  const ambOff = () => { const a = document.body && document.body.dataset.amb; return a === 'fire' || a === 'rain'; };
+  const ambOff = () => { const a = document.body && document.body.dataset.amb; return !!a && a !== 'snow'; };
 
   // 飘雪画布（三层景深 + 阵风）。返回 stop()
   function snow(canvas, o = {}) {
@@ -4500,20 +4558,38 @@ const FX = (() => {
     return () => { dead = true; cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener('resize', onResize); document.removeEventListener('focusin', onFocusIn); document.removeEventListener('focusout', onFocusOut); };
   }
 
-  // 环境光层：火光 / 雨（纯 CSS，只动 transform 和 opacity，GPU 合成，不占主线程）
+  // 每个案件 / 剧本的专属氛围：snow 飘雪 · fire 烛火炉火 · rain 雨 · storm 暴雨+闪电 · mist 雾气 · dust 灰尘光柱 · petals 花瓣 · spot 追光 · neon 霓虹
+  const CASE_AMB = {
+    ferry: 'mist', lastdish: 'fire', library: 'dust', wedding: 'petals', antique: 'dust', blackout: 'storm', homestay: 'snow',
+    troupe: 'spot', liaoyang: 'storm', paimai: 'spot', zujie: 'neon', mirror: 'mist', twins: 'mist',
+    haishen: 'mist', xizhong: 'spot', jiye: 'snow', shoulingye: 'rain', yunqi: 'snow', test: 'snow'
+  };
+  const AMB_SND = { snow: 'snow', mist: 'snow', fire: 'fire', rain: 'rain', storm: 'rain', neon: 'rain' };
+  const caseAmb = (id) => CASE_AMB[id] || null;
+  // 环境光层：全部是纯 CSS，只动 transform 和 opacity，GPU 合成，不占主线程
   function ambient(kind) {
-    try { document.body.dataset.amb = kind || 'snow'; } catch (e) {}
+    kind = kind || 'snow';
+    try { document.body.dataset.amb = kind; } catch (e) {}
+    try { if (window.SFX) SFX.amb(AMB_SND[kind] || null); } catch (e) {}
     let el = document.getElementById('amb');
     if (!el) {
+      const n = (k, fn) => Array.from({ length: k }, (_, i) => fn(i)).join('');
       el = document.createElement('div'); el.id = 'amb';
-      el.innerHTML = '<div class="fire-glow fx-loop"></div><div class="fire-glow2 fx-loop"></div>' + Array.from({ length: 12 }, (_, i) => `<i class="ember fx-loop" style="--x:${(8 + i * 7.6 + (i % 3) * 3).toFixed(0)}%;--d:${(3.2 + (i * 0.7) % 3.4).toFixed(1)}s;--w:-${(i * 1.3) % 4}s"></i>`).join('') + '<div class="rain r1 fx-loop"></div><div class="rain r2 fx-loop"></div>';
+      el.innerHTML = '<div class="fire-glow fx-loop"></div><div class="fire-glow2 fx-loop"></div>'
+        + n(12, (i) => `<i class="ember fx-loop" style="--x:${(8 + i * 7.6 + (i % 3) * 3).toFixed(0)}%;--d:${(3.2 + (i * 0.7) % 3.4).toFixed(1)}s;--w:-${(i * 1.3) % 4}s"></i>`)
+        + '<div class="rain r1 fx-loop"></div><div class="rain r2 fx-loop"></div><div class="flash fx-loop"></div>'
+        + '<div class="mist m1 fx-loop"></div><div class="mist m2 fx-loop"></div><div class="mist m3 fx-loop"></div>'
+        + '<div class="beam b1 fx-loop"></div><div class="beam b2 fx-loop"></div>'
+        + n(14, (i) => `<i class="mote fx-loop" style="--x:${(4 + i * 7) % 96}%;--y:${(10 + i * 13) % 80}%;--d:${(7 + (i * 1.7) % 6).toFixed(1)}s;--w:-${(i * 1.9) % 7}s;--s:${(2 + (i % 3)).toFixed(0)}px"></i>`)
+        + n(10, (i) => `<i class="petal fx-loop" style="--x:${(i * 10 + 3) % 98}%;--d:${(7 + (i * 1.3) % 5).toFixed(1)}s;--w:-${(i * 2.1) % 9}s;--r:${(i * 47) % 360}deg"></i>`)
+        + '<div class="neon n1 fx-loop"></div><div class="neon n2 fx-loop"></div>';
       document.body.insertBefore(el, document.body.firstChild);
     }
   }
 
   // 点击涟漪
   document.addEventListener('pointerdown', (e) => {
-    const b = e.target.closest && e.target.closest('.btn, .loc, .vote-card, .tabs button, .seal-btn');
+    const b = e.target.closest && e.target.closest('.btn, .loc, .vote-card, .tabs button, .seal-btn, .door, .det-case, .sc-card');
     if (!b || b.disabled) return;
     const r = b.getBoundingClientRect();
     const s = document.createElement('span');
@@ -4596,7 +4672,7 @@ const FX = (() => {
       setTimeout(() => s.remove(), 750);
     }
   }
-  return { snow, typewriter, burst, tilt, sparkle, pop, reduce, ambient, setQuality, quality: () => quality, qname: () => QNAME[quality], isLite };
+  return { snow, typewriter, burst, tilt, sparkle, pop, reduce, ambient, caseAmb, setQuality, quality: () => quality, qname: () => QNAME[quality], isLite };
 })();
 if (typeof window !== 'undefined') window.FX = FX;
 
@@ -4990,6 +5066,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     tab = G.result ? 'accuse' : 'brief'; sel = null; pickClue = false; lastClue = null; flash = null;
     clearTimers();
     document.body.dataset.tone = C.tone || 'none';
+    try { FX.ambient(FX.caseAmb(C.id) || 'dust'); } catch (e) {}
     try { SFX.music('case', C.id, C.tone); SFX.tension(false); } catch (e) {}
     window.scrollTo(0, 0);
     if (!G.result && !G.searches && !G.asks && !G.introDone) return showIntro();
@@ -5227,7 +5304,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     const d = t.dataset;
     if (d.case) { sfx('click'); return start(d.case); }
     if (d.act === 'home') { sfx('click'); return close(); }
-    if (d.act === 'list') { sfx('click'); clearTimers(); C = null; delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
+    if (d.act === 'list') { sfx('click'); clearTimers(); C = null; try { FX.ambient('fire'); } catch (x) {} delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
     if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
@@ -5259,7 +5336,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     if ($('.det-reveal')) { endReveal(); return true; }
     if (C) {
       clearTimers(); C = null; delete document.body.dataset.tone;
-      try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
+      try { FX.ambient('fire'); SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
       renderList(); window.scrollTo(0, 0); return true;
     }
     close(); return true;
@@ -5499,7 +5576,7 @@ function fmt(sec) {
 function playerName(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : '?'; }
 
 // ================= 状态变化 =================
-const ambOf = (tone) => (tone === 'sepia' ? 'fire' : tone === 'green' ? 'rain' : 'snow');
+const ambOf = (tone) => FX.caseAmb(S && S.scriptId) || (tone === 'sepia' ? 'fire' : tone === 'green' ? 'rain' : 'snow');
 function stateSounds() {
   try {
     const ids = S.players.map((p) => p.id + ':' + (p.connected ? 1 : 0));
@@ -5510,7 +5587,7 @@ function stateSounds() {
     }
     prevIds = ids; prevCode = S.code;
     const tone = S.script.tone;
-    try { SFX.amb(ambOf(tone)); FX.ambient(ambOf(tone)); } catch (e) {}
+    try { FX.ambient(ambOf(tone)); } catch (e) {}
     if (S.phase === 'lobby') SFX.music('menu', 'lobby:' + S.scriptId, tone);
     else SFX.music('case', S.scriptId || S.script.id || 'game', tone);
     const last = (S.script.rounds || 3);
