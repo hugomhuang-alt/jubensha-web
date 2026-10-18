@@ -1119,6 +1119,70 @@ html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, h
 .cs { background: linear-gradient(180deg, #050816 0, #050816 30%, #0a0f1c 62%); }
 .cs-svg { inset: auto; top: 90px; left: 0; width: 100%; height: auto; aspect-ratio: 300 / 270; }
 
+/* ===== 电影式开场 ===== */
+.fm { position: absolute; inset: 0; animation: fmIn 1.1s ease both; overflow: hidden; background: #02030a; }
+@keyframes fmIn { from { opacity: 0; } to { opacity: 1; } }
+.fm-view { position: absolute; left: 0; right: 0; top: 70px; aspect-ratio: 390 / 520; overflow: hidden; } .fm-view > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fm svg g, .fm svg rect, .fm svg ellipse, .fm svg path, .fm svg circle { transform-box: fill-box; }
+.fm-bar { position: absolute; left: 0; right: 0; height: 0; background: #000; z-index: 4; animation: fmBar 1.4s ease forwards; } .fm-bar.t { top: 0; } .fm-bar.b { bottom: 0; }
+@keyframes fmBar { to { height: 54px; } }
+.fm-grain { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .13; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"); animation: fmGr .5s steps(4) infinite; }
+@keyframes fmGr { 0% { transform: translate(0,0); } 25% { transform: translate(-12px,8px); } 50% { transform: translate(9px,-10px); } 75% { transform: translate(-6px,-4px); } }
+.fm-vig { position: absolute; inset: 0; z-index: 4; pointer-events: none; background: radial-gradient(ellipse at center, transparent 45%, #000c 100%); }
+.dc-skip { z-index: 8 !important; top: 62px !important; }
+.fm .cs-cap { z-index: 3; padding-bottom: 76px; background: none; top: 600px; bottom: 0; } .dc-all, .dc-s3 { z-index: 3; position: relative; }
+.fm-title { position: absolute; left: 0; right: 0; top: 330px; text-align: center; z-index: 3; animation: fmT 5.4s ease both; }
+@keyframes fmT { 0%,12% { opacity: 0; transform: translateY(10px); } 30%,80% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.fm-title h2 { font-family: var(--serif); font-size: 34px; letter-spacing: .18em; margin: 6px 0; text-shadow: 0 0 24px #000; } .fm-title p:last-child { color: #c3cce2; font-size: 14px; letter-spacing: .1em; }
+.fm-st { animation: csTw 2.6s ease-in-out infinite; } .fm-cloud { animation: csCl 30s linear infinite; } .fm-fog { animation: fmFog 14s ease-in-out infinite alternate; } @keyframes fmFog { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
+.fm-w { animation: fmWin 3s ease-in-out infinite; } @keyframes fmWin { 0%,100% { opacity: 1; } 45% { opacity: .55; } }
+.fm-lamp, .fm-fire { animation: fmFlick .18s steps(2) infinite alternate; } @keyframes fmFlick { from { opacity: .85; } to { opacity: 1; } }
+.fm-cam-in { transform-origin: 50% 60%; } .fm-establish .fm-view > svg { animation: fmZoom 6s ease-out both; transform-origin: 50% 62%; } @keyframes fmZoom { from { transform: scale(1); } to { transform: scale(1.32); } }
+.fm-arrive .fm-view > svg { animation: fmPanL 7s ease-in-out both; } @keyframes fmPanL { from { transform: scale(1.18) translateX(30px); } to { transform: scale(1.18) translateX(-14px); } }
+.fm-walker { transform: translate(430px, var(--y)) scale(var(--s)); animation: fmWalk 5.4s linear var(--d) forwards; }
+@keyframes fmWalk { to { transform: translate(190px, var(--y)) scale(calc(var(--s) * .7)); opacity: 0; } }
+.fm-spill { opacity: .0; animation: fmSpill 1.4s ease 3.1s forwards; } @keyframes fmSpill { to { opacity: .95; } }
+.fm-beam { animation: fmSpill 1.4s ease 3.1s forwards; opacity: 0; }
+.fm-seated .fm-view > svg { animation: fmDolly 8s ease-out both; transform-origin: 50% 70%; } @keyframes fmDolly { from { transform: scale(1.3); } to { transform: scale(1.02); } }
+.fm-p { opacity: 0; animation: csFade 1s ease forwards; }
+.fm-stairs .fm-view > svg { animation: fmTilt 7s ease-in-out both; transform-origin: 50% 60%; } @keyframes fmTilt { from { transform: scale(1.15) translateY(30px); } to { transform: scale(1.15) translateY(-14px); } }
+.fm-climb { transform: translate(60px, 430px); animation: fmClimb 6s ease-in-out .5s forwards; } @keyframes fmClimb { to { transform: translate(300px, 150px) scale(.8); } }
+.fm-corridor .fm-view > svg { animation: fmPush 7s ease-in both; transform-origin: 50% 45%; } @keyframes fmPush { from { transform: scale(1); } to { transform: scale(1.4); } }
+.fm-nanny { transform: translate(195px, 520px) scale(1.35); animation: fmNan 6s ease-in-out .3s forwards; } @keyframes fmNan { to { transform: translate(195px, 342px) scale(.5); } }
+.fm-endlight { opacity: .2; } .fm-end { animation: fmFlick .25s steps(2) infinite alternate; }
+.fm-steam { animation: fmSteam 2s ease-in-out infinite; } @keyframes fmSteam { 50% { transform: translateY(-4px); opacity: .4; } }
+.fm-find .fm-view > svg { animation: fmZoomF 6.5s ease-in both; transform-origin: 50% 70%; } @keyframes fmZoomF { from { transform: scale(1.0); } to { transform: scale(1.22); } }
+.fm-door { transform-origin: 0 50%; animation: fmDoor 2.2s ease-in-out .6s both; } @keyframes fmDoor { from { transform: scaleX(1); } to { transform: scaleX(.18); } }
+.fm-redflash { opacity: 0; pointer-events: none; } .fm-find.boom .fm-redflash { animation: dcRed 1.4s ease-out; } .fm-find.boom .fm-view > svg { animation: dcShake .7s, fmZoomF 6.5s ease-in both; }
+.fm-pcar { transform: translate(195px, 372px) scale(.18); animation: fmCar 4.6s cubic-bezier(.3,.1,.5,1) forwards; } @keyframes fmCar { to { transform: translate(195px, 478px) scale(1.15); } }
+.fm-lr { fill: #ff2a2a; animation: csB .3s steps(1) infinite; } .fm-lb { fill: #2a6bff; animation: csB .3s steps(1) infinite reverse; }
+.fm-wash { fill: #2a4bff; opacity: 0; mix-blend-mode: screen; animation: fmWash .6s steps(1) infinite alternate; } @keyframes fmWash { from { opacity: .0; fill: #ff2a2a; } to { opacity: .22; fill: #2a4bff; } }
+.fm-rain line { animation: fmRain .5s linear infinite; } @keyframes fmRain { to { transform: translate(-8px, 40px); } }
+/* 八人合影 */
+.dc-all { width: 100%; padding: 0 18px; text-align: center; animation: dcIn .9s ease both; }
+.dc-ag { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; margin-top: 8px; }
+.dc-ap { display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: 0; animation: dcPop .7s ease forwards; }
+.dc-apav { width: 74px; height: 74px; border-radius: 50%; overflow: hidden; border: 1px solid #4a557a; background: #10172a; box-shadow: 0 0 18px #000a; } .dc-apav svg { width: 100%; height: 100%; }
+.dc-ap b { font-size: 14px; } .dc-ap small { font-size: 11px; color: var(--muted); }
+.dc-all .dc-line { opacity: 0; animation: dcIn 1s ease forwards; }
+.fm-bar, .fm-grain, .fm-vig { pointer-events: none; }
+.dc-go { bottom: 78px !important; z-index: 7; }
+.fm-title { top: 120px !important; }
+
+/* ===== 新手引导 ===== */
+.det-guide { margin: 0 0 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: #0f1626; }
+.dg-steps { display: flex; align-items: center; justify-content: space-between; gap: 2px; }
+.dg-steps button { display: flex; align-items: center; gap: 5px; border: 0; background: transparent; color: var(--muted); font-size: 13px; padding: 2px 4px; }
+.dg-steps button i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+.dg-steps button.on { color: #fff; } .dg-steps button.on i { background: var(--accent, #6ea8fe); border-color: transparent; color: #04101f; font-weight: 700; }
+.dg-steps button.ok i { background: #2f7d4f; border-color: transparent; color: #fff; }
+.dg-ar { color: var(--muted); font-size: 12px; }
+.dg-tip { margin: 6px 0 0; font-size: 13px; line-height: 1.55; color: #d4dae8; }
+.det-how { margin: 6px 0 0; padding-left: 20px; line-height: 1.9; color: #cfd6e6; font-size: 14px; }
+.det-tut { position: fixed; inset: 0; z-index: 70; background: #000b; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.dt-card { width: 100%; max-width: 380px; background: #151c30; border: 1px solid var(--line); border-radius: 16px; padding: 20px; } .dt-card h3 { margin: 0 0 10px; font-family: var(--serif); letter-spacing: .15em; }
+.dt-card ol { margin: 0 0 16px; padding-left: 22px; } .dt-card li { margin-bottom: 10px; line-height: 1.6; } .dt-card li b { display: block; color: #e8c76a; } .dt-card li span { color: #cfd6e6; font-size: 14px; }
+
 /* 狼人杀 */
 .door.wolf { border-color: rgba(190, 90, 90, .55); box-shadow: 0 0 0 1px rgba(190, 90, 90, .12), 0 14px 40px rgba(150, 40, 60, .18); }
 .door.wolf .door-tx small { color: #f0a29a; }
@@ -11435,6 +11499,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
         <div class="det-top"><button class="btn small ghost" data-act="list">‹ 返回</button><div class="det-title">${esc(C.title)}</div>
           <div class="det-tr">${muteBtn()}${G.result ? '' : `<div class="det-meter" title="剩余搜证 / 提问次数"><b>${searchLeft()}</b> 搜 · <b>${askLeft()}</b> 问</div>`}</div></div>
         ${G.result ? '' : `<nav class="tabs det-tabs">${TABS.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}${k === 'notes' && G.found.length ? `<em>${G.found.length}</em>` : ''}</button>`).join('')}</nav>`}
+        ${guideBar()}
         <div class="det-body">${body}</div>
       </div>`;
     wireFx();
@@ -11446,58 +11511,95 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
 
   // ---------- 开场动画：发现尸体 → 在场的人 → 验尸；结束后进“档案” ----------
   let cineAt = 0, cineRun = null;
-  // 夜景：月光、房子、人到场 → 上楼 → 推门尖叫 → 警车。文字取自本案时间线
-  function nightSvg(n) {
-    const heads = Array.from({ length: Math.min(8, n) }, (_, i) => `<g class="cs-seat" style="--d:${(1.6 + i * 0.35).toFixed(2)}s"><circle cx="${112 + i * 7.2}" cy="190" r="3.4"/><rect x="${108.8 + i * 7.2}" y="193" width="6.4" height="9" rx="2"/></g>`).join('');
-    const walkers = Array.from({ length: Math.min(8, n) }, (_, i) => `<g class="cs-walk" style="--d:${(i * 0.55).toFixed(2)}s"><circle cx="0" cy="246" r="4"/><rect x="-3.5" y="250" width="7" height="14" rx="3"/></g>`).join('');
-    return `<svg class="cs-svg" viewBox="30 30 300 270" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <defs><linearGradient id="csSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050816"/><stop offset="1" stop-color="#1a2744"/></linearGradient><radialGradient id="csMoon"><stop offset="0" stop-color="#fffbe6" stop-opacity=".9"/><stop offset="1" stop-color="#fffbe6" stop-opacity="0"/></radialGradient></defs>
-      <rect width="360" height="300" fill="url(#csSky)"/>
-      ${[[30,24],[70,52],[120,18],[160,44],[210,14],[260,40],[300,22],[330,60],[50,90],[180,70]].map(([x, y], i) => `<circle class="cs-star" style="animation-delay:${i * 0.3}s" cx="${x}" cy="${y}" r="1.1" fill="#fff"/>`).join('')}
-      <circle cx="285" cy="62" r="52" fill="url(#csMoon)"/><circle cx="285" cy="62" r="20" fill="#fdf6d8"/><circle cx="278" cy="57" r="4" fill="#e8dfb8" opacity=".6"/><circle cx="293" cy="70" r="3" fill="#e8dfb8" opacity=".5"/>
-      <g class="cs-cloud"><ellipse cx="60" cy="70" rx="40" ry="8" fill="#2a3858" opacity=".7"/><ellipse cx="90" cy="64" rx="26" ry="7" fill="#2a3858" opacity=".7"/></g>
-      <path d="M0 236 Q60 222 120 234 T240 232 T360 236 V300 H0Z" fill="#0a0f1c"/>
-      <g fill="#070b15"><path d="M20 236 l12 -60 l12 60z"/><path d="M40 238 l10 -44 l10 44z"/><path d="M300 236 l12 -66 l12 66z"/><path d="M322 238 l9 -40 l9 40z"/></g>
-      <g class="cs-house"><rect x="92" y="136" width="176" height="104" fill="#10172a"/><polygon points="82,138 180,84 278,138" fill="#0b1020"/><rect x="226" y="82" width="14" height="30" fill="#0b1020"/>
-        <rect class="cs-win lo" x="104" y="176" width="72" height="34" rx="2"/>${heads}
-        <rect class="cs-win up" x="196" y="148" width="46" height="30" rx="2"/><g class="cs-upfig"><circle cx="212" cy="160" r="4"/><rect x="208.5" y="164" width="7" height="12" rx="3"/></g><g class="cs-tray"><circle cx="228" cy="160" r="3.6"/><rect x="224.8" y="163.6" width="6.4" height="11" rx="2.5"/><rect x="221" y="167" width="6" height="2" fill="#c8b070"/></g>
-        <rect class="cs-door" x="214" y="196" width="30" height="44" rx="2"/><circle cx="238" cy="219" r="1.6" fill="#caa14a"/>
-        <rect class="cs-redwin" x="196" y="148" width="46" height="30" rx="2"/></g>
-      ${walkers}
-      <g class="cs-car"><g transform="translate(0 0)"><rect x="0" y="252" width="62" height="18" rx="5" fill="#e9ecf2"/><rect x="10" y="244" width="38" height="12" rx="4" fill="#cfd5e2"/><rect x="0" y="260" width="62" height="5" fill="#1b2438"/><circle cx="14" cy="271" r="6" fill="#0a0f1c"/><circle cx="48" cy="271" r="6" fill="#0a0f1c"/><rect class="cs-l r" x="16" y="239" width="12" height="5" rx="2"/><rect class="cs-l b" x="30" y="239" width="12" height="5" rx="2"/></g></g>
-      <rect class="cs-glow" width="360" height="300"/></svg>`;
-  }
+  // ---------- 电影式开场：一幕一幕的画面（淡入、镜头推拉、雾、月光、剪影），字幕取自本案时间线 ----------
+  const SIL = '#04060d', RIM = '#c98a3c';
+  const fmSky = (id, c1, c2) => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>`;
+  const fmMoon = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r * 2.6}" fill="#fff6d0" opacity=".10"/><circle cx="${x}" cy="${y}" r="${r * 1.6}" fill="#fff6d0" opacity=".14"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fdf6d8"/><circle cx="${x - r * .3}" cy="${y - r * .2}" r="${r * .2}" fill="#e6dcb0" opacity=".6"/><circle cx="${x + r * .25}" cy="${y + r * .3}" r="${r * .14}" fill="#e6dcb0" opacity=".5"/>`;
+  const fmStars = (k) => Array.from({ length: k }, (_, i) => `<circle class="fm-st" style="animation-delay:${(i % 7) * .4}s" cx="${(i * 97 + 31) % 390}" cy="${(i * 53 + 11) % 230}" r="${i % 5 === 0 ? 1.5 : 1}" fill="#fff"/>`).join('');
+  const fmFog = () => `<g class="fm-fog"><ellipse cx="80" cy="430" rx="200" ry="26" fill="#9fb2d8" opacity=".13"/><ellipse cx="300" cy="455" rx="220" ry="30" fill="#9fb2d8" opacity=".12"/></g>`;
+  const person = (x, y, sc, fill, extra) => `<g transform="translate(${x} ${y}) scale(${sc})" fill="${fill || SIL}"><circle cx="0" cy="-46" r="9"/><path d="M-13 0 Q-14 -30 0 -34 Q14 -30 13 0Z"/>${extra || ''}</g>`;
+  const FM = {
+    establish: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice">${fmSky('g1', '#01030a', '#22345a')}<rect width="390" height="520" fill="url(#g1)"/>${fmStars(46)}${fmMoon(290, 120, 32)}
+      <g class="fm-cloud"><ellipse cx="90" cy="110" rx="70" ry="9" fill="#2c3e66" opacity=".7"/><ellipse cx="140" cy="100" rx="44" ry="8" fill="#2c3e66" opacity=".7"/></g>
+      <path d="M0 330 Q90 290 190 322 T390 310 V520H0Z" fill="#0b1224"/>
+      <g fill="${SIL}"><path d="M10 380 l18 -120 l18 120z"/><path d="M36 384 l14 -86 l14 86z"/><path d="M330 384 l20 -130 l20 130z"/><path d="M360 388 l12 -70 l12 70z"/></g>
+      <g class="fm-cam-in"><rect x="98" y="300" width="194" height="110" fill="#0e1528"/><polygon points="84,302 195,222 306,302" fill="#090e1d"/><rect x="240" y="228" width="16" height="40" fill="#090e1d"/>
+        <rect class="fm-w" x="116" y="330" width="34" height="26" fill="#f1b955"/><rect class="fm-w" x="170" y="330" width="34" height="26" fill="#f1b955" style="animation-delay:.6s"/><rect class="fm-w" x="224" y="330" width="34" height="26" fill="#f1b955" style="animation-delay:1.1s"/><rect x="170" y="262" width="30" height="24" fill="#f1b955" opacity=".85"/><rect x="212" y="372" width="26" height="38" fill="#05070f"/><path d="M0 410 H390" stroke="#05070f" stroke-width="3"/></g>${fmFog()}</svg>`,
+    arrive: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice">${fmSky('g2', '#050a16', '#141f38')}<rect width="390" height="520" fill="url(#g2)"/>
+      <g class="fm-pan"><rect x="40" y="60" width="310" height="380" fill="#0b1224"/><path d="M150 440 V210 Q195 150 240 210 V440Z" fill="#06080f"/>
+        <path class="fm-spill" d="M150 440 V210 Q195 150 240 210 V440Z" fill="#f4bb5e"/><path class="fm-beam" d="M150 440 L110 520 H280 L240 440Z" fill="#f4bb5e" opacity=".0"/>
+        <rect x="86" y="130" width="6" height="40" fill="#222"/><rect x="74" y="152" width="30" height="40" rx="6" fill="#f6c36a" class="fm-lamp"/><circle cx="89" cy="172" r="46" fill="#f6c36a" opacity=".14" class="fm-lamp"/>
+        ${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="${60 + i * 52}" y="60" width="2" height="380" fill="#10182c"/>`).join('')}
+        <path d="M0 440 H390 V520 H0Z" fill="#070a14"/><path d="M0 456 H390" stroke="#141c30" stroke-width="2"/></g>
+      ${Array.from({ length: Math.min(8, n) }, (_, i) => `<g class="fm-walker" style="--d:${(i * .8).toFixed(1)}s;--y:${462 + (i % 3) * 14}px;--s:${(1.15 + (i % 3) * .12).toFixed(2)}">${person(0, 0, 1, SIL, `<rect x="-3" y="0" width="6" height="22"/>`)}</g>`).join('')}${fmFog()}</svg>`,
+    seated: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#0b0a0e"/><rect y="0" width="390" height="330" fill="#1a1318"/>
+      <g><rect x="130" y="150" width="130" height="170" fill="#0d090b"/><rect x="144" y="170" width="102" height="150" fill="#05030a"/><ellipse class="fm-fire" cx="195" cy="300" rx="44" ry="26" fill="#ff8a2a"/><ellipse class="fm-fire" cx="195" cy="292" rx="26" ry="36" fill="#ffc35a" style="animation-delay:.2s"/><circle class="fm-fire" cx="195" cy="260" r="150" fill="#ff8a2a" opacity=".10" style="animation-delay:.1s"/></g>
+      <rect x="40" y="100" width="46" height="60" fill="#0c0a0f" stroke="#33261a"/><rect x="304" y="96" width="46" height="60" fill="#0c0a0f" stroke="#33261a"/><circle cx="195" cy="110" r="16" fill="#120d0f" stroke="#4a3822"/><path d="M195 110 V100 M195 110 L202 114" stroke="#caa14a" stroke-width="1.5"/>
+      <path d="M0 330 H390 V520 H0Z" fill="#0a0709"/><ellipse cx="195" cy="450" rx="150" ry="22" fill="#120c0d"/><rect x="186" y="418" width="8" height="26" fill="#d9c9a0"/><ellipse class="fm-fire" cx="190" cy="414" rx="4" ry="8" fill="#ffd27a"/>
+      <g class="fm-seatrow">${Array.from({ length: Math.min(8, n) }, (_, i) => { const k = Math.min(8, n), ang = Math.PI * (0.12 + 0.76 * (i / Math.max(1, k - 1))); const x = 195 - Math.cos(ang) * 170, y = 440 + Math.sin(ang) * 46, sc = 0.9 + Math.sin(ang) * 0.35; return `<g class="fm-p" style="animation-delay:${(i * .25).toFixed(2)}s">${person(x, y, sc, '#050307', `<path d="M-13 -34 Q0 -40 13 -34" stroke="${RIM}" stroke-width="1.4" fill="none" opacity=".6"/>`)}</g>`; }).join('')}</g></svg>`,
+    stairs: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#0b0b12"/><rect width="390" height="520" fill="#1a1520" opacity=".8"/>
+      <rect x="40" y="60" width="64" height="86" fill="#0a0a10" stroke="#3a2c1c"/><rect x="290" y="90" width="56" height="74" fill="#0a0a10" stroke="#3a2c1c"/><circle cx="195" cy="64" r="20" fill="#120e12" stroke="#5a4528"/><path d="M195 64 V50 M195 64 L206 70" stroke="#caa14a" stroke-width="2"/>
+      ${Array.from({ length: 9 }, (_, i) => `<polygon points="${20 + i * 38},${470 - i * 38} ${58 + i * 38},${470 - i * 38} ${58 + i * 38},${520} ${20 + i * 38},${520}" fill="${i % 2 ? '#14101a' : '#181320'}" stroke="#05040a"/><rect x="${20 + i * 38}" y="${466 - i * 38}" width="38" height="5" fill="#2a2030"/>`).join('')}
+      <path d="M20 440 L360 100" stroke="#3a2a1a" stroke-width="4"/><path d="M20 440 L360 100" stroke="#caa14a" stroke-width="1" opacity=".4"/>
+      <g class="fm-climb">${person(0, 0, 1.25, SIL, `<rect x="6" y="-30" width="14" height="10" fill="#e8e0c8" transform="rotate(-12)"/>`)}</g>
+      <rect class="fm-lamp" x="250" y="40" width="130" height="260" fill="#f4bb5e" opacity=".07"/></svg>`,
+    corridor: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#08070c"/>
+      <polygon points="0,0 390,0 250,190 140,190" fill="#120f18"/><polygon points="0,520 390,520 250,330 140,330" fill="#0d0a10"/><polygon points="0,0 140,190 140,330 0,520" fill="#171320"/><polygon points="390,0 250,190 250,330 390,520" fill="#171320"/>
+      <rect x="140" y="190" width="110" height="140" fill="#05040a"/>
+      <rect class="fm-end" x="176" y="212" width="38" height="118" fill="#f4bb5e"/><rect x="176" y="212" width="38" height="118" fill="none" stroke="#2a1d10" stroke-width="3"/>
+      <polygon class="fm-endlight" points="176,330 214,330 330,520 60,520" fill="#f4bb5e"/>
+      ${[[40, 210, 70], [30, 150, 100]].map(([x, y, h]) => `<polygon points="${x},${y} ${x + 60},${y + 40} ${x + 60},${y + 40 + h} ${x},${y + h + 60}" fill="#0b0810" stroke="#2a2030"/>`).join('')}
+      <polygon points="352,210 292,250 292,320 352,380" fill="#0b0810" stroke="#2a2030"/>
+      <g class="fm-nanny"><g fill="${SIL}"><circle cx="0" cy="-46" r="9"/><path d="M-14 0 Q-15 -30 0 -34 Q15 -30 14 0 L20 44 H-20Z"/><rect x="8" y="-22" width="34" height="4"/></g><rect x="14" y="-30" width="9" height="8" fill="#e8e0c8"/><path class="fm-steam" d="M18 -34 q-3 -8 0 -14 q3 -6 0 -12" stroke="#e8e0c8" stroke-width="1.5" fill="none"/></g></svg>`,
+    find: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#08060a"/>
+      <rect x="40" y="60" width="310" height="300" fill="#150f12"/><rect x="40" y="60" width="60" height="300" fill="#0b0809"/><rect x="290" y="60" width="60" height="300" fill="#0b0809"/>
+      ${Array.from({ length: 4 }, (_, i) => `<rect x="${52 + (i % 2) * 238}" y="${80 + Math.floor(i / 2) * 120}" width="34" height="100" fill="#201512" stroke="#3a2a1c"/>`).join('')}
+      <path d="M0 360 H390 V520 H0Z" fill="#0b0709"/><polygon points="120,360 270,360 330,520 60,520" fill="#1a1210"/>
+      <rect x="140" y="300" width="110" height="10" fill="#2a1a12"/><rect x="146" y="310" width="8" height="50" fill="#2a1a12"/><rect x="236" y="310" width="8" height="50" fill="#2a1a12"/><rect class="fm-lamp" x="226" y="270" width="20" height="30" fill="#f4bb5e"/>
+      <g class="fm-body"><ellipse cx="195" cy="440" rx="62" ry="18" fill="#05030a"/><circle cx="148" cy="436" r="11" fill="#05030a"/><path d="M158 430 Q200 420 238 436 L250 450 Q200 462 160 448Z" fill="#05030a"/><ellipse cx="170" cy="452" rx="26" ry="6" fill="#5a0d12" opacity=".7"/></g>
+      <g fill="#e8e0c8" opacity=".8"><rect x="250" y="452" width="16" height="10" transform="rotate(14 258 457)"/><rect x="108" y="468" width="16" height="10" transform="rotate(-20 116 473)"/></g>
+      <g class="fm-door"><polygon points="0,0 60,40 60,420 0,520" fill="#0b0809"/><rect x="0" y="0" width="60" height="520" fill="#05030a" opacity=".5"/></g>
+      <rect class="fm-redflash" width="390" height="520" fill="#d4121a"/></svg>`,
+    police: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice">${fmSky('g7', '#02040c', '#1a2a4c')}<rect width="390" height="520" fill="url(#g7)"/>${fmStars(30)}
+      <g fill="${SIL}"><path d="M0 330 Q60 300 120 326 T250 318 T390 322 V360 H0Z"/><path d="M300 330 l16 -90 l16 90z"/><path d="M30 330 l14 -70 l14 70z"/></g>
+      <rect x="150" y="282" width="90" height="52" fill="#0a1020"/><polygon points="142,284 195,246 248,284" fill="#070c18"/><rect x="170" y="296" width="14" height="12" fill="#f1b955"/><rect x="204" y="296" width="14" height="12" fill="#f1b955"/>
+      <polygon points="160,360 230,360 360,520 30,520" fill="#0a0e1a"/><path d="M195 360 L195 520" stroke="#2a3558" stroke-width="3" stroke-dasharray="14 16"/>
+      <g class="fm-rain">${Array.from({ length: 36 }, (_, i) => `<line x1="${(i * 41) % 390}" y1="${(i * 67) % 520}" x2="${(i * 41) % 390 - 6}" y2="${(i * 67) % 520 + 26}" stroke="#9fb4e0" stroke-width=".8" opacity=".35"/>`).join('')}</g>
+      <g class="fm-pcar"><rect x="-70" y="-30" width="140" height="48" rx="14" fill="#e7eaf2"/><rect x="-52" y="-52" width="104" height="30" rx="10" fill="#c8cfdf"/><rect x="-46" y="-48" width="92" height="22" rx="6" fill="#16213a"/><rect x="-70" y="-6" width="140" height="10" fill="#1a2438"/><circle cx="-44" cy="20" r="14" fill="#05070f"/><circle cx="44" cy="20" r="14" fill="#05070f"/><circle cx="-52" cy="-8" r="8" fill="#fff6c8"/><circle cx="52" cy="-8" r="8" fill="#fff6c8"/><rect class="fm-lr" x="-34" y="-62" width="30" height="10" rx="3"/><rect class="fm-lb" x="4" y="-62" width="30" height="10" rx="3"/></g>
+      <rect class="fm-wash" width="390" height="520"/></svg>`
+  };
   function startCinema() {
     clearTimers(); try { SFX.tension(false); } catch (e) {}
     const R = C.deathReport || {}, v = C.victim, list = suspectsOrdered();
-    root().innerHTML = `<div class="det-cine"><div class="dc-stage" id="dcStage" data-act="cinenext"></div><button class="btn small ghost dc-skip" data-act="cineskip">跳过 ›</button></div>`;
+    root().innerHTML = `<div class="det-cine"><div class="dc-stage" id="dcStage" data-act="cinenext"></div><div class="fm-bar t"></div><div class="fm-bar b"></div><div class="fm-grain"></div><div class="fm-vig"></div><button class="btn small ghost dc-skip" data-act="cineskip">跳过 ›</button></div>`;
     const st = () => $('#dcStage');
     const type = (el, text, step, gap) => { let i = 0; const run = () => { if (!el || !el.isConnected) return; i = Math.min(text.length, i + (step || 1)); el.textContent = text.slice(0, i); if (i % 2 === 0) sfx('tick'); if (i < text.length) later(run, gap || 55); }; run(); };
     const beats = (k, every, from) => { for (let i = 0; i < k; i++) later(() => sfx('heartbeat'), (from || 0) + i * every); };
     const tl = (C.timeline || []).slice(0, 8), N = tl.length;
     const scenes = [];
-    // —— 夜景叙事：每条时间线一拍 ——
+    const film = (kind, tm, text, snd) => { // 一幕：黑场淡入 → 镜头缓动 → 字幕
+      st().innerHTML = `<div class="fm fm-${kind}"><div class="fm-view">${FM[kind](list.length)}</div><div class="cs-cap"><b>${esc(tm)}</b><p id="csX"></p></div></div>`;
+      later(() => type($('#csX'), text, 1, 55), 700); snd && snd();
+    };
+    scenes.push([5600, () => { sfx('suspense'); st().innerHTML = `<div class="fm fm-establish"><div class="fm-view">${FM.establish(list.length)}</div><div class="fm-title"><p class="dc-k">CASE FILE</p><h2>${esc(C.title)}</h2><p>${esc(C.tagline)}</p></div></div>`; later(() => sfx('owl'), 1500); later(() => sfx('cricket'), 600); }]);
     tl.forEach((e, i) => {
       const state = i === N - 1 ? 'police' : i === N - 2 ? 'find' : i < Math.ceil((N - 2) / 2) ? 'gather' : 'act';
-      const dur = Math.max(3400, 1600 + e.text.length * 60);
-      scenes.push([dur, () => {
-        const old = $('.cs');
-        if (!old) { st().innerHTML = `<div class="cs st-${state}">${nightSvg(list.length)}<div class="cs-top"><p class="dc-k">${esc(C.title)}</p></div><div class="cs-cap"><b id="csT"></b><p id="csX"></p></div></div>`; if (i === 0) sfx('suspense'); }
-        else { old.className = 'cs st-' + state; }
-        $('#csT').textContent = e.t; const x = $('#csX'); x.textContent = '';
-        later(() => type(x, e.text, 1, 55), 350);
-        if (state === 'gather') { sfx('footsteps'); later(() => sfx('chat'), 900); }
-        if (state === 'act') { sfx('footsteps'); later(() => sfx('creak'), 1200); later(() => sfx('clink'), 600); }
-        if (state === 'find') { beats(3, 800, 200); later(() => { sfx('knock'); }, 1000); later(() => sfx('creak'), 1900); later(() => { sfx('stinger'); sfx('scream'); const c = $('.cs'); if (c) c.classList.add('boom'); }, 2700); }
-        if (state === 'police') { sfx('siren'); }
-      }]);
+      const kind = state === 'police' ? 'police' : state === 'find' ? 'find' : state === 'gather' ? (i % 2 === 0 ? 'arrive' : 'seated') : (i % 2 === 0 ? 'stairs' : 'corridor');
+      const dur = Math.max(4200, 2200 + e.text.length * 60);
+      scenes.push([dur, () => film(kind, e.t, e.text, () => {
+        if (kind === 'arrive') { sfx('footsteps'); later(() => sfx('knock'), 2200); later(() => sfx('bell'), 2900); }
+        if (kind === 'seated') { sfx('chat'); later(() => sfx('clink'), 1200); later(() => sfx('chat'), 2600); }
+        if (kind === 'stairs') { sfx('footsteps'); later(() => sfx('creak'), 1500); later(() => sfx('footsteps'), 2400); }
+        if (kind === 'corridor') { sfx('footsteps'); later(() => sfx('clink'), 1400); later(() => sfx('footsteps'), 2400); }
+        if (kind === 'find') { beats(3, 800, 200); later(() => sfx('creak'), 1400); later(() => { sfx('stinger'); sfx('scream'); const c = $('.fm'); if (c) c.classList.add('boom'); }, 2600); }
+        if (kind === 'police') { sfx('siren'); later(() => sfx('whoosh'), 400); }
+      })]);
     });
-    // —— 人物：每人一个画面 ——
-    list.forEach((x, i) => scenes.push([3200, () => {
-      const R0 = (C.relations || {})[x.id] || x.bio || '';
-      st().innerHTML = `<div class="dc-sp"><p class="dc-k">在场的人 · ${i + 1} / ${list.length}</p><div class="dc-spav">${portraitOf(x, null)}</div><h3>${esc(x.name)}</h3><p class="dc-role">${esc(x.role)}${x.age ? ' · ' + x.age + ' 岁' : ''}</p><p class="dc-rel">${esc(R0)}</p></div>`;
-      sfx('lit'); if (i % 2 === 0) sfx('heartbeat'); else sfx('stinger');
-    }]));
+    // —— 人物：八个人一个画面 ——
+    scenes.push([7600, () => {
+      st().innerHTML = `<div class="dc-all"><p class="dc-k">在场的人</p><div class="dc-ag">${list.map((x, i) => `<div class="dc-ap" style="animation-delay:${(0.3 + i * 0.45).toFixed(2)}s"><div class="dc-apav">${portraitOf(x, null, 'head')}</div><b>${esc(x.name)}</b><small>${esc(x.role)}</small></div>`).join('')}</div><p class="dc-line" style="animation-delay:${(0.5 + list.length * 0.45).toFixed(2)}s">他们之中，有一个人在说谎。</p></div>`;
+      list.forEach((x, i) => later(() => sfx('lit'), 300 + i * 450)); later(() => sfx('stinger'), 500 + list.length * 450);
+    }]);
     // —— 验尸：播完停住，等玩家自己点“开始调查” ——
     scenes.push([0, () => {
       const rows = [['死者', v.name], ['死亡时间', R.time], ['死因', R.cause], ['发现地点', R.loc ? ((C.locations.find((l) => l.id === R.loc) || {}).name || '') : '']].filter((r) => r[1]);
@@ -11573,6 +11675,29 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     for (let i = 0; i < 12 && pg.scrollHeight > pg.clientHeight + 1 && fs > 10; i++) { fs -= 0.5; pg.style.setProperty('--fs', fs + 'px'); }
   }
 
+  // ---------- 新手引导：四步流程条 + 每一步当前该做什么 ----------
+  const STEPS = [['brief', '看档案'], ['search', '搜证'], ['ask', '审问'], ['accuse', '指认']];
+  function guideBar() {
+    if (G.result) return '';
+    const done = [!!G.cineDone && G.tutDone, G.searches > 0, G.asks > 0, false];
+    const found = G.found.length;
+    let tip = '';
+    if (tab === 'brief') tip = '先读完档案（案情、人物、地图、时间线、死因），然后点“开始调查”。';
+    else if (tab === 'search') tip = G.searches === 0 ? `第 2 步：点一个地点，再点里面的东西搜证。总共能搜 ${C.budget.search} 次，先去最可疑的地方。` : (G.asks === 0 && found >= 3 ? `已找到 ${found} 条线索。下一步：去“审问”，当面问嫌疑人。` : `已找到 ${found} 条线索，还能搜 ${searchLeft()} 次。线索自动存进“笔记”。`);
+    else if (tab === 'ask') tip = !sel ? '第 3 步：点上面一个人物，开始审问。' : (G.asks === 0 ? '点下面的问题向他提问。注意回答里前后矛盾、含糊其辞的地方。' : '回答有破绽？点“出示证物”拿线索质问他。问得差不多了，就去“指认”。');
+    else if (tab === 'notes') tip = '这里是你找到的线索和标记的嫌疑人。自己对照，找出谁在说谎。';
+    else if (tab === 'accuse') tip = '第 4 步：依次选 凶手 → 作案手法 → 动机，最后点“提交指认”。只能指认一次，提交后案件结束。';
+    const cur = tab === 'notes' ? -1 : STEPS.findIndex((x) => x[0] === tab);
+    return `<div class="det-guide"><div class="dg-steps">${STEPS.map((x, i) => `<button data-tab="${x[0]}" class="${i === cur ? 'on' : ''} ${done[i] ? 'ok' : ''}"><i>${done[i] ? '✓' : i + 1}</i>${x[1]}</button>`).join('<span class="dg-ar">›</span>')}</div><p class="dg-tip">${esc(tip)}</p></div>`;
+  }
+  function showTut() {
+    root().insertAdjacentHTML('beforeend', `<div class="det-tut"><div class="dt-card"><h3>怎么玩</h3><ol>
+      <li><b>搜证</b><span>点地点 → 点里面的东西，找到线索。次数有限（${C.budget.search} 次）。</span></li>
+      <li><b>审问</b><span>点人物 → 点问题。回答里的矛盾就是突破口；有了证物，可以“出示证物”质问他（共 ${C.budget.ask} 问）。</span></li>
+      <li><b>指认</b><span>选 凶手、手法、动机，然后提交。只能一次，提交后案件结束。</span></li>
+      <li><b>随时翻档案</b><span>人物关系、地图、时间线都在“档案”里；线索都在“笔记”里。</span></li></ol>
+      <button class="btn primary" data-act="tutok">明白了，去搜证</button></div></div>`);
+  }
   function viewSearch() {
     const cm = clueMap();
     const locs = C.locations.map((l) => {
@@ -11594,7 +11719,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
       const star = G.mark.includes(s.id);
       return `<button class="det-sus ${sel === s.id ? 'on' : ''}" data-sus="${s.id}"><div class="av">${ART.portrait(s.look, { age: s.age, crop: 'head' })}</div><div class="nm">${esc(s.name)}</div><div class="ch">${esc(s.role)}</div>${star ? '<i class="mk">★</i>' : ''}</button>`;
     }).join('');
-    return `<div class="det-sus-row">${chips}</div>${sel ? panel(sus(sel)) : '<div class="card"><p class="det-p det-dim">选一个人开始审问。每个人只说自己知道的，也会隐瞒。</p></div>'}`;
+    return `<div class="det-sus-row">${chips}</div>${sel ? panel(sus(sel)) : '<div class="card"><p class="det-p"><b>审问怎么做</b></p><ol class="det-how"><li>点上面的人物头像，选中一个人</li><li>点下面的问题提问，看他怎么回答</li><li>发现矛盾？点“出示证物”质问</li><li>每个人只说自己知道的，也会隐瞒</li></ol></div>'}`;
   }
   function panel(s) {
     const cm = clueMap();
@@ -11766,6 +11891,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     if (d.bs !== undefined) { sfx('tab'); bstep = Number(d.bs); renderCase(); return window.scrollTo(0, 0); }
     if (d.maploc) { sfx('click'); mapOpen = d.maploc; return renderCase(); }
     if (d.fsel) { sfx('pick'); fsel = d.fsel; return renderCase(); }
+    if (d.tab === 'search' && tab === 'brief' && !G.tutDone) { sfx('click'); G.tutDone = true; save(); tab = 'search'; renderCase(); return showTut(); }
     if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
       const l = C.locations.find((x) => x.id === d.search), got = G.ptr[l.id] || 0;
@@ -11787,6 +11913,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
       if (!confirmSubmit) { confirmSubmit = true; t.textContent = '再点一次确认（提交后不能更改）'; return; }
       confirmSubmit = false; return submit();
     }
+    if (d.act === 'tutok') { const o = $('.det-tut'); if (o) o.remove(); sfx('click'); return window.scrollTo(0, 0); }
     if (d.act === 'cineskip') return endCinema();
     if (d.act === 'cinereplay') return startCinema();
     if (d.act === 'again') { const id = C.id; store.set(key(id), null); start(id); }
