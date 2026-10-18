@@ -194,6 +194,7 @@ const SFX = (() => {
       [4, 11, 19, 25].forEach((d, i) => tone(op(i), t + d, 2.2, Object.assign({ type: 'triangle', gain: 0.03, attack: 1, lp: 700, to: op(i) * 0.97 }, O)));
     },
     // 凶手被抓：手铐咔嗒咔嗒锁上 → 铁链拖动 → 牢门哐当关上
+    siren: (t) => { for (let k = 0; k < 4; k++) { const a = t + k * 0.85; tone(620, a, 0.42, { type: 'sawtooth', to: 900, gain: 0.07, lp: 2200 }); tone(900, a + 0.42, 0.42, { type: 'sawtooth', to: 620, gain: 0.07, lp: 2200 }); } noise(t, 3.4, { f: 300, gain: 0.03 }); },
     cuff: (t) => {
       [0, 0.09, 0.17, 0.24].forEach((d, i) => { noise(t + d, 0.04, { f: 3800 + i * 300, q: 6, gain: 0.32 }); tone(2600 + i * 220, t + d, 0.05, { type: 'square', gain: 0.07, lp: 5000 }); });
       [0.5, 0.58, 0.66].forEach((d, i) => { noise(t + d, 0.05, { f: 4200 + i * 250, q: 7, gain: 0.3 }); tone(3100 + i * 200, t + d, 0.06, { type: 'square', gain: 0.06, lp: 5200 }); });
