@@ -1,0 +1,16 @@
+name: Deploy server to Render
+on:
+  push:
+    branches: [main]
+    paths: ['server/**']
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "RENDER_DEPLOY_HOOK 未设置，跳过"; exit 0; fi
+          curl -fsS -X POST "$HOOK" && echo " 已触发 Render 部署"
