@@ -25,7 +25,16 @@
   const cases = () => window.__CASES || [];
   const caseById = (id) => cases().find((c) => c.id === id);
   const key = (id) => 'det:' + id;
-  const fresh = () => ({ ptr: {}, found: [], asked: {}, conf: {}, broken: [], log: [], mark: [], seen: {}, searches: 0, asks: 0, result: null });
+  const fresh = () => ({ ptr: {}, found: [], asked: {}, conf: {}, broken: [], log: [], mark: [], seen: {}, searches: 0, asks: 0, result: null, order: null });
+  // 嫌疑人的显示顺序：每局随机，免得凶手总排在固定位置
+  function suspectsOrdered() {
+    if (!G.order || G.order.length !== C.suspects.length || !C.suspects.every((x) => G.order.includes(x.id))) {
+      const a = C.suspects.map((x) => x.id);
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+      G.order = a; save();
+    }
+    return G.order.map((id) => sus(id));
+  }
   function save() { if (C) store.set(key(C.id), G); }
 
   const clueMap = () => { const m = {}; C.locations.forEach((l) => l.clues.forEach((k) => { m[k.id] = Object.assign({ loc: l.id, locName: l.name }, k); })); return m; };
@@ -206,7 +215,7 @@
 
   // ---------- 审问 ----------
   function viewAsk() {
-    const chips = C.suspects.map((s) => {
+    const chips = suspectsOrdered().map((s) => {
       const star = G.mark.includes(s.id);
       return `<button class="det-sus ${sel === s.id ? 'on' : ''}" data-sus="${s.id}"><div class="av">${ART.portrait(s.look, { age: s.age, crop: 'head' })}</div><div class="nm">${esc(s.name)}</div><div class="ch">${esc(s.role)}</div>${star ? '<i class="mk">★</i>' : ''}</button>`;
     }).join('');
@@ -261,15 +270,21 @@
     flash = sid; save(); renderCase(); scrollLog();
     const e = G.log.filter((x) => x.s === sid).pop();
     if (!again) {
-      sfx('ask'); reactSfx(moodOfEntry(s, e)); later(() => { try { SFX.voice(sid, s.age, String(e && e.a || '').length); } catch (x) {} }, 160);
+      sfx('ask'); reactSfx(moodOfEntry(s, e), e && e.a, sid); later(() => { try { SFX.voice(sid, s.age, String(e && e.a || '').length); } catch (x) {} }, 160);
       const n = s.topics.filter((x) => unlocked(s, x) && !G.seen[sid].includes(x.id)).length;
       if (n > 0) later(() => toast(`${s.name} 松了口，多出 ${n} 个可问的话题`), 350);
     }
   }
-  function reactSfx(m) {
-    if (m === 'angry') later(() => sfx('growl'), 120);
-    else if (m === 'scared' || m === 'panic' || m === 'shocked') later(() => sfx('gasp'), 120);
-    else if (m === 'weep') later(() => sfx('sob'), 150);
+  // 人物反应音：生气低吼、受惊吸气、哭泣；紧张咳嗽、不耐烦哼声；回答里带叹息或迟疑时叹气 / “嗯……”
+  function reactSfx(m, text, sid) {
+    if (m === 'angry') return later(() => sfx('growl'), 120);
+    if (m === 'scared' || m === 'panic' || m === 'shocked') return later(() => sfx('gasp'), 120);
+    if (m === 'weep') return later(() => sfx('sob'), 150);
+    if (m === 'nervous') return later(() => sfx('cough'), 140);
+    if (m === 'annoyed') return later(() => sfx('huff'), 120);
+    const t = String(text || ''), h = hashS((sid || '') + '|' + t) % 100;
+    if (/唉|叹了|叹气|无奈|算了|罢了|没办法/.test(t)) later(() => sfx('sigh'), 120);
+    else if (/呃|嗯|……|…|我想想|记不清|不太记得|说不好/.test(t) && h < 70) later(() => sfx('hmm'), 120);
   }
   function confront(cid) {
     const s = sus(sel), cm = clueMap(), k = cm[cid]; if (!k) return;
@@ -288,7 +303,7 @@
     }
     G.log.push(e); flash = sel; save(); renderCase(); scrollLog();
     sfx('confront'); later(() => { try { SFX.voice(sel, s.age, String(e.a || '').length); } catch (x) {} }, 420);
-    if (e.crack) later(() => sfx('crack'), 260); else if (e.broke) later(() => sfx('lie'), 260); else reactSfx(moodOfEntry(s, e));
+    if (e.crack) later(() => sfx('crack'), 260); else if (e.broke) later(() => sfx('lie'), 260); else reactSfx(moodOfEntry(s, e), e.a, s.id);
     if (e.crack) { try { const b = FX.burst(root(), 'gold'); setTimeout(() => b.remove(), 4500); } catch (x) {} }
   }
   function scrollLog() { const el = $('#detLog'); if (el) el.scrollTop = el.scrollHeight; }
@@ -310,7 +325,7 @@
     if (r) return resultView(r);
     const A = G.draft || {};
     const sol = C.solution;
-    return `<div class="card"><h4>谁是凶手？</h4><div class="det-pickrow">${C.suspects.map((s) => `<button class="det-opt ${A.culprit === s.id ? 'on' : ''}" data-draft="culprit:${s.id}">${esc(s.name)}<small>${esc(s.role)}</small></button>`).join('')}</div></div>
+    return `<div class="card"><h4>谁是凶手？</h4><div class="det-pickrow">${suspectsOrdered().map((s) => `<button class="det-opt ${A.culprit === s.id ? 'on' : ''}" data-draft="culprit:${s.id}">${esc(s.name)}<small>${esc(s.role)}</small></button>`).join('')}</div></div>
       <div class="card"><h4>${esc(sol.method.q)}</h4>${sol.method.options.map((o, i) => `<button class="det-opt wide ${A.method === i ? 'on' : ''}" data-draft="method:${i}">${esc(o)}</button>`).join('')}</div>
       <div class="card"><h4>${esc(sol.motive.q)}</h4>${sol.motive.options.map((o, i) => `<button class="det-opt wide ${A.motive === i ? 'on' : ''}" data-draft="motive:${i}">${esc(o)}</button>`).join('')}</div>
       <p class="det-dim">只能指认一次。想清楚再提交。</p>

@@ -135,6 +135,24 @@ const SFX = (() => {
     gasp: (t) => noise(t, 0.35, { f: 500, to: 2600, q: 1.1, gain: 0.14 }),
     growl: (t) => { tone(70, t, 0.45, { type: 'sawtooth', to: 55, gain: 0.16, lp: 300 }); noise(t, 0.3, { f: 200, gain: 0.07 }); },
     sob: (t) => { tone(330, t, 0.5, { to: 262, gain: 0.07, attack: 0.15 }); tone(310, t + 0.5, 0.5, { to: 247, gain: 0.06, attack: 0.15 }); },
+    // 人物反应音：叹气 / 紧张咳嗽 / 迟疑的“嗯……” / 不耐烦的哼声
+    sigh: (t) => {
+      noise(t, 1.2, { f: 1100, to: 380, q: 0.7, gain: 0.22, attack: 0.3 });
+      tone(240, t + 0.1, 1.0, { to: 150, gain: 0.05, attack: 0.3, lp: 700 });
+    },
+    cough: (t) => {
+      [0, 0.17].forEach((d, i) => { noise(t + d, 0.1, { f: 1500 - i * 200, q: 1.3, gain: 0.34 }); tone(210 - i * 30, t + d, 0.1, { type: 'sawtooth', to: 120, gain: 0.1, lp: 700 }); });
+      tone(170, t + 0.4, 0.28, { type: 'sawtooth', to: 140, gain: 0.05, lp: 500, attack: 0.08 });
+    },
+    hmm: (t) => {
+      tone(200, t, 0.55, { type: 'sawtooth', to: 168, gain: 0.1, lp: 520, attack: 0.1 });
+      tone(205, t + 0.02, 0.5, { to: 172, gain: 0.05, attack: 0.1 });
+      tone(176, t + 0.62, 0.35, { type: 'sawtooth', to: 150, gain: 0.06, lp: 450, attack: 0.06 });
+    },
+    huff: (t) => {
+      noise(t, 0.2, { f: 2800, to: 900, q: 0.9, gain: 0.3, attack: 0.02 });
+      tone(280, t, 0.18, { type: 'square', to: 170, gain: 0.05, lp: 900 });
+    },
     // 凶手被抓：手铐咔嗒咔嗒锁上 → 铁链拖动 → 牢门哐当关上
     cuff: (t) => {
       [0, 0.09, 0.17, 0.24].forEach((d, i) => { noise(t + d, 0.04, { f: 3800 + i * 300, q: 6, gain: 0.32 }); tone(2600 + i * 220, t + d, 0.05, { type: 'square', gain: 0.07, lp: 5000 }); });
