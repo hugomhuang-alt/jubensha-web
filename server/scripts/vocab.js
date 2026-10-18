@@ -3,7 +3,7 @@
 module.exports = {
   scenes: ['cover', 'dining', 'study', 'library', 'kitchen', 'hall', 'clinic', 'guestroom',
     'coverShip', 'deck', 'cabin', 'engine', 'coverTheater', 'stage', 'backstage', 'cellar',
-    'coverStation', 'lab', 'mourning', 'coverOldHouse', 'garden', 'coverRestaurant', 'coverLibrary', 'coverWedding', 'coverAntique', 'coverBlackout', 'coverHospital', 'coverAuction', 'coverGramophone', 'coverTwins', 'coverHomestay'],
+    'coverStation', 'lab', 'mourning', 'coverOldHouse', 'garden', 'coverRestaurant', 'coverLibrary', 'coverWedding', 'coverAntique', 'coverBlackout', 'coverHospital', 'coverAuction', 'coverGramophone', 'coverTwins', 'coverHomestay', 'cv_teahouse', 'cv_bookclub', 'cv_campus', 'cv_lighthouse', 'cv_vineyard', 'cv_railway', 'cv_filmset', 'cv_museum', 'cv_onsen', 'cv_greenhouse', 'cv_casino', 'cv_observatory', 'cv_bank', 'cv_clanhall', 'cv_deepstation', 'cv_birthday', 'cv_reunion', 'cv_camping', 'cv_yacht', 'cv_circus', 'cv_castle', 'cv_tvshow', 'cv_watertown', 'cv_skiresort', 'cv_colliery', 'cv_oldtrain', 'cv_princepalace', 'cv_biolab', 'cv_island', 'cv_hotel1937'],
   tones: ['none', 'cold', 'warm', 'green', 'purple', 'red', 'sepia'],
   icons: ['key', 'glass', 'door', 'pill', 'cam', 'skull', 'siren', 'clock', 'phone', 'wave', 'fire', 'mask', 'book', 'anchor', 'snow'],
   look: {

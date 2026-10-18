@@ -93,7 +93,11 @@ const FX = (() => {
   const CASE_AMB = {
     ferry: 'mist', lastdish: 'fire', library: 'dust', wedding: 'petals', antique: 'dust', blackout: 'storm', homestay: 'snow',
     troupe: 'spot', liaoyang: 'storm', paimai: 'spot', zujie: 'neon', mirror: 'mist', twins: 'mist',
-    haishen: 'mist', xizhong: 'spot', jiye: 'snow', shoulingye: 'rain', yunqi: 'snow', test: 'snow'
+    haishen: 'mist', xizhong: 'spot', jiye: 'snow', shoulingye: 'rain', yunqi: 'snow', test: 'snow',
+    teahouse: 'fire', bookclub: 'dust', campus: 'dust', lighthouse: 'storm', vineyard: 'dust', railway: 'snow', filmset: 'spot', museum: 'spot', onsen: 'snow', greenhouse: 'mist',
+    casino: 'neon', observatory: 'rain', bank: 'rain', clanhall: 'fire', deepstation: 'mist',
+    birthday: 'fire', reunion: 'dust', camping: 'fire', yacht: 'mist', circus: 'spot', castle: 'storm', tvshow: 'neon', watertown: 'rain', skiresort: 'snow', colliery: 'dust',
+    oldtrain: 'mist', princepalace: 'snow', biolab: 'mist', island: 'storm', hotel1937: 'rain'
   };
   const AMB_SND = { snow: 'snow', mist: 'snow', fire: 'fire', rain: 'rain', storm: 'rain', neon: 'rain' };
   const caseAmb = (id) => CASE_AMB[id] || null;
