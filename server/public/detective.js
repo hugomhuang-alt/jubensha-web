@@ -163,12 +163,13 @@
   const TABS = [['brief', '案情'], ['search', '搜证'], ['ask', '审问'], ['notes', '笔记'], ['accuse', '指认']];
   function renderCase() {
     confirmSubmit = false;
+    if (G.result) tab = 'accuse';
     const body = { brief: viewBrief, search: viewSearch, ask: viewAsk, notes: viewNotes, accuse: viewAccuse }[tab]();
     root().innerHTML = `
       <div class="det-wrap">
         <div class="det-top"><button class="btn small ghost" data-act="list">‹ 返回</button><div class="det-title">${esc(C.title)}</div>
-          <div class="det-tr">${muteBtn()}<div class="det-meter" title="剩余搜证 / 提问次数"><b>${searchLeft()}</b> 搜 · <b>${askLeft()}</b> 问</div></div></div>
-        <nav class="tabs det-tabs">${TABS.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}${k === 'notes' && G.found.length ? `<em>${G.found.length}</em>` : ''}</button>`).join('')}</nav>
+          <div class="det-tr">${muteBtn()}${G.result ? '' : `<div class="det-meter" title="剩余搜证 / 提问次数"><b>${searchLeft()}</b> 搜 · <b>${askLeft()}</b> 问</div>`}</div></div>
+        ${G.result ? '' : `<nav class="tabs det-tabs">${TABS.map(([k, n]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${n}${k === 'notes' && G.found.length ? `<em>${G.found.length}</em>` : ''}</button>`).join('')}</nav>`}
         <div class="det-body">${body}</div>
       </div>`;
     wireFx();
@@ -335,9 +336,9 @@
       ov.classList.add(r.okC ? 'yes' : 'no');
       $('.dr-p', ov).innerHTML = portraitOf(acc, r.okC ? 'panic' : 'angry');
       $('.dr-b', ov).textContent = r.okC ? '没错。就是他。' : '不是他。你抓错人了。';
-      sfx(r.okC ? 'crack' : 'lose');
+      if (r.okC) { sfx('crack'); later(() => sfx('cuff'), 450); } else sfx('laugh');
     }, 2200);
-    later(endReveal, 4900);
+    later(endReveal, r.okC ? 6000 : 5600);
   }
   function endReveal() {
     clearTimers(); const ov = $('.det-reveal'); if (ov) ov.remove();
@@ -370,6 +371,7 @@
     if (d.act === 'home') { sfx('click'); return close(); }
     if (d.act === 'list') { sfx('click'); clearTimers(); C = null; try { FX.ambient('fire'); } catch (x) {} delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
+    if (G.result && (d.tab || d.search || d.ev || d.sus || d.q || d.conf || d.mark || d.draft)) return; // 指认之后案件结束，不能再回去调查
     if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
       const l = C.locations.find((x) => x.id === d.search), got = G.ptr[l.id] || 0;

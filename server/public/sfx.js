@@ -135,6 +135,35 @@ const SFX = (() => {
     gasp: (t) => noise(t, 0.35, { f: 500, to: 2600, q: 1.1, gain: 0.14 }),
     growl: (t) => { tone(70, t, 0.45, { type: 'sawtooth', to: 55, gain: 0.16, lp: 300 }); noise(t, 0.3, { f: 200, gain: 0.07 }); },
     sob: (t) => { tone(330, t, 0.5, { to: 262, gain: 0.07, attack: 0.15 }); tone(310, t + 0.5, 0.5, { to: 247, gain: 0.06, attack: 0.15 }); },
+    // 凶手被抓：手铐咔嗒咔嗒锁上 → 铁链拖动 → 牢门哐当关上
+    cuff: (t) => {
+      [0, 0.09, 0.17, 0.24].forEach((d, i) => { noise(t + d, 0.04, { f: 3800 + i * 300, q: 6, gain: 0.32 }); tone(2600 + i * 220, t + d, 0.05, { type: 'square', gain: 0.07, lp: 5000 }); });
+      [0.5, 0.58, 0.66].forEach((d, i) => { noise(t + d, 0.05, { f: 4200 + i * 250, q: 7, gain: 0.3 }); tone(3100 + i * 200, t + d, 0.06, { type: 'square', gain: 0.06, lp: 5200 }); });
+      for (let i = 0; i < 9; i++) noise(t + 0.95 + i * 0.07 + Math.random() * 0.03, 0.05, { f: 2500 + Math.random() * 2500, q: 4, gain: 0.07 + Math.random() * 0.05 });
+      const b = t + 1.75;
+      [196, 311, 523, 817, 1290].forEach((f, i) => tone(f, b, 1.5 - i * 0.18, { type: 'triangle', gain: 0.2 / (1 + i * 0.6) }));
+      noise(b, 0.25, { f: 900, q: 1, gain: 0.5 }); tone(60, b, 0.5, { to: 38, gain: 0.7 });
+      tone(120, b + 0.55, 0.3, { type: 'square', to: 90, gain: 0.12, lp: 600 }); noise(b + 0.55, 0.08, { f: 1800, q: 3, gain: 0.25 });
+    },
+    // 凶手逃脱：低沉的奸笑 “嘿嘿嘿……哈哈哈哈”
+    laugh: (t) => {
+      const ha = (at, f0, dur, g, vib) => {
+        const o = ac.createOscillator(), lfo = ac.createOscillator(), lg = ac.createGain(), env = ac.createGain();
+        const f1 = ac.createBiquadFilter(), f2 = ac.createBiquadFilter();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f0 * 0.8, at + dur);
+        lfo.frequency.value = vib || 7; lg.gain.value = f0 * 0.03; lfo.connect(lg); lg.connect(o.frequency);
+        f1.type = 'bandpass'; f1.Q.value = 5; f1.frequency.setValueAtTime(700, at); f1.frequency.exponentialRampToValueAtTime(1100, at + dur * 0.6);
+        f2.type = 'bandpass'; f2.Q.value = 6; f2.frequency.value = 2300;
+        env.gain.setValueAtTime(0.0001, at); env.gain.linearRampToValueAtTime(g, at + 0.03); env.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+        o.connect(f1); o.connect(f2); f1.connect(env); f2.connect(env); env.connect(sfxBus);
+        o.start(at); lfo.start(at); o.stop(at + dur + 0.05); lfo.stop(at + dur + 0.05);
+        noise(at, dur * 0.7, { f: 1500, q: 1.2, gain: g * 0.22, attack: 0.02 });
+      };
+      [0, 0.2, 0.4].forEach((d, i) => ha(t + d, 150 - i * 6, 0.14, 0.55, 9));
+      [0.85, 1.12, 1.4, 1.68].forEach((d, i) => ha(t + d, 175 - i * 9, 0.2, 0.6, 8));
+      ha(t + 2.05, 165, 0.9, 0.55, 6.5);
+      tone(55, t + 0.85, 1.9, { type: 'sawtooth', gain: 0.07, lp: 220, attack: 0.3 });
+    },
     win: (t) => {
       [261.6, 329.6, 392, 523.3, 659.3, 784].forEach((f, i) => { tone(f, t + i * 0.13, 1.8, { type: 'triangle', gain: 0.16 }); tone(f * 2, t + i * 0.13, 1, { gain: 0.04 }); });
       [130.8, 196].forEach((f) => tone(f, t, 3.2, { gain: 0.2, attack: 0.1 }));
