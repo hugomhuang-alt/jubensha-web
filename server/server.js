@@ -89,10 +89,13 @@ function cleanName(s) {
   return String(s || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 12);
 }
 
+// ---------- 狼人杀 ----------
+const WW = require('./werewolf')({ send, rid, uid, shuffle, cleanName, TIME_SCALE, REQUIRE_AUTH, crypto, codeTaken: (c) => rooms.has(c) });
+
 // ---------- 房间 ----------
 function createRoom(scriptId, cap) {
   let code;
-  do { code = rid(4); } while (rooms.has(code));
+  do { code = rid(4); } while (rooms.has(code) || WW.rooms.has(code));
   const sc = SCRIPTS.byId(scriptId) || SCRIPTS.list.find((s) => !s.internal) || SCRIPTS.list[0];
   const room = {
     code, players: [], hostId: null, phase: 'lobby', phaseEnd: null, timer: null,
@@ -388,6 +391,7 @@ function onMessage(ws, raw) {
 
   const ctx = ws.ctx; // { room, player }
   const err = (m) => send(ws, { type: 'error', message: m });
+  if (msg.type.slice(0, 3) === 'ww-') return WW.handle(ws, msg, err);
 
   // 加入前的消息
   if (msg.type === 'auth') {
@@ -625,6 +629,7 @@ function onMessage(ws, raw) {
 }
 
 function onClose(ws) {
+  try { WW.onClose(ws); } catch (e) {}
   const ctx = ws.ctx;
   if (!ctx) return;
   const { room, player } = ctx;

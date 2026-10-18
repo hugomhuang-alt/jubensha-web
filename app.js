@@ -100,6 +100,7 @@ function connect() {
     if (account) send({ type: 'auth', token: account.token });
     const s = session();
     if (s && (entered || !(SERVER || needAuth))) { resuming = true; send({ type: 'rejoin', code: s.code, token: s.token }); }
+    else if (!s && WWG.hasSession() && (entered || !(SERVER || needAuth))) WWG.resume();
   };
   ws.onclose = () => {
     updateNet(); setBanner();
@@ -111,6 +112,11 @@ function connect() {
 }
 
 function onMsg(m) {
+  if (m.type.slice(0, 3) === 'ww-') {
+    try { WWG.onMsg(m); } catch (e) { console.error(e); }
+    if (m.type === 'ww-rejoin-failed' && (visibleScreen() === '#auth' || !visibleScreen())) showHub();
+    return;
+  }
   switch (m.type) {
     case 'hello':
       ICE = m.ice || ICE;
@@ -143,7 +149,7 @@ function onMsg(m) {
       break;
     case 'rejoin-failed':
       resuming = false; clearSession();
-      if (!S) showHome();
+      if (!S && (visibleScreen() === '#auth' || !visibleScreen())) showHub();
       break;
     case 'state':
       clockOffset = m.now - Date.now();
@@ -178,6 +184,7 @@ function onMsg(m) {
       showHome();
       break;
     case 'error':
+      if (window.WWG && WWG.visible() && WWG.onMsg(m)) break;
       if (pendingJoin && /密码/.test(m.message || '')) { askPassword(pendingJoin, true); break; }
       toast(m.message);
       break;
@@ -217,9 +224,22 @@ function showHome() {
   if (!heroDone) { heroDone = true; $('#artSolo').innerHTML = ART.scene('study'); $('#artMulti').innerHTML = ART.scene('coverTheater'); }
   if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80, global: true });
   $('#home').hidden = false; $('#mp').hidden = true; $('#auth').hidden = true;
-  $('#room').hidden = true;
+  $('#room').hidden = true; $('#hub').hidden = true; $('#ww').hidden = true;
+  $('#homeBack').hidden = false;
   renderAcct();
 }
+function showHub() {
+  S = null; prevIds = null; prevCode = null; lastPhase = null; lastSpeaker = null;
+  delete document.body.dataset.tone; document.body.dataset.ww = '';
+  try { SFX.music('menu', 'menu'); SFX.tension(false); SFX.amb('snow'); } catch (e) {}
+  FX.ambient('snow');
+  if (!hubArt) { hubArt = true; $('#artHubScript').innerHTML = ART.scene('coverTheater'); $('#artHubWolf').innerHTML = ART.scene('wolfmoon'); }
+  if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 80, global: true });
+  ['#home', '#mp', '#auth', '#room', '#ww', '#det'].forEach((x) => { const e = $(x); if (e) e.hidden = true; });
+  $('#hub').hidden = false;
+  renderAcct();
+}
+let hubArt = false;
 function me() { return S && S.players.find((p) => p.id === myId); }
 function isHost() { return S && S.hostId === myId; }
 function fmt(sec) {
@@ -852,36 +872,39 @@ function startSplash() {
   setTimeout(() => snd('logo'), 250);
   setTimeout(done, 4000);
 }
-function visibleScreen() { return ['#home', '#mp', '#auth', '#room', '#det'].find((s) => !$(s).hidden); }
+function visibleScreen() { return ['#hub', '#ww', '#home', '#mp', '#auth', '#room', '#det'].find((s) => !$(s).hidden); }
 function route(first) {
   const v = visibleScreen();
   if (first) {
     if (SERVER || needAuth) return showAuth(); // 联网版：每次打开都先到登录页（登录 / 注册 / 游客）
-    if (session()) return; // 正在重连房间，等 state；超时后由兜底定时器显示首页
-    if (account || guest) return showHome();
-    if (gotHello) return showHome();
+    if (session() || WWG.hasSession()) return; // 正在重连房间，等 state；超时后由兜底定时器显示首页
+    if (account || guest) return showHub();
+    if (gotHello) return showHub();
     return; // 等 hello
   }
-  if (!v) { if (session() && !(SERVER || needAuth)) return; return ((needAuth || SERVER) && !entered) ? showAuth() : showHome(); }
-  if (v === '#auth' && (SERVER || needAuth ? entered : true)) showHome();
+  if (!v) { if ((session() || WWG.hasSession()) && !(SERVER || needAuth)) return; return ((needAuth || SERVER) && !entered) ? showAuth() : showHub(); }
+  if (v === '#auth' && (SERVER || needAuth ? entered : true)) showHub();
 }
 // 过了登录页：有没有结束的房间要回去？没有就进首页
 function enterApp() {
   entered = true;
-  const s = session();
+  const s = session(), hasWW = WWG.hasSession();
+  const fb = () => { if (!S && visibleScreen() === '#auth') showHub(); };
   if (s && connected()) {
     resuming = true; toast('正在回到你的房间…');
     send({ type: 'rejoin', code: s.code, token: s.token });
-    setTimeout(() => { if (!S && visibleScreen() === '#auth') showHome(); }, 9000);
-  } else if (s) {
+    setTimeout(fb, 9000);
+  } else if (!s && hasWW && connected()) {
+    toast('正在回到你的狼人杀房间…'); WWG.resume(); setTimeout(fb, 9000);
+  } else if (s || hasWW) {
     toast('连上服务器后会回到你的房间');
-    setTimeout(() => { if (!S && visibleScreen() === '#auth') showHome(); }, 9000);
-  } else showHome();
+    setTimeout(fb, 9000);
+  } else showHub();
 }
 function afterHello() { if (splashDone) route(false); }
 function showAuth() {
   S = null; FX.ambient('snow'); try { SFX.music('menu', 'menu'); } catch (e) {}
-  ['#home', '#mp', '#room'].forEach((s) => ($(s).hidden = true));
+  ['#home', '#mp', '#room', '#hub', '#ww'].forEach((s) => ($(s).hidden = true));
   $('#auth').hidden = false;
   const ac = $('#auContinue'); if (ac) { ac.hidden = !account; if (account) { ac.textContent = '继续：' + account.nick; if (!$('#auEmail').value) $('#auEmail').value = account.email || ''; } }
   if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 60, global: true });
@@ -890,6 +913,7 @@ function renderAcct() {
   const a = $('#acct'); if (!a) return;
   a.hidden = !account;
   if (account) { $('#acctNm').textContent = account.nick; $('#acctAv').textContent = account.nick.slice(0, 1); }
+  const h = $('#hubAcct'); if (h) { h.hidden = !account; if (account) { $('#hubNm').textContent = account.nick; $('#hubAv').textContent = account.nick.slice(0, 1); } }
 }
 let authMode = 'login';
 function setAuthMode(m) {
@@ -928,7 +952,12 @@ function initAccountUI() {
   $('#auGuest').addEventListener('click', () => { guest = true; enterApp(); });
   $('#auContinue').addEventListener('click', () => { guest = false; if (connected() && account) send({ type: 'auth', token: account.token }); enterApp(); });
   $('#auSwitch').addEventListener('click', () => setAuthMode(authMode === 'login' ? 'register' : 'login'));
-  $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; entered = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
+  const logout = () => { clearAcct(); authedWs = false; guest = false; entered = false; try { ws && ws.close(); } catch (e) {} showAuth(); };
+  $('#logoutBtn').addEventListener('click', logout);
+  $('#hubLogout').addEventListener('click', logout);
+  $('#hubScript').addEventListener('click', () => { snd('click'); showHome(); });
+  $('#hubWolf').addEventListener('click', () => { snd('click'); if (needAuth && !account) { toast('联机游戏需要先登录'); return showAuth(); } WWG.open(); });
+  $('#homeBack').addEventListener('click', () => { snd('click'); showHub(); });
   $('#mpBtn').addEventListener('click', () => {
     if (needAuth && !account) { toast('多人游戏需要先登录'); return showAuth(); }
     showMp();
@@ -1084,8 +1113,10 @@ function goBack() {
     closeModal(modal); return true;
   }
   if (!$('#det').hidden) return !!(window.DET && DET.back && DET.back());
+  if (!$('#ww').hidden) return WWG.back();
   if (!$('#mp').hidden) { stopRoomPoll(); showHome(); return true; }
   if (!$('#room').hidden) { askLeave(); return true; }
+  if (!$('#home').hidden) { showHub(); return true; }
   return false;
 }
 window.__back = () => goBack();
@@ -1095,7 +1126,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') goBack(); 
 
 // 先把首页显示出来（单人侦探不需要服务器）；联机服务器在后台连接，连上之前提示“正在连接”
 startSplash();
-if (session()) setTimeout(() => { if (!S && $('#room').hidden && $('#det').hidden && splashDone) showHome(); }, 3500);
+if (session() || WWG.hasSession()) setTimeout(() => { if (!S && !WWG.isOpen() && $('#room').hidden && $('#det').hidden && splashDone && !visibleScreen()) showHub(); }, 3500);
 try { $('#ver').textContent = window.__BUILD ? '版本 ' + window.__BUILD : ''; } catch (e) {}
 wakeServer();
 connect();

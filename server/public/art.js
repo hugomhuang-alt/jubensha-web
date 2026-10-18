@@ -226,6 +226,18 @@ const ART = (() => {
   const vignette = (u) => `<defs><radialGradient id="vn${u}" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></radialGradient></defs><rect width="400" height="240" fill="url(#vn${u})"/><radialGradient id="bl${u}" cx=".5" cy=".38" r=".6"><stop offset="0" stop-color="#ffe9c0" stop-opacity=".16"/><stop offset="1" stop-color="#ffe9c0" stop-opacity="0"/></radialGradient><rect width="400" height="240" fill="url(#bl${u})"/>`;
 
   const SCENES = {
+    // 狼人杀：大月亮、林间狼影
+    wolfmoon(u) {
+      return `<defs><linearGradient id="sk${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050610"/><stop offset=".65" stop-color="#1a1230"/><stop offset="1" stop-color="#3a1f3a"/></linearGradient>
+        <radialGradient id="mn${u}"><stop offset="0" stop-color="#fff0d0" stop-opacity=".95"/><stop offset=".3" stop-color="#ffcf9a" stop-opacity=".3"/><stop offset="1" stop-color="#ffcf9a" stop-opacity="0"/></radialGradient></defs>
+        <rect width="400" height="240" fill="url(#sk${u})"/>${stars(40, 7)}
+        <circle cx="290" cy="82" r="92" fill="url(#mn${u})"/><circle cx="290" cy="82" r="34" fill="#fbe9c4"/><circle cx="278" cy="72" r="6" fill="#ecd3a2"/><circle cx="300" cy="92" r="4" fill="#ecd3a2"/><circle cx="296" cy="68" r="3" fill="#ecd3a2"/>
+        <path d="M-10 170L60 128L110 156L170 116L230 160L300 130L360 150L410 128V240H-10Z" fill="#150f26"/>
+        <g>${[14, 40, 66, 96, 330, 358, 384].map((x, i) => pine(x, 196 + (i % 3) * 4, 1.0 + (i % 4) * 0.15, false)).join('')}</g>
+        <path d="M-10 206C60 196 140 200 200 206S340 200 410 204V240H-10Z" fill="#0a0814"/>
+        <g fill="#05040a"><path d="M196 206c-4-12-2-24 6-30l-2-12 8 8c6-4 14-4 20 2l10-6-2 10c8 6 10 16 6 28l-6 0 -2 6h-6l-1-8h-12l-1 8h-6l-2-6z"/><path d="M262 178l6 8-4 2z"/></g>
+        <circle cx="213" cy="170" r="1.6" fill="#ffd95a"/><circle cx="220" cy="170" r="1.6" fill="#ffd95a"/>`;
+    },
     cover(u) {
       const win = [];
       for (let r = 0; r < 2; r++) for (let c = 0; c < 5; c++) {

@@ -155,6 +155,12 @@ const SFX = (() => {
     sonar: (t) => { tone(1250, t, 1.6, { gain: 0.07, attack: 0.005 }); tone(1250, t + 0.02, 0.5, { gain: 0.03, lp: 1500 }); },
     bubble: (t) => { const f = 420 + Math.random() * 500; tone(f, t, 0.12, { to: f * 1.7, gain: 0.07, attack: 0.01 }); if (Math.random() < 0.5) tone(f * 1.2, t + 0.1, 0.1, { to: f * 2, gain: 0.05 }); },
     hullcreak: (t) => { tone(70, t, 1.6, { type: 'sawtooth', to: 52, gain: 0.07, lp: 220, attack: 0.5 }); noise(t + 0.2, 0.9, { f: 300, to: 160, q: 3, gain: 0.05, attack: 0.4 }); },
+    // 狼嚎（狼人杀入夜）
+    howl: (t) => { tone(300, t, 2.2, { to: 560, gain: 0.07, attack: 0.5, lp: 1200 }); tone(450, t + 1.4, 1.6, { to: 260, gain: 0.07, attack: 0.1, lp: 1000 }); tone(602, t + 0.05, 2.2, { to: 1100, gain: 0.02, attack: 0.5, lp: 1500 }); },
+    // 天亮鸡鸣
+    rooster: (t) => { [[620, 880], [700, 1040], [660, 760]].forEach(([a, b], i) => tone(a, t + i * 0.32, 0.3, { type: 'sawtooth', to: b, gain: 0.05, lp: 1800, attack: 0.04 })); tone(560, t + 1.0, 0.7, { type: 'sawtooth', to: 380, gain: 0.05, lp: 1400, attack: 0.05 }); },
+    // 枪响 / 遗言结束
+    gunshot: (t) => { noise(t, 0.25, { f: 1800, to: 300, q: 0.5, gain: 0.5 }); tone(90, t, 0.4, { to: 40, gain: 0.4 }); },
     owl: (t) => { [0, 0.5].forEach((d, i) => tone(i ? 340 : 400, t + d, 0.4, { to: i ? 290 : 360, gain: 0.07, attack: 0.08, lp: 900 })); },
     cricket: (t) => { for (let i = 0; i < 4; i++) tone(4300, t + i * 0.06, 0.035, { type: 'square', gain: 0.012, lp: 5200 }); },
     chip: (t) => { for (let i = 0; i < 3; i++) { tone(2600 + Math.random() * 600, t + i * 0.05, 0.08, { type: 'triangle', gain: 0.06 }); noise(t + i * 0.05, 0.03, { f: 3800, gain: 0.05 }); } },

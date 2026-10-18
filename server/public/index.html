@@ -7,6 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <title>线上剧本杀</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="werewolf.css">
 </head>
 <body>
 <div id="banner" class="banner" hidden>连接已断开，正在重连…</div>
@@ -16,7 +17,7 @@
 
 <main id="home" class="screen home" hidden>
   <div class="bg-fade"></div>
-  <header class="s-top"><span class="mini-mark"><svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+  <header class="s-top"><button class="back home-back" id="homeBack" aria-label="游戏列表" hidden>‹</button><span class="mini-mark"><svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
 <circle class="e-ring" cx="60" cy="60" r="54" fill="none" stroke="url(#gf)" stroke-width="1.6" pathLength="100"/>
 <circle class="e-ring2" cx="60" cy="60" r="49" fill="none" stroke="url(#gf)" stroke-width=".5" opacity=".6" pathLength="100"/>
 <g class="e-lens" fill="none" stroke="url(#gf)" stroke-width="1.5"><circle cx="48" cy="60" r="24" pathLength="100"/><circle cx="72" cy="60" r="24" pathLength="100"/></g>
@@ -27,6 +28,28 @@
     <button id="mpBtn" class="door gold"><div class="door-art" id="artMulti"></div><div class="door-tx"><small>和朋友一起</small><b>多人剧本杀</b><span>建房间，或加入正在等人的房间</span></div><i class="door-go"></i></button>
   </section>
   <footer class="s-foot"><div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div><button class="link" id="qualBtn">画质：自动</button><p class="fine ver" id="ver"></p><p class="fine" id="homeFine"></p></footer>
+</main>
+
+<main id="hub" class="screen hub" hidden>
+  <div class="bg-fade"></div>
+  <header class="s-top"><span class="mini-mark"><svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+<circle class="e-ring" cx="60" cy="60" r="54" fill="none" stroke="url(#gf)" stroke-width="1.6" pathLength="100"/>
+<circle class="e-ring2" cx="60" cy="60" r="49" fill="none" stroke="url(#gf)" stroke-width=".5" opacity=".6" pathLength="100"/>
+<g class="e-lens" fill="none" stroke="url(#gf)" stroke-width="1.5"><circle cx="48" cy="60" r="24" pathLength="100"/><circle cx="72" cy="60" r="24" pathLength="100"/></g>
+<path class="e-gem" d="M60 44l7 16-7 16-7-16z" fill="url(#gf)"/></svg><b>abba</b></span><div class="s-top-r"><div class="acct" id="hubAcct" hidden><span class="acct-av" id="hubAv"></span><span class="acct-nm" id="hubNm"></span><button class="link" id="hubLogout">退出</button></div><button class="btn small ghost sfx-toggle" aria-label="声音开关">🔊</button></div></header>
+  <section class="s-title"><h1>今晚玩什么</h1><p class="sub">选一个游戏开始</p></section>
+  <section class="doors">
+    <button id="hubScript" class="door gold"><div class="door-art" id="artHubScript"></div><div class="door-tx"><small>推理 · 单人 / 多人</small><b>剧本杀</b><span>28 桩单人案件，20 个多人剧本，找出说谎的人</span></div><i class="door-go"></i></button>
+    <button id="hubWolf" class="door wolf"><div class="door-art" id="artHubWolf"></div><div class="door-tx"><small>6–12 人 · 可补机器人</small><b>狼人杀</b><span>狼人、预言家、女巫、猎人、守卫……天黑请闭眼</span></div><i class="door-go"></i></button>
+    <div class="door soon" aria-disabled="true"><div class="door-art"></div><div class="door-tx"><small>敬请期待</small><b>更多游戏</b><span>正在准备中</span></div></div>
+  </section>
+  <footer class="s-foot"><div class="net" data-s="wait" role="status"><i></i><span>正在连接联机服务器…</span></div></footer>
+</main>
+
+<main id="ww" class="screen ww" hidden>
+  <div class="bg-fade"></div>
+  <header class="ww-top"><button class="back" id="wwBack" aria-label="返回">‹</button><h2 id="wwTitle">狼人杀</h2><div class="ww-top-r"><span class="ww-timer" id="wwTimer"></span><span class="net mini" data-s="wait"><i></i><span>连接中</span></span><button class="btn small ghost sfx-toggle" aria-label="声音开关">🔊</button></div></header>
+  <div id="wwBody" class="ww-body"></div>
 </main>
 
 <main id="auth" class="screen auth" hidden>
@@ -119,6 +142,7 @@
 <script src="sfx.js"></script>
 <script src="fx.js"></script>
 <script src="detective.js"></script>
+<script src="werewolf.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
