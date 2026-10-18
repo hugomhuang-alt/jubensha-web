@@ -980,3 +980,27 @@ html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, h
 .mp-bar { position: sticky; bottom: 0; z-index: 20; margin: 8px -22px 0; padding: 12px 22px max(14px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(11, 15, 26, 0), rgba(11, 15, 26, .96) 22%); display: grid; gap: 8px; }
 .mp-bar .cap-row { margin: 0; } .mp-bar .fine { margin: 0; text-align: center; font-size: 12px; }
 .lob-act { position: sticky; bottom: 0; z-index: 20; margin: 0 -4px; padding: 12px 4px max(12px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(11, 15, 26, 0), rgba(11, 15, 26, .96) 22%); }
+
+/* 开场简报：四步 */
+.det-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
+.det-steps button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border: 0; background: transparent; color: var(--muted); font-size: 12px; }
+.det-steps i { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal; font-weight: 700; border: 1px solid var(--line); background: #0f1626; }
+.det-steps .on { color: var(--accent); } .det-steps .on i { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.det-steps .done i { border-color: var(--accent); color: var(--accent); }
+.det-bnav { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; margin-top: 16px; position: sticky; bottom: 0; padding: 10px 0 max(10px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(11,15,26,0), rgba(11,15,26,.95) 30%); }
+.det-bnav .btn.primary { width: 100%; }
+.det-rels { display: grid; gap: 10px; margin-bottom: 12px; }
+.det-rel { display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 14px; background: rgba(23, 32, 51, .8); border: 1px solid var(--line); }
+.det-rel .det-av { width: 64px; } .det-rel b { display: block; font-size: 16px; } .det-rel small { color: var(--muted); } .det-rel p { margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: #d6d2e4; }
+.det-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.det-links li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 14px; } .det-links i { font-style: normal; color: var(--accent); } .det-links span { flex-basis: 100%; color: var(--muted); font-size: 13px; }
+.det-map { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px; border-radius: 16px; border: 1px dashed var(--line); background: rgba(15, 22, 38, .5); }
+.det-mt { position: relative; text-align: left; padding: 0 0 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel2); overflow: hidden; display: flex; flex-direction: column; gap: 4px; }
+.det-mt-art { height: 84px; overflow: hidden; } .det-mt-art svg, .det-mt-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.det-mt b { padding: 0 10px; font-size: 15px; } .det-mt small { padding: 0 10px; color: var(--muted); font-size: 12px; } .det-mt p { margin: 0; padding: 0 10px; font-size: 13px; line-height: 1.55; color: #d6d2e4; }
+.det-mt em { position: absolute; top: 6px; right: 6px; font-style: normal; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: rgba(200, 60, 70, .85); }
+.det-mt.dead { border-color: rgba(229, 123, 115, .6); } .det-mt.open { grid-column: 1 / -1; border-color: var(--accent); }
+.det-report { border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, #1c2236, #141a2a); padding: 14px; }
+.det-rp-h { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px dashed var(--line); margin-bottom: 8px; font-family: var(--serif); font-size: 18px; letter-spacing: .12em; } .det-rp-h i { font-style: normal; font-size: 12px; color: var(--danger); border: 1px solid var(--danger); padding: 1px 8px; border-radius: 4px; transform: rotate(-4deg); }
+.det-rp-r { display: grid; grid-template-columns: 74px 1fr; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 14px; line-height: 1.6; } .det-rp-r b { color: var(--muted); font-weight: 600; }
+.det-rp-n { padding-top: 10px; font-size: 14px; } .det-rp-n b { color: var(--muted); } .det-rp-n ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.7; }

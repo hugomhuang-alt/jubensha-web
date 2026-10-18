@@ -21,6 +21,18 @@ function check(c) {
   const S = {}; const sus = c.suspects || [];
   if (sus.length !== 8) e('suspects 需要 8 个');
   for (const s of sus) S[s.id] = s;
+  // 开场简报：人物关系 + 死亡报告
+  if (!c.relations || typeof c.relations !== 'object') e('缺 relations（每个嫌疑人与死者的一句话关系）');
+  else for (const x of sus) { const t = c.relations[x.id]; if (typeof t !== 'string' || t.length < 4 || t.length > 28) e(`relations.${x.id} 需 4–28 字`); }
+  if (!Array.isArray(c.links) || c.links.length < 2 || c.links.length > 5) e('links 需要 2–5 条嫌疑人之间的关系');
+  else for (const k of c.links) { if (!S[k.a] || !S[k.b] || k.a === k.b) e('links 里 a/b 必须是不同的嫌疑人 id'); if (typeof k.text !== 'string' || k.text.length < 4 || k.text.length > 24) e('links.text 需 4–24 字'); }
+  const dr = c.deathReport;
+  if (!dr) e('缺 deathReport'); else {
+    for (const k of ['time', 'cause', 'scene']) if (typeof dr[k] !== 'string' || dr[k].length < 4) e(`deathReport.${k} 缺失或太短`);
+    if (dr.scene && dr.scene.length > 60) e('deathReport.scene ≤60 字');
+    if (dr.loc != null && !(c.locations || []).some((l) => l.id === dr.loc)) e('deathReport.loc 必须是地点 id 或省略');
+    if (!Array.isArray(dr.notes) || dr.notes.length < 2 || dr.notes.length > 4 || dr.notes.some((n) => typeof n !== 'string' || n.length < 6 || n.length > 40)) e('deathReport.notes 需 2–4 条，每条 6–40 字');
+  }
   const sol = c.solution || {};
   if (!S[sol.culprit]) e('culprit 不存在');
   for (const k of ['method', 'motive']) { const m = sol[k]; if (!m || !m.options || m.options.length !== 4 || !(m[k] !== 0) && false) {} if (!m || !m.options || m.options.length !== 4 || !(m.correct >= 0 && m.correct <= 3)) e('solution.' + k + ' 不合法'); }

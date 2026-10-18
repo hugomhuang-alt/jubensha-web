@@ -335,6 +335,33 @@ const SOLUTION = {
 };
 
 module.exports = Object.assign({}, BASE, {
+  relations: {
+    qiu: '死者的双胞胎妹妹，今晚穿红裙',
+    xie: '死者的丈夫，近来分房住',
+    liang: '林家三十年的律师，管信托交割',
+    song: '看着姐妹长大的家庭医生',
+    zhou: '带大姐妹俩的管家',
+    liu: '死者的继母，基金会执行人',
+    su: '妹妹知秋的大学室友兼闺蜜',
+    cheng: '晚宴上来历不明的陌生访客'
+  },
+  links: [
+    { a: 'su', b: 'song', text: '苏念的母亲长年由宋医生照料' },
+    { a: 'xie', b: 'liu', text: '都向梁律师打听过信托条款' },
+    { a: 'liang', b: 'song', text: '同为林家三十年的老人' },
+    { a: 'zhou', b: 'qiu', text: '周妈从小带大的孩子' }
+  ],
+  deathReport: {
+    time: '约 21:00–23:10',
+    cause: '疑似溺水，尚无正式尸检',
+    scene: '22:58苏念在码头发现水中有人呼救，宋医生23:05赶到，判断已无生命体征。',
+    loc: 'garden',
+    notes: [
+      '遗体浸泡海水，体温偏低，难以精确推断死亡时间',
+      '台风夜雨势不停，码头木板湿滑',
+      '警方凌晨一点半才到，现场暂无正式勘验'
+    ]
+  },
   locations: [LOC_HALL, LOC_DINING, LOC_CELLAR, LOC_GARDEN, LOC_GUEST, LOC_STUDY],
   suspects: [S_QIU, S_XIE, S_LIANG, S_SONG, S_ZHOU, S_LIU, S_SU, S_CHENG],
   solution: SOLUTION

@@ -25,6 +25,7 @@
   const cases = () => window.__CASES || [];
   const caseById = (id) => cases().find((c) => c.id === id);
   const key = (id) => 'det:' + id;
+  let bstep = 0, mapOpen = null;
   const fresh = () => ({ ptr: {}, found: [], asked: {}, conf: {}, broken: [], log: [], mark: [], seen: {}, searches: 0, asks: 0, result: null, order: null });
   // 嫌疑人的显示顺序：每局随机，免得凶手总排在固定位置
   function suspectsOrdered() {
@@ -136,7 +137,7 @@
     C = caseById(id); if (!C) return;
     const g = store.get(key(id));
     G = g && g.log ? Object.assign(fresh(), g) : fresh();
-    tab = G.result ? 'accuse' : 'brief'; sel = null; pickClue = false; lastClue = null; flash = null;
+    tab = G.result ? 'accuse' : 'brief'; bstep = 0; mapOpen = null; sel = null; pickClue = false; lastClue = null; flash = null;
     clearTimers();
     document.body.dataset.tone = C.tone || 'none';
     try { FX.ambient(FX.caseAmb(C.id) || 'dust'); } catch (e) {}
@@ -186,16 +187,50 @@
   }
   function wireFx() { try { root().querySelectorAll('.det-fx').forEach((el) => FX.sparkle(el, 6, { min: 5, max: 8 })); } catch (e) {} }
 
+  // ---------- 开场简报：案情 → 人物关系 → 地图 → 验尸，然后才搜证 ----------
+  const BSTEPS = ['案情', '人物', '地图', '验尸'];
   function viewBrief() {
-    return `
-      <div class="det-hero">${ART.sceneFor(C.id, 'cover', C.cover, { title: C.title, text: C.title + C.tagline })}<div class="det-hero-t"><p class="eyebrow">委托</p><h2>${esc(C.title)}</h2></div></div>
-      <div class="card rise" style="animation-delay:.15s"><p class="det-p">${esc(C.brief).replace(/\n/g, '<br>')}</p></div>
-      <div class="card det-victim rise" style="animation-delay:.35s"><div class="det-av">${ART.portrait(C.victim.look, { age: C.victim.age || 50 })}</div>
-        <div><h4>死者 · ${esc(C.victim.name)}</h4><p class="det-p">${esc(C.victim.desc)}</p></div></div>
-      <div class="card rise" style="animation-delay:.55s"><h4>已知事实</h4><ul class="det-ul">${C.publicFacts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>
-      <div class="card rise" style="animation-delay:.75s"><h4>现场时间线</h4><div class="det-tl">${C.timeline.map((t) => `<div><b>${esc(t.t)}</b><span>${esc(t.text)}</span></div>`).join('')}</div></div>
-      <div class="card rise" style="animation-delay:.95s"><h4>规则</h4><p class="det-p">搜证和提问都有次数限制。线索会随着你反复搜查同一个地点而逐渐深入。把你找到的证物拿给嫌疑人看，谎言就会露出破绽。审问要循序渐进：先聊基本情况，对方松了口才问得出更敏感的话题；留意他们的表情，神色不对的地方往往有文章。准备好了，就去“指认”。</p>
-      <button class="btn primary det-fx" data-tab="search">开始调查</button></div>`;
+    bstep = Math.max(0, Math.min(BSTEPS.length - 1, bstep));
+    const dots = `<div class="det-steps">${BSTEPS.map((n, i) => `<button data-bs="${i}" class="${i === bstep ? 'on' : i < bstep ? 'done' : ''}"><i>${i + 1}</i><span>${n}</span></button>`).join('')}</div>`;
+    const body = [briefCase, briefPeople, briefMap, briefReport][bstep]();
+    const last = bstep === BSTEPS.length - 1;
+    const nav = `<div class="det-bnav">${bstep > 0 ? '<button class="btn" data-bs="' + (bstep - 1) + '">上一步</button>' : ''}${last ? '<button class="btn primary det-fx" data-tab="search">开始调查</button>' : '<button class="btn primary det-fx" data-bs="' + (bstep + 1) + '">下一步：' + BSTEPS[bstep + 1] + '</button>'}</div>`;
+    return dots + body + nav;
+  }
+  function briefCase() {
+    return `<div class="det-hero">${ART.sceneFor(C.id, 'cover', C.cover, { title: C.title, text: C.title + C.tagline })}<div class="det-hero-t"><p class="eyebrow">委托</p><h2>${esc(C.title)}</h2></div></div>
+      <div class="card rise" style="animation-delay:.1s"><p class="det-p">${esc(C.brief).replace(/\n/g, '<br>')}</p></div>
+      <div class="card rise" style="animation-delay:.25s"><h4>现场时间线</h4><div class="det-tl">${C.timeline.map((t) => `<div><b>${esc(t.t)}</b><span>${esc(t.text)}</span></div>`).join('')}</div></div>
+      <div class="card rise" style="animation-delay:.4s"><h4>规则</h4><p class="det-p">搜证和提问都有次数限制。反复搜查同一个地点，线索会逐渐深入。把证物拿给嫌疑人看，谎言就会露出破绽。审问要循序渐进，对方松了口才问得出更敏感的话题；留意他们的表情和声音。准备好了就去“指认”，只能指认一次，指认之后案件就结束了。</p></div>`;
+  }
+  function briefPeople() {
+    const R = C.relations || {};
+    const v = C.victim;
+    const cards = suspectsOrdered().map((s) => `<div class="det-rel"><div class="det-av">${portraitOf(s, null, 'head')}</div>
+      <div><b>${esc(s.name)}</b><small>${esc(s.role)}${s.age ? ' · ' + s.age + ' 岁' : ''}</small><p>${esc(R[s.id] || s.bio || '')}</p></div></div>`).join('');
+    const links = (C.links || []).map((k) => `<li><b>${esc(sus(k.a).name)}</b> <i>⇄</i> <b>${esc(sus(k.b).name)}</b><span>${esc(k.text)}</span></li>`).join('');
+    return `<div class="card det-victim rise"><div class="det-av">${ART.portrait(v.look, { age: v.age || 50 })}</div><div><h4>死者 · ${esc(v.name)}</h4><p class="det-p">${esc(v.desc)}</p></div></div>
+      <h4 class="det-h">在场的人（${C.suspects.length}）</h4><div class="det-rels">${cards}</div>
+      ${links ? `<div class="card rise"><h4>人和人之间</h4><ul class="det-links">${links}</ul></div>` : ''}`;
+  }
+  function briefMap() {
+    const dead = C.deathReport && C.deathReport.loc;
+    const tiles = C.locations.map((l) => {
+      const open = mapOpen === l.id;
+      return `<button class="det-mt ${open ? 'open' : ''} ${l.id === dead ? 'dead' : ''}" data-maploc="${l.id}"><div class="det-mt-art">${ART.sceneFor(C.id, l.id, l.scene, { text: l.name + l.desc })}</div>
+        <b>${esc(l.name)}</b>${l.id === dead ? '<em>发现死者</em>' : ''}${open ? `<p>${esc(l.desc)}</p>` : '<small>点开看看</small>'}</button>`;
+    }).join('');
+    return `<div class="card rise"><h4>案发地点</h4><p class="det-p">这是你能搜查的 ${C.locations.length} 个地方。点一下看介绍；搜证时每个地点可以反复搜，越搜越深。</p></div><div class="det-map">${tiles}</div>`;
+  }
+  function briefReport() {
+    const d = C.deathReport || {}, v = C.victim;
+    const rows = [['死者', v.name], ['死亡时间', d.time], ['死因', d.cause], ['发现经过', d.scene]].filter((r) => r[1]);
+    const where = d.loc ? (C.locations.find((l) => l.id === d.loc) || {}).name : '';
+    return `<div class="det-report rise"><div class="det-rp-h"><span>现场勘验报告</span><i>绝密</i></div>
+      ${rows.map(([k, t]) => `<div class="det-rp-r"><b>${k}</b><span>${esc(t)}</span></div>`).join('')}
+      ${where ? `<div class="det-rp-r"><b>发现地点</b><span>${esc(where)}</span></div>` : ''}
+      ${d.notes && d.notes.length ? `<div class="det-rp-n"><b>勘验记录</b><ul>${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''}</div>
+      <div class="card rise" style="animation-delay:.2s"><h4>已知事实</h4><ul class="det-ul">${C.publicFacts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>`;
   }
 
   function viewSearch() {
@@ -386,7 +421,9 @@
     if (d.act === 'home') { sfx('click'); return close(); }
     if (d.act === 'list') { sfx('click'); clearTimers(); C = null; try { FX.ambient('fire'); } catch (x) {} delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
-    if (G.result && (d.tab || d.search || d.ev || d.sus || d.q || d.conf || d.mark || d.draft)) return; // 指认之后案件结束，不能再回去调查
+    if (G.result && (d.bs !== undefined || d.maploc || d.tab || d.search || d.ev || d.sus || d.q || d.conf || d.mark || d.draft)) return; // 指认之后案件结束，不能再回去调查
+    if (d.bs !== undefined) { sfx('tab'); bstep = Number(d.bs); renderCase(); return window.scrollTo(0, 0); }
+    if (d.maploc) { sfx('click'); mapOpen = mapOpen === d.maploc ? null : d.maploc; return renderCase(); }
     if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
       const l = C.locations.find((x) => x.id === d.search), got = G.ptr[l.id] || 0;

@@ -305,6 +305,34 @@ module.exports = {
     desc: '36岁，婚礼工作室创办人，这场婚礼的总策划，新郎同父异母的兄长。他倒在暖房兰花架旁，后脑遭钝器重击。',
     look: { skin: 'light', hair: 'short', hairColor: 'black', glasses: 'rect', beard: 'none', outfit: 'suit', acc: 'tie', mood: 'neutral' }
   },
+  relations: {
+    heming: '新郎的发小，今晚的伴郎，管着递戒指',
+    luye: '请来的摄影师，和他合作过不少婚礼',
+    ziheng: '死者同父异母的弟弟，明天的新郎',
+    ruoxi: '弟媳，明天的新娘，婚礼由他一手策划',
+    zhen: '死者的父亲，新郎的父亲',
+    xiaotang: '新娘的伴娘，筹备婚礼时常碰面',
+    guyan: '新娘的前任恋人，今晚不请自来',
+    hanbo: '庄园管家，替周家打理多年'
+  },
+  links: [
+    { a: 'ziheng', b: 'ruoxi', text: '明天就要结婚的新郎新娘' },
+    { a: 'ruoxi', b: 'guyan', text: '前任恋人，已分手多时' },
+    { a: 'ziheng', b: 'heming', text: '穿一条裤子长大的发小' },
+    { a: 'ziheng', b: 'zhen', text: '亲生父子' }
+  ],
+  deathReport: {
+    time: '约 21:00–21:30',
+    cause: '后脑遭钝器重击，颅脑损伤致死',
+    scene: '管家韩伯 21:55 去关暖房加湿系统，发现周明哲倒在兰花架旁，已无呼吸，随即报警。',
+    loc: 'garden',
+    notes: [
+      '后脑一处钝器伤，一击致命',
+      '现场的铜喷壶沾有血迹',
+      '花架上的戒指盒敞开，里面是空的',
+      '手表停在心率归零的时刻'
+    ]
+  },
   publicFacts: [
     '死者周明哲是婚礼总策划，也是新郎的兄长，死因是后脑钝器伤，现场有沾血的铜喷壶。',
     '彩排结束后，伴郎把戒指盒交给周明哲保管；现在盒子是空的，戒指不见了。',
