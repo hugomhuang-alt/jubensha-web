@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0e1420">
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <title>线上剧本杀</title>
-<link rel="stylesheet" href="style.css?v=10181459">
+<link rel="stylesheet" href="style.css?v=10181607">
 </head>
 <body>
 <div id="banner" class="banner" hidden>连接已断开，正在重连…</div>
@@ -37,6 +37,7 @@
 <g class="e-lens" fill="none" stroke="url(#gf)" stroke-width="1.5"><circle cx="48" cy="60" r="24" pathLength="100"/><circle cx="72" cy="60" r="24" pathLength="100"/></g>
 <path class="e-gem" d="M60 44l7 16-7 16-7-16z" fill="url(#gf)"/></svg><b>abba</b></span></header>
   <form class="auth-form" id="authForm" autocomplete="on">
+    <button class="btn primary cta" id="auContinue" type="button" hidden>继续</button>
     <h2 id="auTitle">欢迎回来</h2><p class="sub" id="auSub">登录后可以创建房间、加入朋友的房间；也可以先以游客身份进去逛逛。</p>
     <label class="uf"><span>邮箱</span><input id="auEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@gmail.com"></label>
     <label class="uf" id="auNickRow" hidden><span>昵称</span><input id="auNick" maxlength="12" autocomplete="nickname" placeholder="游戏里别人看到的名字"></label>
@@ -61,11 +62,13 @@
     <div class="code-join"><span>知道房间码？</span><div class="join-row"><input id="codeInput" maxlength="4" placeholder="四位房间码" autocomplete="off" autocapitalize="characters"><button id="joinBtn" class="btn primary">加入</button></div></div>
   </section>
   <section id="mpCreate" hidden>
-    <div class="sec-h"><h3>选剧本</h3></div><div id="mpScripts" class="sc-list"></div>
-    <div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="capMinus">−</button><b id="capNum">4</b><button class="btn small" id="capPlus">+</button></div></div>
     <label class="uf"><span>房间密码（可不填）</span><input id="roomPw" maxlength="12" placeholder="设置后，朋友进房要输入密码" autocomplete="off"></label>
-    <p class="fine">人到齐、并且都点了“准备”，游戏自动开始。</p>
-    <button id="createBtn" class="btn primary cta">创建房间</button>
+    <div class="sec-h"><h3>选剧本（点一下就选中，下面随时可以创建）</h3></div><div id="mpScripts" class="sc-list"></div>
+    <div class="mp-bar">
+      <div class="cap-row"><span>房间人数</span><div class="stepper"><button class="btn small" id="capMinus">−</button><b id="capNum">4</b><button class="btn small" id="capPlus">+</button></div></div>
+      <button id="createBtn" class="btn primary cta">创建房间</button>
+      <p class="fine">人到齐、并且都点了“准备”，游戏自动开始。</p>
+    </div>
   </section>
 </main>
 
@@ -110,12 +113,12 @@
   <footer class="voicebar" id="voiceBar"></footer>
 </main>
 
-<script src="cases.js?v=10181459"></script>
-<script src="config.js?v=10181459"></script>
-<script src="art.js?v=10181459"></script>
-<script src="sfx.js?v=10181459"></script>
-<script src="fx.js?v=10181459"></script>
-<script src="detective.js?v=10181459"></script>
-<script src="app.js?v=10181459"></script>
+<script src="cases.js?v=10181607"></script>
+<script src="config.js?v=10181607"></script>
+<script src="art.js?v=10181607"></script>
+<script src="sfx.js?v=10181607"></script>
+<script src="fx.js?v=10181607"></script>
+<script src="detective.js?v=10181607"></script>
+<script src="app.js?v=10181607"></script>
 </body>
 </html>

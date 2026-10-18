@@ -975,3 +975,8 @@ html[data-q="low"] #amb .flash, html[data-q="low"] #amb .mote, html[data-q="low"
 .det-badge.go { animation: badgep 2s ease-in-out infinite; } @keyframes badgep { 50% { box-shadow: 0 0 10px rgba(217, 184, 111, .7); } }
 .room-row:active, .tabs2 button:active { transform: scale(.985); }
 html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, html[data-q="low"] .door-go::after { display: none; }
+
+/* 创建房间 / 房间大厅：操作栏吸在屏幕底部，不用拉到最下面 */
+.mp-bar { position: sticky; bottom: 0; z-index: 20; margin: 8px -22px 0; padding: 12px 22px max(14px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(11, 15, 26, 0), rgba(11, 15, 26, .96) 22%); display: grid; gap: 8px; }
+.mp-bar .cap-row { margin: 0; } .mp-bar .fine { margin: 0; text-align: center; font-size: 12px; }
+.lob-act { position: sticky; bottom: 0; z-index: 20; margin: 0 -4px; padding: 12px 4px max(12px, env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(11, 15, 26, 0), rgba(11, 15, 26, .96) 22%); }

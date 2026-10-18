@@ -99,7 +99,7 @@ function connect() {
     authedWs = false;
     if (account) send({ type: 'auth', token: account.token });
     const s = session();
-    if (s) send({ type: 'rejoin', code: s.code, token: s.token });
+    if (s && (entered || !(SERVER || needAuth))) { resuming = true; send({ type: 'rejoin', code: s.code, token: s.token }); }
   };
   ws.onclose = () => {
     updateNet(); setBanner();
@@ -128,7 +128,7 @@ function onMsg(m) {
       break;
     case 'auth-failed':
       authedWs = false;
-      if (needAuth) { clearAcct(); toast('登录已过期，请重新登录'); if (S) doLeave(); showAuth(); }
+      if (needAuth) { clearAcct(); entered = false; toast('登录已过期，请重新登录'); if (S) doLeave(); showAuth(); }
       break;
     case 'scripts':
       scriptsList = m.scripts || scriptsList;
@@ -142,11 +142,12 @@ function onMsg(m) {
       saveSession({ code: m.code, token: m.token });
       break;
     case 'rejoin-failed':
-      clearSession();
-      showHome();
+      resuming = false; clearSession();
+      if (!S) showHome();
       break;
     case 'state':
       clockOffset = m.now - Date.now();
+      if (resuming) { resuming = false; if (m.phase === 'reveal') { toast('上一局已经结束，回到大厅'); S = null; doLeave(); break; } }
       S = m;
       onState();
       break;
@@ -581,43 +582,16 @@ function showIntro() {
 function showSearch(locName, clue) {
   const loc = S.script.locations.find((l) => l.id === pendingLoc) || S.script.locations.find((l) => l.name === locName) || S.script.locations[0];
   pendingLoc = null;
-  const el = mountOverlay('searchov', `<div class="bgscene">${ART.scene(loc.scene || loc.id)}</div><div class="shade" style="opacity:.55"></div>
-    <div class="darkmask"></div><div class="lens"></div><div class="locname">${esc(loc.name)}</div><div class="result"><div></div></div>`);
-  setModal(el); snd('search'); setTimeout(() => snd('rustle'), 500);
-  const W = () => el.clientWidth, H = () => el.clientHeight;
-  const path = [[.2, .7], [.78, .35], [.35, .45], [.62, .68], [.5, .5]];
-  const T = 2300, t0 = performance.now();
-  let raf = 0, done = false;
-  const setPos = (x, y) => { el.style.setProperty('--x', x + 'px'); el.style.setProperty('--y', y + 'px'); };
-  setPos(W() * path[0][0], H() * path[0][1]);
-  const finish = () => {
-    if (done) return; done = true; cancelAnimationFrame(raf);
-    setPos(W() * .5, H() * .5);
-    el.querySelector('.darkmask').classList.add('off'); el.querySelector('.lens').classList.add('off');
-    const res = el.querySelector('.result > div');
-    res.innerHTML = clue
-      ? `<div class="clue-reveal"><span class="new">新线索</span><h3>${esc(clue.title)}</h3><p>${esc(clue.text)}</p><button class="btn primary">收入线索</button></div>`
-      : `<div class="clue-reveal empty"><h3 style="color:var(--text)">什么也没有</h3><p>你翻遍了这里，没有新的发现。</p><button class="btn primary">继续</button></div>`;
-    if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('paper'); snd('clue'); } else snd('nothing');
-    res.querySelector('.btn').addEventListener('click', () => closeModal(el, () => { if (clue) { tab = 'clues'; if (S) renderTabs(); } }));
-  };
-  const tick = (now) => {
-    const k = Math.min(1, (now - t0) / T), seg = (path.length - 1) * k, i = Math.min(path.length - 2, Math.floor(seg)), f = seg - i;
-    const ease = f * f * (3 - 2 * f);
-    setPos(W() * (path[i][0] + (path[i + 1][0] - path[i][0]) * ease), H() * (path[i][1] + (path[i + 1][1] - path[i][1]) * ease));
-    if (k >= 1) return finish();
-    raf = requestAnimationFrame(tick);
-  };
-  if (document.documentElement.classList.contains('lite')) {
-    // 手机：不做手电筒移动动画（每帧重绘全屏渐变很卡），停一下直接出结果
-    setPos(W() * .5, H() * .5);
-    const to = setTimeout(finish, 900);
-    el._stop = () => clearTimeout(to);
-  } else {
-    raf = requestAnimationFrame(tick);
-    el._stop = () => cancelAnimationFrame(raf);
-  }
-  el.addEventListener('click', (e) => { if (!done && !e.target.closest('.btn')) finish(); });
+  // 直接给线索：不做手电筒动画，场景淡淡铺底，线索卡立即出现
+  const el = mountOverlay('searchov', `<div class="bgscene">${ART.scene(loc.scene || loc.id)}</div><div class="shade" style="opacity:.5"></div>
+    <div class="locname">${esc(loc.name)}</div><div class="result"><div></div></div>`);
+  setModal(el); snd('search'); setTimeout(() => snd('rustle'), 300);
+  const res = el.querySelector('.result > div');
+  res.innerHTML = clue
+    ? `<div class="clue-reveal"><span class="new">新线索</span><h3>${esc(clue.title)}</h3><p>${esc(clue.text)}</p><button class="btn primary">收入线索</button></div>`
+    : `<div class="clue-reveal empty"><h3 style="color:var(--text)">什么也没有</h3><p>你翻遍了这里，没有新的发现。</p><button class="btn primary">继续</button></div>`;
+  if (clue) { freshClues.add(clue.id); FX.sparkle(res.querySelector('.clue-reveal'), 14); snd('paper'); snd('clue'); } else snd('nothing');
+  res.querySelector('.btn').addEventListener('click', () => closeModal(el, () => { if (clue) { tab = 'clues'; if (S) renderTabs(); } }));
 }
 
 function showReveal() {
@@ -856,6 +830,7 @@ function renderVoiceBar() {
 }
 
 // ================= 开屏 / 账号 / 多人大厅 =================
+let entered = false, resuming = false;
 let account = null, guest = false, needAuth = false, gotHello = false, authedWs = false, scriptsList = [], splashDone = false;
 try { account = JSON.parse(localStorage.getItem('jbs_acct') || 'null'); } catch (e) {}
 function saveAcct() { try { localStorage.setItem('jbs_acct', JSON.stringify(account)); } catch (e) {} }
@@ -881,20 +856,34 @@ function visibleScreen() { return ['#home', '#mp', '#auth', '#room', '#det'].fin
 function route(first) {
   const v = visibleScreen();
   if (first) {
+    if (SERVER || needAuth) return showAuth(); // 联网版：每次打开都先到登录页（登录 / 注册 / 游客）
     if (session()) return; // 正在重连房间，等 state；超时后由兜底定时器显示首页
     if (account || guest) return showHome();
-    if (SERVER) return showAuth(); // 联网版：每次都先停在登录页（可登录/注册，或游客进入）
-    if (gotHello) return needAuth ? showAuth() : showHome();
+    if (gotHello) return showHome();
     return; // 等 hello
   }
-  if (!v) { if (session()) return; return ((needAuth || SERVER) && !account && !guest) ? showAuth() : showHome(); }
-  if (v === '#auth' && (SERVER ? (account || guest) : (!needAuth || account))) showHome();
+  if (!v) { if (session() && !(SERVER || needAuth)) return; return ((needAuth || SERVER) && !entered) ? showAuth() : showHome(); }
+  if (v === '#auth' && (SERVER || needAuth ? entered : true)) showHome();
+}
+// 过了登录页：有没有结束的房间要回去？没有就进首页
+function enterApp() {
+  entered = true;
+  const s = session();
+  if (s && connected()) {
+    resuming = true; toast('正在回到你的房间…');
+    send({ type: 'rejoin', code: s.code, token: s.token });
+    setTimeout(() => { if (!S && visibleScreen() === '#auth') showHome(); }, 9000);
+  } else if (s) {
+    toast('连上服务器后会回到你的房间');
+    setTimeout(() => { if (!S && visibleScreen() === '#auth') showHome(); }, 9000);
+  } else showHome();
 }
 function afterHello() { if (splashDone) route(false); }
 function showAuth() {
   S = null; FX.ambient('snow'); try { SFX.music('menu', 'menu'); } catch (e) {}
   ['#home', '#mp', '#room'].forEach((s) => ($(s).hidden = true));
   $('#auth').hidden = false;
+  const ac = $('#auContinue'); if (ac) { ac.hidden = !account; if (account) { ac.textContent = '继续：' + account.nick; if (!$('#auEmail').value) $('#auEmail').value = account.email || ''; } }
   if (!stopSnow) stopSnow = FX.snow($('#snow'), { count: 60, global: true });
 }
 function renderAcct() {
@@ -927,7 +916,7 @@ async function submitAuth(e) {
     account = { token: j.token, nick: j.nick, email: j.email, tester: !!j.tester }; saveAcct();
     snd('win'); guest = false;
     if (connected()) send({ type: 'auth', token: account.token });
-    msg.textContent = ''; showHome();
+    msg.textContent = ''; enterApp();
   } catch (err) {
     msg.textContent = err.name === 'AbortError' ? '服务器没有响应，稍后再试' : (err.message === 'Failed to fetch' ? '连不上服务器，请检查网络后重试' : err.message);
     snd('lose');
@@ -936,9 +925,10 @@ async function submitAuth(e) {
 function initAccountUI() {
   $('#authForm').addEventListener('submit', submitAuth);
   $('#authSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setAuthMode(b.dataset.m); });
-  $('#auGuest').addEventListener('click', () => { guest = true; showHome(); });
+  $('#auGuest').addEventListener('click', () => { guest = true; enterApp(); });
+  $('#auContinue').addEventListener('click', () => { guest = false; if (connected() && account) send({ type: 'auth', token: account.token }); enterApp(); });
   $('#auSwitch').addEventListener('click', () => setAuthMode(authMode === 'login' ? 'register' : 'login'));
-  $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
+  $('#logoutBtn').addEventListener('click', () => { clearAcct(); authedWs = false; guest = false; entered = false; try { ws && ws.close(); } catch (e) {} showAuth(); });
   $('#mpBtn').addEventListener('click', () => {
     if (needAuth && !account) { toast('多人游戏需要先登录'); return showAuth(); }
     showMp();
@@ -1023,6 +1013,7 @@ function renderMpScripts() {
   setHTML($('#mpScripts'), list.map((s) => `<button class="sc-card ${s.id === mpScript ? 'sel' : ''}" data-tone="${s.tone}" data-script="${s.id}"><div class="sc-img">${ART.scene(s.cover)}</div>
     <div class="sc-tx"><b>${esc(s.title)}</b><span class="sc-tag">${esc(s.tagline)}</span><span class="sc-meta"><em>难度 ${dots(s.difficulty)}</em> · ${s.minPlayers}–${s.maxPlayers} 人 · ${esc(s.duration)}</span></div>${s.id === mpScript ? '<i class="sc-check">已选</i>' : ''}</button>`).join(''));
   $('#capNum').textContent = mpCap;
+  $('#createBtn').textContent = '创建房间 · ' + sc.title;
   $('#capMinus').disabled = mpCap <= sc.minPlayers; $('#capPlus').disabled = mpCap >= sc.maxPlayers;
 }
 
