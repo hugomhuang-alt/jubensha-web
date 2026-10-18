@@ -242,9 +242,10 @@ function stateSounds() {
     try { FX.ambient(ambOf(tone)); } catch (e) {}
     if (S.phase === 'lobby') SFX.music('menu', 'lobby:' + S.scriptId, tone);
     else SFX.music('case', S.scriptId || S.script.id || 'game', tone);
+    try { SFX.theme(S.phase === 'lobby' ? null : (S.scriptId || S.script.id)); } catch (e) {}
     const last = (S.script.rounds || 3);
     SFX.tension(S.phase === 'vote' || S.phase === 'discuss' + last);
-    if (S.phase === 'turns' && S.speakerId !== lastSpeaker) { lastSpeaker = S.speakerId; if (S.speakerId === myId) snd('turn'); else snd('lit'); }
+    if (S.phase === 'turns' && S.speakerId !== lastSpeaker) { lastSpeaker = S.speakerId; if (S.speakerId === myId) snd('turn'); else snd('lit'); try { SFX.motif((S.script && S.script.id || '') + ':' + S.speakerId); } catch (e) {} }
     if (S.phase !== 'turns') lastSpeaker = null;
   } catch (e) {}
 }
@@ -882,12 +883,12 @@ function route(first) {
   if (first) {
     if (session()) return; // 正在重连房间，等 state；超时后由兜底定时器显示首页
     if (account || guest) return showHome();
+    if (SERVER) return showAuth(); // 联网版：每次都先停在登录页（可登录/注册，或游客进入）
     if (gotHello) return needAuth ? showAuth() : showHome();
-    if (SERVER) return showAuth(); // 服务器还在睡，先让用户填登录信息
     return; // 等 hello
   }
-  if (!v) { if (session()) return; return (needAuth && !account && !guest) ? showAuth() : showHome(); }
-  if (v === '#auth' && (!needAuth || account)) showHome();
+  if (!v) { if (session()) return; return ((needAuth || SERVER) && !account && !guest) ? showAuth() : showHome(); }
+  if (v === '#auth' && (SERVER ? (account || guest) : (!needAuth || account))) showHome();
 }
 function afterHello() { if (splashDone) route(false); }
 function showAuth() {
@@ -908,7 +909,7 @@ function setAuthMode(m) {
   $('#auNickRow').hidden = m !== 'register';
   $('#auGo').textContent = m === 'login' ? '登录' : '注册并进入';
   $('#auTitle').textContent = m === 'login' ? '欢迎回来' : '创建账号';
-  $('#auSub').textContent = m === 'login' ? '登录后可以创建房间、加入朋友的房间。' : '邮箱和密码就够了，Gmail 等任何邮箱都可以。';
+  $('#auSub').textContent = m === 'login' ? '登录后可以创建房间、加入朋友的房间；也可以先以游客身份进去逛逛。' : '邮箱和密码就够了，Gmail 等任何邮箱都可以。';
   $('#auAltTx').textContent = m === 'login' ? '还没有账号？' : '已经有账号？';
   $('#auSwitch').textContent = m === 'login' ? '注册' : '登录';
   $('#auPw').autocomplete = m === 'login' ? 'current-password' : 'new-password';

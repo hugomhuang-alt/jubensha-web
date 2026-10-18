@@ -145,6 +145,134 @@ const SFX = (() => {
       tone(98, t, 3.4, { type: 'sawtooth', gain: 0.1, attack: 0.3, lp: 300 });
     }
   };
+  // ---------- 案件专属点缀音 ----------
+  Object.assign(fx, {
+    woodblock: (t) => { tone(820, t, 0.07, { type: 'square', to: 520, gain: 0.12, lp: 1800 }); noise(t, 0.05, { f: 1500, gain: 0.1 }); },       // 醒木/木鱼
+    toll: (t) => { [196, 392, 588, 785].forEach((f, i) => tone(f, t, 3.2 - i * 0.5, { gain: 0.1 / (i * 0.6 + 1) })); },                         // 钟声
+    gong: (t) => { tone(98, t, 3.6, { gain: 0.16, attack: 0.02 }); tone(147, t, 3, { gain: 0.08 }); tone(263, t, 2.2, { gain: 0.04 }); noise(t, 0.3, { f: 700, gain: 0.07 }); },
+    foghorn: (t) => { tone(87, t, 2.4, { type: 'sawtooth', gain: 0.1, attack: 0.5, lp: 260 }); tone(92, t, 2.4, { type: 'sawtooth', gain: 0.07, attack: 0.5, lp: 240 }); },
+    gull: (t) => { for (let i = 0; i < 3; i++) tone(1500 - i * 120, t + i * 0.16, 0.22, { to: 2300 - i * 200, gain: 0.04, lp: 3200, attack: 0.05 }); },
+    sonar: (t) => { tone(1250, t, 1.6, { gain: 0.07, attack: 0.005 }); tone(1250, t + 0.02, 0.5, { gain: 0.03, lp: 1500 }); },
+    bubble: (t) => { const f = 420 + Math.random() * 500; tone(f, t, 0.12, { to: f * 1.7, gain: 0.07, attack: 0.01 }); if (Math.random() < 0.5) tone(f * 1.2, t + 0.1, 0.1, { to: f * 2, gain: 0.05 }); },
+    hullcreak: (t) => { tone(70, t, 1.6, { type: 'sawtooth', to: 52, gain: 0.07, lp: 220, attack: 0.5 }); noise(t + 0.2, 0.9, { f: 300, to: 160, q: 3, gain: 0.05, attack: 0.4 }); },
+    owl: (t) => { [0, 0.5].forEach((d, i) => tone(i ? 340 : 400, t + d, 0.4, { to: i ? 290 : 360, gain: 0.07, attack: 0.08, lp: 900 })); },
+    cricket: (t) => { for (let i = 0; i < 4; i++) tone(4300, t + i * 0.06, 0.035, { type: 'square', gain: 0.012, lp: 5200 }); },
+    chip: (t) => { for (let i = 0; i < 3; i++) { tone(2600 + Math.random() * 600, t + i * 0.05, 0.08, { type: 'triangle', gain: 0.06 }); noise(t + i * 0.05, 0.03, { f: 3800, gain: 0.05 }); } },
+    slot: (t) => { [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, t + i * 0.07, 0.18, { type: 'square', gain: 0.025, lp: 3000 })); },
+    clack: (t) => { for (let i = 0; i < 4; i++) { const tt = t + i * 0.36; tone(120, tt, 0.07, { to: 70, gain: 0.12 }); tone(110, tt + 0.1, 0.07, { to: 65, gain: 0.1 }); noise(tt, 0.04, { f: 900, gain: 0.07 }); } },
+    chime: (t) => { [2093, 1760, 2349, 1568].forEach((f, i) => tone(f * (1 + Math.random() * 0.01), t + i * 0.09 + Math.random() * 0.05, 1.3, { gain: 0.04 })); },
+    piano: (t) => { const n = [262, 311, 392, 466, 523][(Math.random() * 5) | 0]; tone(n, t, 1.8, { type: 'triangle', gain: 0.08, lp: 2200 }); tone(n * 2, t, 0.8, { gain: 0.02 }); },
+    drip: (t) => { tone(1500 + Math.random() * 400, t, 0.1, { to: 700, gain: 0.07 }); tone(500, t + 0.12, 0.2, { gain: 0.03, lp: 900 }); },
+    thunder: (t) => { noise(t, 2.6, { f: 160, to: 70, q: 0.5, gain: 0.22, attack: 0.3 }); tone(45, t + 0.1, 2.2, { gain: 0.14, attack: 0.4 }); },
+    shutter: (t) => { noise(t, 0.03, { f: 3000, gain: 0.2 }); noise(t + 0.07, 0.05, { f: 2000, gain: 0.15 }); },
+    whistle: (t) => { tone(880, t, 1.2, { type: 'triangle', to: 840, gain: 0.05, attack: 0.1, lp: 2400 }); tone(1320, t, 1.1, { gain: 0.02, attack: 0.15 }); },
+    static: (t) => { noise(t, 0.5, { f: 3200, q: 0.4, gain: 0.05, attack: 0.05 }); noise(t + 0.55, 0.2, { f: 1800, q: 0.4, gain: 0.04 }); },
+    typewriter: (t) => { for (let i = 0; i < 6; i++) { const tt = t + i * 0.11 + Math.random() * 0.03; noise(tt, 0.02, { f: 2800, gain: 0.07 }); tone(240, tt, 0.03, { type: 'square', gain: 0.02, lp: 900 }); } tone(1760, t + 0.8, 0.5, { gain: 0.04 }); },
+    tick: (t) => { for (let i = 0; i < 3; i++) tone(i % 2 ? 1700 : 2100, t + i * 0.5, 0.025, { type: 'square', gain: 0.03, lp: 3000 }); },
+    firework: (t) => { tone(900, t, 0.6, { to: 2200, gain: 0.04, attack: 0.05 }); noise(t + 0.6, 0.4, { f: 600, to: 150, gain: 0.2 }); for (let i = 0; i < 6; i++) noise(t + 0.7 + i * 0.07, 0.03, { f: 3500, gain: 0.06 }); },
+    vinyl: (t) => { for (let i = 0; i < 3; i++) noise(t + Math.random() * 0.4, 0.015, { f: 4200, gain: 0.07 }); },
+    calliope: (t) => { [523, 659, 784, 659, 523, 784, 880].forEach((f, i) => tone(f, t + i * 0.16, 0.2, { type: 'square', gain: 0.025, lp: 2600 })); },
+    pour: (t) => { noise(t, 0.9, { f: 2200, to: 3800, q: 1.2, gain: 0.06, attack: 0.2 }); tone(900, t + 0.7, 0.1, { gain: 0.03 }); },
+    wind: (t) => { noise(t, 2.2, { f: 400, to: 1100, q: 1.5, gain: 0.07, attack: 0.9 }); },
+    beep: (t) => { tone(1568, t, 0.08, { type: 'square', gain: 0.025, lp: 2600 }); tone(1568, t + 0.2, 0.08, { type: 'square', gain: 0.025, lp: 2600 }); },
+    motorhum: (t) => { tone(60, t, 1.6, { type: 'sawtooth', gain: 0.035, attack: 0.5, lp: 180 }); },
+    snowcrunch: (t) => { for (let i = 0; i < 3; i++) noise(t + i * 0.3, 0.12, { f: 2000, to: 900, q: 0.6, gain: 0.07 }); },
+    rattle: (t) => { for (let i = 0; i < 8; i++) tone(1800 + Math.random() * 800, t + i * 0.035, 0.03, { type: 'square', gain: 0.02, lp: 2800 }); },
+    mouse: (t) => { for (let i = 0; i < 4; i++) tone(2800 + Math.random() * 600, t + i * 0.05, 0.03, { gain: 0.03 }); }
+  });
+  // ---------- 案件主题：环境床 + 随机点缀（按 case/script id 取，没有就不加） ----------
+  // bed: rain/fire/snow/sea/wind/hum/deep；spots: [音效, 最短间隔秒, 最长间隔秒]
+  const THEMES = {
+    teahouse: { bed: 'rain', spots: [['woodblock', 14, 30], ['piano', 40, 70], ['clink', 20, 40]] },
+    bookclub: { bed: 'fire', spots: [['paper', 12, 25], ['tick', 14, 26], ['typewriter', 30, 60]] },
+    campus: { bed: 'wind', spots: [['toll', 40, 70], ['cricket', 10, 20], ['footsteps', 28, 50]] },
+    lighthouse: { bed: 'sea', spots: [['foghorn', 22, 40], ['gull', 12, 24], ['creak', 25, 45]] },
+    vineyard: { bed: 'wind', spots: [['pour', 20, 40], ['cricket', 10, 20], ['clink', 22, 40]] },
+    railway: { bed: 'wind', spots: [['clack', 6, 10], ['whistle', 30, 55], ['rattle', 15, 30]] },
+    filmset: { bed: 'hum', spots: [['shutter', 16, 30], ['beep', 18, 34], ['static', 22, 40]] },
+    museum: { bed: 'hum', spots: [['tick', 10, 20], ['footsteps', 22, 40], ['chime', 30, 55]] },
+    onsen: { bed: 'snow', spots: [['drip', 7, 14], ['woodblock', 26, 50], ['wind', 20, 35]] },
+    greenhouse: { bed: 'rain', spots: [['drip', 5, 10], ['cricket', 8, 16], ['rustle', 18, 34]] },
+    casino: { bed: 'hum', spots: [['chip', 7, 14], ['slot', 14, 26], ['clink', 16, 30]] },
+    observatory: { bed: 'wind', spots: [['motorhum', 16, 30], ['cricket', 8, 16], ['beep', 28, 50]] },
+    bank: { bed: 'rain', spots: [['tick', 8, 14], ['keys', 24, 44], ['beep', 30, 55]] },
+    clanhall: { bed: 'fire', spots: [['woodblock', 6, 12], ['toll', 40, 70], ['wind', 24, 44]] },
+    deepstation: { bed: 'deep', spots: [['sonar', 9, 16], ['bubble', 3, 7], ['hullcreak', 24, 44]] },
+    birthday: { bed: 'fire', spots: [['firework', 28, 50], ['clink', 12, 24], ['chime', 30, 50]] },
+    reunion: { bed: 'wind', spots: [['static', 24, 42], ['piano', 20, 38], ['clink', 14, 28]] },
+    camping: { bed: 'fire', spots: [['owl', 20, 38], ['cricket', 7, 14], ['rustle', 16, 30]] },
+    yacht: { bed: 'sea', spots: [['clink', 14, 26], ['gull', 20, 38], ['hullcreak', 30, 50]] },
+    circus: { bed: 'wind', spots: [['calliope', 20, 38], ['drum', 55, 90], ['gasp', 28, 50]] },
+    castle: { bed: 'rain', spots: [['thunder', 22, 42], ['creak', 16, 30], ['toll', 40, 70]] },
+    tvshow: { bed: 'hum', spots: [['beep', 12, 22], ['static', 22, 40], ['shutter', 18, 34]] },
+    watertown: { bed: 'rain', spots: [['drip', 4, 9], ['woodblock', 26, 46], ['gull', 40, 70]] },
+    skiresort: { bed: 'snow', spots: [['snowcrunch', 12, 24], ['wind', 14, 28], ['whistle', 40, 70]] },
+    colliery: { bed: 'deep', spots: [['drip', 5, 11], ['hullcreak', 20, 36], ['rattle', 22, 40]] },
+    oldtrain: { bed: 'wind', spots: [['clack', 5, 9], ['whistle', 26, 46], ['keys', 24, 44]] },
+    princepalace: { bed: 'snow', spots: [['woodblock', 14, 28], ['toll', 38, 64], ['chime', 20, 36]] },
+    biolab: { bed: 'hum', spots: [['beep', 8, 16], ['drip', 14, 28], ['motorhum', 20, 36]] },
+    island: { bed: 'sea', spots: [['thunder', 24, 44], ['gull', 14, 28], ['wind', 14, 26]] },
+    hotel1937: { bed: 'rain', spots: [['piano', 14, 28], ['vinyl', 12, 24], ['clink', 16, 32]] },
+    ferry: { bed: 'sea', spots: [['foghorn', 22, 40], ['hullcreak', 20, 36]] },
+    lastdish: { bed: 'fire', spots: [['pour', 18, 34], ['clink', 12, 24]] },
+    library: { bed: 'hum', spots: [['paper', 12, 24], ['tick', 14, 26]] },
+    wedding: { bed: 'wind', spots: [['chime', 16, 30], ['clink', 14, 26]] },
+    antique: { bed: 'hum', spots: [['tick', 8, 16], ['vinyl', 14, 28]] },
+    blackout: { bed: 'rain', spots: [['thunder', 20, 38], ['creak', 16, 30]] },
+    homestay: { bed: 'snow', spots: [['wind', 16, 30], ['snowcrunch', 20, 36]] },
+    troupe: { bed: 'hum', spots: [['gong', 26, 46], ['woodblock', 12, 24]] },
+    liaoyang: { bed: 'rain', spots: [['beep', 9, 16], ['thunder', 24, 44]] },
+    paimai: { bed: 'hum', spots: [['woodblock', 18, 36], ['clink', 14, 28]] },
+    zujie: { bed: 'rain', spots: [['vinyl', 10, 20], ['piano', 20, 38]] },
+    mirror: { bed: 'hum', spots: [['chime', 18, 34], ['drip', 10, 20]] },
+    twins: { bed: 'wind', spots: [['piano', 16, 30], ['creak', 20, 36]] },
+    haishen: { bed: 'sea', spots: [['foghorn', 24, 44], ['hullcreak', 18, 34], ['gull', 30, 50]] },
+    xizhong: { bed: 'hum', spots: [['gong', 20, 40], ['woodblock', 8, 16]] },
+    jiye: { bed: 'snow', spots: [['wind', 12, 24], ['beep', 24, 44]] },
+    shoulingye: { bed: 'rain', spots: [['woodblock', 8, 15], ['toll', 40, 70]] },
+    yunqi: { bed: 'snow', spots: [['wind', 14, 26], ['creak', 22, 40]] }
+  };
+  let themeId = null, themeIv = 0, extKind = null, extAtTheme = null;
+  function themeStop() { themeId = null; clearTimeout(themeIv); themeIv = 0; }
+  function themeLoop(th, tok) {
+    const sp = th.spots[(Math.random() * th.spots.length) | 0];
+    themeIv = setTimeout(() => {
+      if (themeId !== tok) return;
+      if (!muted && !document.hidden && ac && ac.state === 'running') play(fx[sp[0]]);
+      themeLoop(th, tok);
+    }, (sp[1] + Math.random() * (sp[2] - sp[1])) * 1000);
+  }
+  // ---------- 人物声音：每个人固定的“嗓音”和登场动机，用 id 哈希生成 ----------
+  function voiceOf(id, age) {
+    const h = hashStr(String(id));
+    const a = +age || 35;
+    const f0 = 110 + (h % 120) + (a < 25 ? 30 : a > 60 ? -15 : 0);
+    return { f0, h, form: [[700, 1100], [500, 1700], [350, 2300], [450, 900], [600, 1400]][h % 5], wave: ['triangle', 'sawtooth', 'square'][(h >> 3) % 3], rate: 0.075 + ((h >> 5) % 5) * 0.012 };
+  }
+  function api2voice() {
+    api.motif = (id) => play((t) => {
+      const v = voiceOf(id), pent = [0, 2, 4, 7, 9], base = 392 * Math.pow(2, ((v.h >> 7) % 5 - 2) / 12);
+      const mk = [(v.h >> 9) % 5, (v.h >> 12) % 5, (v.h >> 15) % 5];
+      mk.forEach((d, i) => { const f = base * Math.pow(2, pent[d] / 12); tone(f, t + i * 0.11, 0.7, { type: (v.h >> 18) % 2 ? 'triangle' : 'sine', gain: 0.1 }); tone(f * 2, t + i * 0.11, 0.3, { gain: 0.02 }); });
+    });
+    api.voice = (id, age, len) => play((t) => {
+      const v = voiceOf(id, age), n = Math.max(2, Math.min(11, Math.ceil((len || 40) / 9)));
+      const r = mulberry(v.h);
+      for (let i = 0; i < n; i++) {
+        const tt = t + i * v.rate * (0.9 + r() * 0.5), f = v.f0 * (0.85 + r() * 0.5) * (i === n - 1 ? 0.8 : 1);
+        const fm = v.form[(r() * 2) | 0] * (0.85 + r() * 0.35);
+        tone(f, tt, 0.07, { type: v.wave, gain: 0.05, lp: fm, attack: 0.008 });
+        noise(tt, 0.04, { f: fm, q: 4, gain: 0.02 });
+      }
+    });
+    api.theme = (id) => {
+      if (id && id === themeId) return;
+      themeStop();
+      const th = id && THEMES[id];
+      if (!th) return;
+      themeId = id; extAtTheme = extKind; ambStart(th.bed); themeLoop(th, id);
+    };
+  }
   const syncBtns = () => { try { document.querySelectorAll('.sfx-toggle').forEach((b) => { b.textContent = muted ? '🔇' : '🔊'; b.setAttribute('aria-label', muted ? '声音已关闭' : '声音已开启'); }); } catch (e) {} };
   // 所有带 .sfx-toggle 的按钮都是同一个静音开关
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.sfx-toggle'); if (!b) return; e.stopPropagation(); api.toggle(); }, true);
@@ -161,6 +289,7 @@ const SFX = (() => {
     wake
   };
   Object.keys(fx).forEach((k) => { api[k] = () => play(fx[k]); });
+  api2voice();
 
   // ---------- 背景音乐 ----------
   function playBar(t) {
@@ -223,7 +352,9 @@ const SFX = (() => {
     try { a.g.gain.setTargetAtTime(0, ac.currentTime, 0.4); setTimeout(() => { try { a.src.stop(); } catch (e) {} }, 1500); } catch (e) {}
     clearInterval(a.iv);
   }
-  api.amb = (kind) => {
+  // 环境床：rain 雨 / fire 火 / snow 雪风 / sea 海浪 / wind 夜风 / hum 室内低鸣 / deep 深水或矿井的低频
+  const BED = { rain: [5200, 0.1], fire: [260, 0.05], snow: [520, 0.07], sea: [700, 0.09], wind: [620, 0.06], hum: [240, 0.035], deep: [150, 0.07] };
+  function ambStart(kind) {
     kind = kind || null;
     if (kind === ambKind) return;
     ambStop(); ambKind = kind;
@@ -232,22 +363,31 @@ const SFX = (() => {
       const src = ac.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
       const f = ac.createBiquadFilter(); f.type = 'lowpass';
       const g = ac.createGain(); g.gain.value = 0;
-      f.frequency.value = kind === 'rain' ? 5200 : kind === 'fire' ? 260 : 520;
+      const bed = BED[kind] || BED.snow;
+      f.frequency.value = bed[0];
       src.connect(f); f.connect(g); g.connect(musicBus); src.start();
-      const base = kind === 'rain' ? 0.1 : kind === 'fire' ? 0.05 : 0.07;
-      g.gain.setTargetAtTime(base, ac.currentTime, 1.2);
+      g.gain.setTargetAtTime(bed[1], ac.currentTime, 1.2);
       amb = { src, g, iv: 0 };
       amb.iv = setInterval(() => {
         if (!ac || muted || document.hidden || ac.state !== 'running') return;
         const t = ac.currentTime + 0.02;
         if (kind === 'fire' && Math.random() < 0.7) noise(t, 0.03 + Math.random() * 0.05, { f: 1800 + Math.random() * 3000, q: 1, gain: 0.05 + Math.random() * 0.06, bus: musicBus });
-        if (kind === 'snow') { f.frequency.setTargetAtTime(380 + Math.random() * 420, t, 1.5); g.gain.setTargetAtTime(0.04 + Math.random() * 0.06, t, 1.5); }
+        if (kind === 'snow' || kind === 'wind') { f.frequency.setTargetAtTime(380 + Math.random() * 520, t, 1.5); g.gain.setTargetAtTime(bed[1] * (0.5 + Math.random() * 0.9), t, 1.5); }
         if (kind === 'rain') g.gain.setTargetAtTime(0.08 + Math.random() * 0.04, t, 0.8);
-      }, kind === 'fire' ? 160 : 1800);
+        if (kind === 'sea') { f.frequency.setTargetAtTime(300 + Math.random() * 700, t, 2.2); g.gain.setTargetAtTime(0.03 + Math.random() * 0.09, t, 2.2); }
+        if (kind === 'deep') { f.frequency.setTargetAtTime(90 + Math.random() * 120, t, 2); g.gain.setTargetAtTime(0.04 + Math.random() * 0.06, t, 2); }
+        if (kind === 'hum') g.gain.setTargetAtTime(0.025 + Math.random() * 0.02, t, 1.5);
+      }, kind === 'fire' ? 160 : kind === 'sea' ? 2400 : 1800);
     } catch (e) { amb = null; ambKind = null; }
+  }
+  // 对外的 amb：外部切换环境床时，同时结束当前案件的点缀音
+  api.amb = (kind) => {
+    kind = kind || null;
+    if (themeId && kind === extAtTheme) { extKind = kind; return; }   // 案件主题生效期间，同一个外部环境请求不打断它
+    extKind = kind; themeStop(); ambStart(kind);
   };
   api.tension = (on) => { tense = !!on; };
-  api.stop = () => { ambStop(); mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
+  api.stop = () => { themeStop(); ambStop(); mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
   return api;
 })();
 if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener('DOMContentLoaded', () => SFX.sync()); setTimeout(() => SFX.sync(), 0); }

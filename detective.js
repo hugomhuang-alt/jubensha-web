@@ -131,7 +131,7 @@
     clearTimers();
     document.body.dataset.tone = C.tone || 'none';
     try { FX.ambient(FX.caseAmb(C.id) || 'dust'); } catch (e) {}
-    try { SFX.music('case', C.id, C.tone); SFX.tension(false); } catch (e) {}
+    try { SFX.music('case', C.id, C.tone); SFX.tension(false); SFX.theme(C.id); } catch (e) {}
     window.scrollTo(0, 0);
     if (!G.result && !G.searches && !G.asks && !G.introDone) return showIntro();
     renderCase();
@@ -260,7 +260,7 @@
     flash = sid; save(); renderCase(); scrollLog();
     const e = G.log.filter((x) => x.s === sid).pop();
     if (!again) {
-      sfx('ask'); reactSfx(moodOfEntry(s, e));
+      sfx('ask'); reactSfx(moodOfEntry(s, e)); later(() => { try { SFX.voice(sid, s.age, String(e && e.a || '').length); } catch (x) {} }, 160);
       const n = s.topics.filter((x) => unlocked(s, x) && !G.seen[sid].includes(x.id)).length;
       if (n > 0) later(() => toast(`${s.name} 松了口，多出 ${n} 个可问的话题`), 350);
     }
@@ -286,7 +286,7 @@
       e.broke = true; e.truth = t && t.truth; e.crack = !!f.crack;
     }
     G.log.push(e); flash = sel; save(); renderCase(); scrollLog();
-    sfx('confront');
+    sfx('confront'); later(() => { try { SFX.voice(sel, s.age, String(e.a || '').length); } catch (x) {} }, 420);
     if (e.crack) later(() => sfx('crack'), 260); else if (e.broke) later(() => sfx('lie'), 260); else reactSfx(moodOfEntry(s, e));
     if (e.crack) { try { const b = FX.burst(root(), 'gold'); setTimeout(() => b.remove(), 4500); } catch (x) {} }
   }
@@ -379,7 +379,7 @@
       lastClue = k.id; save(); renderCase(); sfx('search'); later(() => sfx('clue'), 420); return window.scrollTo(0, 0);
     }
     if (d.ev) { lastClue = d.ev; renderCase(); return window.scrollTo(0, 0); }
-    if (d.sus) { sfx('pick'); sel = d.sus; pickClue = false; renderCase(); return scrollLog(); }
+    if (d.sus) { sfx('pick'); try { SFX.motif(d.sus); } catch (x) {} sel = d.sus; pickClue = false; renderCase(); return scrollLog(); }
     if (d.q) return ask(sel, d.q);
     if (d.act === 'pick') { pickClue = !pickClue; renderCase(); return; }
     if (d.conf) return confront(d.conf);
