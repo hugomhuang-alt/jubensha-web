@@ -71,6 +71,8 @@ const SFX = (() => {
   const play = (fn) => { if (muted) return; if (!wake()) return; try { fn(T()); } catch (e) {} };
 
   // ---------- 音效 ----------
+  let susGain = null;
+  const op = (i) => [196, 207.7, 185, 220][i % 4];
   const fx = {
     // ---------- 场景音效 ----------
     // 公司 logo：柔和的上行音 + 闪光
@@ -152,6 +154,44 @@ const SFX = (() => {
     huff: (t) => {
       noise(t, 0.2, { f: 2800, to: 900, q: 0.9, gain: 0.3, attack: 0.02 });
       tone(280, t, 0.18, { type: 'square', to: 170, gain: 0.05, lp: 900 });
+    },
+    // ---------- 开场悬疑动画用 ----------
+    stinger: (t) => {
+      [233.1, 246.9, 311.1, 370].forEach((f, i) => tone(f, t, 1.6, { type: 'sawtooth', gain: 0.1 - i * 0.012, lp: 1400, attack: 0.02 }));
+      noise(t, 0.5, { f: 1200, to: 300, q: 0.7, gain: 0.3 }); tone(46, t, 1.4, { to: 34, gain: 0.7 });
+    },
+    // 惊恐的尖叫（合成）
+    scream: (t) => {
+      const mk = (f0, f1, g) => {
+        const o = ac.createOscillator(), lfo = ac.createOscillator(), lg = ac.createGain(), env = ac.createGain();
+        const a = ac.createBiquadFilter(), b = ac.createBiquadFilter(), c = ac.createBiquadFilter();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + 0.35); o.frequency.exponentialRampToValueAtTime(f1 * 0.82, t + 1.5);
+        lfo.frequency.value = 11; lg.gain.value = f0 * 0.05; lfo.connect(lg); lg.connect(o.frequency);
+        a.type = 'bandpass'; a.frequency.value = 950; a.Q.value = 4; b.type = 'bandpass'; b.frequency.value = 2900; b.Q.value = 5; c.type = 'bandpass'; c.frequency.value = 4300; c.Q.value = 6;
+        env.gain.setValueAtTime(0.0001, t); env.gain.linearRampToValueAtTime(g, t + 0.05); env.gain.setValueAtTime(g, t + 0.9); env.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+        o.connect(a); o.connect(b); o.connect(c); a.connect(env); b.connect(env); c.connect(env); env.connect(sfxBus);
+        o.start(t); lfo.start(t); o.stop(t + 1.7); lfo.stop(t + 1.7);
+      };
+      mk(620, 1450, 0.5); mk(633, 1480, 0.3);
+      noise(t, 1.5, { f: 3200, q: 0.8, gain: 0.1, attack: 0.05 });
+    },
+    heartbeat: (t) => {
+      tone(62, t, 0.16, { to: 42, gain: 0.55 }); noise(t, 0.08, { f: 120, q: 0.6, gain: 0.2 });
+      tone(54, t + 0.2, 0.2, { to: 38, gain: 0.4 });
+    },
+    tick: (t) => { noise(t, 0.03, { f: 3400, q: 3, gain: 0.1 }); tone(1900, t, 0.02, { type: 'square', gain: 0.025, lp: 4000 }); },
+    shutter: (t) => { noise(t, 0.04, { f: 4500, q: 2, gain: 0.35 }); noise(t + 0.07, 0.09, { f: 1600, q: 1.5, gain: 0.22 }); tone(180, t + 0.07, 0.08, { type: 'square', to: 90, gain: 0.05, lp: 700 }); },
+    // 悬疑氛围垫（约 30 秒，可用 SFX.suspenseStop() 提前淡出）
+    suspense: (t) => {
+      if (susGain) { try { susGain.gain.setTargetAtTime(0, ac.currentTime, 0.1); } catch (e) {} }
+      const g = ac.createGain(); g.gain.value = 1; g.connect(sfxBus); susGain = g;
+      const O = { bus: g };
+      tone(55, t, 31, Object.assign({ type: 'sawtooth', gain: 0.1, attack: 5, lp: 280 }, O));
+      tone(58.3, t, 31, Object.assign({ type: 'sawtooth', gain: 0.08, attack: 6, lp: 260 }, O));
+      tone(1244.5, t + 3, 9, Object.assign({ gain: 0.018, attack: 4 }, O)); tone(1318.5, t + 5, 9, Object.assign({ gain: 0.014, attack: 4 }, O));
+      tone(932, t + 13, 9, Object.assign({ gain: 0.016, attack: 4, to: 880 }, O)); tone(988, t + 15, 9, Object.assign({ gain: 0.012, attack: 4 }, O));
+      noise(t, 30, Object.assign({ f: 420, to: 900, q: 0.6, gain: 0.04, attack: 8 }, O));
+      [4, 11, 19, 25].forEach((d, i) => tone(op(i), t + d, 2.2, Object.assign({ type: 'triangle', gain: 0.03, attack: 1, lp: 700, to: op(i) * 0.97 }, O)));
     },
     // 凶手被抓：手铐咔嗒咔嗒锁上 → 铁链拖动 → 牢门哐当关上
     cuff: (t) => {
@@ -440,6 +480,7 @@ const SFX = (() => {
     extKind = kind; themeStop(); ambStart(kind);
   };
   api.tension = (on) => { tense = !!on; };
+  api.suspenseStop = () => { try { if (susGain) { susGain.gain.cancelScheduledValues(ac.currentTime); susGain.gain.setTargetAtTime(0, ac.currentTime, 0.3); susGain = null; } } catch (e) {} };
   api.stop = () => { themeStop(); ambStop(); mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
   return api;
 })();

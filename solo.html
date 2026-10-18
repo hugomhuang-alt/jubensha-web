@@ -1008,6 +1008,71 @@ html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, h
 .det-rp-r { display: grid; grid-template-columns: 74px 1fr; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 14px; line-height: 1.6; } .det-rp-r b { color: var(--muted); font-weight: 600; }
 .det-rp-n { padding-top: 10px; font-size: 14px; } .det-rp-n b { color: var(--muted); } .det-rp-n ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.7; }
 
+/* ===== 开场动画 ===== */
+.det-cine { position: fixed; inset: 0; z-index: 60; background: #05070d; color: #e8ecf5; overflow: hidden; }
+.dc-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.dc-skip { position: absolute; top: 12px; right: 12px; z-index: 3; }
+.dc-k { letter-spacing: .4em; font-size: 12px; color: var(--danger, #e5484d); text-align: center; margin: 0 0 14px; }
+.dc-s0, .dc-s1, .dc-s2, .dc-s3 { width: 100%; max-width: 420px; text-align: center; animation: dcIn .9s ease both; }
+@keyframes dcIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.dc-s0 h2 { font-family: var(--serif); font-size: 28px; letter-spacing: .1em; margin: 0 0 6px; }
+.dc-tag { color: var(--muted); margin: 0 0 22px; font-size: 14px; }
+.dc-tx { text-align: left; line-height: 1.9; font-size: 15px; min-height: 8em; color: #cfd6e6; }
+.dc-s1 { animation: dcFlick 2.4s steps(1) both; position: relative; }
+@keyframes dcFlick { 0%{opacity:0} 8%{opacity:1} 14%{opacity:.2} 20%{opacity:1} 30%{opacity:.5} 36%,100%{opacity:1} }
+.dc-scene { min-height: 3.6em; line-height: 1.8; color: #cfd6e6; margin: 0 0 18px; font-size: 15px; }
+.dc-body { opacity: .0; transition: opacity 1.2s; }
+.dc-s1.boom .dc-body { opacity: 1; animation: dcShake .7s; }
+.dc-av { width: 150px; height: 150px; margin: 0 auto 8px; border-radius: 50%; overflow: hidden; filter: grayscale(.9) contrast(1.1); border: 2px solid #5a1d22; }
+.dc-av svg { width: 100%; height: 100%; }
+.dc-s1 h3 { color: var(--danger, #e5484d); letter-spacing: .15em; margin: 6px 0 0; }
+@keyframes dcShake { 0%,100%{transform:none} 15%{transform:translate(-7px,3px)} 35%{transform:translate(6px,-4px)} 55%{transform:translate(-5px,2px)} 75%{transform:translate(3px,-2px)} }
+.dc-flash { position: absolute; inset: -40px; background: #c4151c; opacity: 0; pointer-events: none; }
+.dc-s1.boom .dc-flash { animation: dcRed 1s ease-out; }
+.dc-flash.w { background: #fff; animation: dcWhite .5s ease-out 0s 1; }
+@keyframes dcRed { 0%{opacity:.85} 100%{opacity:0} }
+@keyframes dcWhite { 0%{opacity:.8} 100%{opacity:0} }
+.dc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.dc-p { opacity: 0; animation: dcPop .6s ease forwards; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+@keyframes dcPop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+.dc-pav { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 1px solid var(--line); background: #10172a; } .dc-pav svg { width: 100%; height: 100%; }
+.dc-p b { font-size: 13px; } .dc-p small { color: var(--muted); font-size: 11px; }
+.dc-line { margin-top: 22px; font-family: var(--serif); letter-spacing: .12em; color: #ffb4b8; opacity: 0; animation: dcIn 1s ease 4.8s forwards; }
+.dc-paper { position: relative; text-align: left; background: linear-gradient(180deg, #e9e2d0, #d8cfb6); color: #2a2418; border-radius: 6px; padding: 16px; box-shadow: 0 10px 40px #000a; }
+.dc-ph { border-bottom: 2px solid #2a2418; padding-bottom: 8px; margin-bottom: 8px; font-family: var(--serif); font-size: 19px; letter-spacing: .2em; text-align: center; }
+.dc-pr { display: grid; grid-template-columns: 74px 1fr; gap: 8px; padding: 4px 0; font-size: 14px; line-height: 1.6; min-height: 1.6em; } .dc-pr b { color: #6b5d3a; }
+.dc-pn { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; min-height: 6em; }
+.dc-stamp { position: absolute; right: 14px; bottom: 12px; font-style: normal; font-weight: 800; font-size: 22px; color: #b3131b; border: 3px solid #b3131b; padding: 2px 10px; border-radius: 6px; transform: rotate(-12deg) scale(2.2); opacity: 0; letter-spacing: .1em; }
+.dc-stamp.on { opacity: .85; transform: rotate(-12deg) scale(1); transition: all .25s cubic-bezier(.3,1.6,.5,1); }
+
+/* ===== 档案：单屏 ===== */
+.det-file { display: flex; flex-direction: column; gap: 8px; min-height: 320px; }
+.df-seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex: none; }
+.df-seg button { padding: 8px 0; border: 1px solid var(--line); background: #0f1626; color: var(--muted); border-radius: 8px; font-size: 13px; }
+.df-seg button.on { color: #fff; border-color: var(--accent, #6ea8fe); background: #1a2540; }
+.df-page { --fs: 15px; flex: 1; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, #1a2034, #131829); font-size: var(--fs); }
+.df-in { padding: 12px 14px; }
+.df-t { font-family: var(--serif); margin: 0 0 6px; font-size: 1.2em; }
+.df-p { margin: 0 0 8px; line-height: 1.7; color: #d4dae8; } .df-p.sm { font-size: .9em; margin: 0; } .df-p em { font-style: normal; color: var(--muted); margin-right: 8px; }
+.df-h { margin: 10px 0 4px; color: var(--muted); font-size: .85em; letter-spacing: .15em; } .df-h.first { margin-top: 0; }
+.df-ul { margin: 0; padding-left: 18px; line-height: 1.65; } .df-ul.tight { font-size: .92em; }
+.df-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.df-pc { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 5px 2px; border: 1px solid var(--line); border-radius: 10px; background: #0f1626; color: inherit; }
+.df-pc.on { border-color: var(--accent, #6ea8fe); background: #1a2540; }
+.df-pc b { font-size: .8em; } .df-pc small { font-size: .65em; color: var(--muted); }
+.df-pav { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; } .df-pav svg { width: 100%; height: 100%; } .df-pav.big { width: 64px; height: 64px; flex: none; }
+.df-detail { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #0f1626; border: 1px solid var(--line); }
+.df-dh { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; } .df-dh span { color: var(--muted); font-size: .85em; } .df-dh .red { color: var(--danger, #e5484d); }
+.df-mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.df-mt { padding: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #0f1626; color: inherit; position: relative; display: flex; flex-direction: column; }
+.df-mt.on { border-color: var(--accent, #6ea8fe); } .df-mt.dead { border-color: var(--danger, #e5484d); }
+.df-mav { height: 46px; overflow: hidden; } .df-mav svg { width: 100%; height: 100%; object-fit: cover; }
+.df-mt b { font-size: .78em; padding: 3px 2px; } .df-mt em { position: absolute; top: 2px; right: 2px; font-style: normal; font-size: 9px; background: var(--danger, #e5484d); color: #fff; padding: 0 4px; border-radius: 4px; }
+.df-tl > div { display: grid; grid-template-columns: 62px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); line-height: 1.55; } .df-tl b { color: var(--accent, #6ea8fe); }
+.df-victim { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+.df-page .det-report { padding: 8px 10px; } .df-page .det-rp-r { padding: 4px 0; font-size: .95em; } .det-rp-n ul { margin: 4px 0 0; padding-left: 18px; font-size: .92em; line-height: 1.55; } .det-rp-n b { color: var(--muted); }
+.df-foot { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; flex: none; }
+
 /* 狼人杀 */
 .door.wolf { border-color: rgba(190, 90, 90, .55); box-shadow: 0 0 0 1px rgba(190, 90, 90, .12), 0 14px 40px rgba(150, 40, 60, .18); }
 .door.wolf .door-tx small { color: #f0a29a; }
@@ -10721,6 +10786,8 @@ const SFX = (() => {
   const play = (fn) => { if (muted) return; if (!wake()) return; try { fn(T()); } catch (e) {} };
 
   // ---------- 音效 ----------
+  let susGain = null;
+  const op = (i) => [196, 207.7, 185, 220][i % 4];
   const fx = {
     // ---------- 场景音效 ----------
     // 公司 logo：柔和的上行音 + 闪光
@@ -10802,6 +10869,44 @@ const SFX = (() => {
     huff: (t) => {
       noise(t, 0.2, { f: 2800, to: 900, q: 0.9, gain: 0.3, attack: 0.02 });
       tone(280, t, 0.18, { type: 'square', to: 170, gain: 0.05, lp: 900 });
+    },
+    // ---------- 开场悬疑动画用 ----------
+    stinger: (t) => {
+      [233.1, 246.9, 311.1, 370].forEach((f, i) => tone(f, t, 1.6, { type: 'sawtooth', gain: 0.1 - i * 0.012, lp: 1400, attack: 0.02 }));
+      noise(t, 0.5, { f: 1200, to: 300, q: 0.7, gain: 0.3 }); tone(46, t, 1.4, { to: 34, gain: 0.7 });
+    },
+    // 惊恐的尖叫（合成）
+    scream: (t) => {
+      const mk = (f0, f1, g) => {
+        const o = ac.createOscillator(), lfo = ac.createOscillator(), lg = ac.createGain(), env = ac.createGain();
+        const a = ac.createBiquadFilter(), b = ac.createBiquadFilter(), c = ac.createBiquadFilter();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + 0.35); o.frequency.exponentialRampToValueAtTime(f1 * 0.82, t + 1.5);
+        lfo.frequency.value = 11; lg.gain.value = f0 * 0.05; lfo.connect(lg); lg.connect(o.frequency);
+        a.type = 'bandpass'; a.frequency.value = 950; a.Q.value = 4; b.type = 'bandpass'; b.frequency.value = 2900; b.Q.value = 5; c.type = 'bandpass'; c.frequency.value = 4300; c.Q.value = 6;
+        env.gain.setValueAtTime(0.0001, t); env.gain.linearRampToValueAtTime(g, t + 0.05); env.gain.setValueAtTime(g, t + 0.9); env.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+        o.connect(a); o.connect(b); o.connect(c); a.connect(env); b.connect(env); c.connect(env); env.connect(sfxBus);
+        o.start(t); lfo.start(t); o.stop(t + 1.7); lfo.stop(t + 1.7);
+      };
+      mk(620, 1450, 0.5); mk(633, 1480, 0.3);
+      noise(t, 1.5, { f: 3200, q: 0.8, gain: 0.1, attack: 0.05 });
+    },
+    heartbeat: (t) => {
+      tone(62, t, 0.16, { to: 42, gain: 0.55 }); noise(t, 0.08, { f: 120, q: 0.6, gain: 0.2 });
+      tone(54, t + 0.2, 0.2, { to: 38, gain: 0.4 });
+    },
+    tick: (t) => { noise(t, 0.03, { f: 3400, q: 3, gain: 0.1 }); tone(1900, t, 0.02, { type: 'square', gain: 0.025, lp: 4000 }); },
+    shutter: (t) => { noise(t, 0.04, { f: 4500, q: 2, gain: 0.35 }); noise(t + 0.07, 0.09, { f: 1600, q: 1.5, gain: 0.22 }); tone(180, t + 0.07, 0.08, { type: 'square', to: 90, gain: 0.05, lp: 700 }); },
+    // 悬疑氛围垫（约 30 秒，可用 SFX.suspenseStop() 提前淡出）
+    suspense: (t) => {
+      if (susGain) { try { susGain.gain.setTargetAtTime(0, ac.currentTime, 0.1); } catch (e) {} }
+      const g = ac.createGain(); g.gain.value = 1; g.connect(sfxBus); susGain = g;
+      const O = { bus: g };
+      tone(55, t, 31, Object.assign({ type: 'sawtooth', gain: 0.1, attack: 5, lp: 280 }, O));
+      tone(58.3, t, 31, Object.assign({ type: 'sawtooth', gain: 0.08, attack: 6, lp: 260 }, O));
+      tone(1244.5, t + 3, 9, Object.assign({ gain: 0.018, attack: 4 }, O)); tone(1318.5, t + 5, 9, Object.assign({ gain: 0.014, attack: 4 }, O));
+      tone(932, t + 13, 9, Object.assign({ gain: 0.016, attack: 4, to: 880 }, O)); tone(988, t + 15, 9, Object.assign({ gain: 0.012, attack: 4 }, O));
+      noise(t, 30, Object.assign({ f: 420, to: 900, q: 0.6, gain: 0.04, attack: 8 }, O));
+      [4, 11, 19, 25].forEach((d, i) => tone(op(i), t + d, 2.2, Object.assign({ type: 'triangle', gain: 0.03, attack: 1, lp: 700, to: op(i) * 0.97 }, O)));
     },
     // 凶手被抓：手铐咔嗒咔嗒锁上 → 铁链拖动 → 牢门哐当关上
     cuff: (t) => {
@@ -11090,6 +11195,7 @@ const SFX = (() => {
     extKind = kind; themeStop(); ambStart(kind);
   };
   api.tension = (on) => { tense = !!on; };
+  api.suspenseStop = () => { try { if (susGain) { susGain.gain.cancelScheduledValues(ac.currentTime); susGain.gain.setTargetAtTime(0, ac.currentTime, 0.3); susGain = null; } } catch (e) {} };
   api.stop = () => { themeStop(); ambStop(); mode = null; api._key = null; clearInterval(timer); timer = null; tense = false; };
   return api;
 })();
@@ -11124,7 +11230,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
   const cases = () => window.__CASES || [];
   const caseById = (id) => cases().find((c) => c.id === id);
   const key = (id) => 'det:' + id;
-  let bstep = 0, mapOpen = null;
+  let bstep = 0, mapOpen = null, fsel = null;
   const fresh = () => ({ ptr: {}, found: [], asked: {}, conf: {}, broken: [], log: [], mark: [], seen: {}, searches: 0, asks: 0, result: null, order: null });
   // 嫌疑人的显示顺序：每局随机，免得凶手总排在固定位置
   function suspectsOrdered() {
@@ -11236,7 +11342,7 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     C = caseById(id); if (!C) return;
     const g = store.get(key(id));
     G = g && g.log ? Object.assign(fresh(), g) : fresh();
-    tab = G.result ? 'accuse' : 'brief'; bstep = 0; mapOpen = null; sel = null; pickClue = false; lastClue = null; flash = null;
+    tab = G.result ? 'accuse' : 'brief'; bstep = 0; mapOpen = null; fsel = null; sel = null; pickClue = false; lastClue = null; flash = null;
     clearTimers();
     document.body.dataset.tone = C.tone || 'none';
     try { FX.ambient(FX.caseAmb(C.id) || 'dust'); } catch (e) {}
@@ -11265,12 +11371,15 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
   }
   function endIntro() {
     clearTimers(); if (!C) return;
-    G.introDone = true; save(); renderCase(); window.scrollTo(0, 0); sfx('click');
+    G.introDone = true; save(); window.scrollTo(0, 0); sfx('click');
+    if (!G.cineDone && C.deathReport) return startCinema();
+    renderCase();
   }
 
   // ---------- 主界面 ----------
-  const TABS = [['brief', '案情'], ['search', '搜证'], ['ask', '审问'], ['notes', '笔记'], ['accuse', '指认']];
+  const TABS = [['brief', '档案'], ['search', '搜证'], ['ask', '审问'], ['notes', '笔记'], ['accuse', '指认']];
   function renderCase() {
+    const keepY = window.scrollY; // 重绘后保持滚动位置，连续提问不用再往下拖
     confirmSubmit = false;
     if (G.result) tab = 'accuse';
     const body = { brief: viewBrief, search: viewSearch, ask: viewAsk, notes: viewNotes, accuse: viewAccuse }[tab]();
@@ -11282,54 +11391,115 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
         <div class="det-body">${body}</div>
       </div>`;
     wireFx();
+    if (keepY) { const back = () => window.scrollTo(0, keepY); back(); try { requestAnimationFrame(back); } catch (e) {} setTimeout(back, 30); }
+    if (tab === 'brief') { fitFile(); try { requestAnimationFrame(fitFile); } catch (e) {} }
     try { SFX.tension((tab === 'ask' && !!sel) || (tab === 'accuse' && !G.result)); } catch (e) {}
   }
   function wireFx() { try { root().querySelectorAll('.det-fx').forEach((el) => FX.sparkle(el, 6, { min: 5, max: 8 })); } catch (e) {} }
 
-  // ---------- 开场简报：案情 → 人物关系 → 地图 → 验尸，然后才搜证 ----------
-  const BSTEPS = ['案情', '人物', '地图', '验尸'];
+  // ---------- 开场动画：发现尸体 → 在场的人 → 验尸；结束后进“档案” ----------
+  let cineAt = 0;
+  function startCinema() {
+    clearTimers(); try { SFX.tension(false); } catch (e) {}
+    const R = C.deathReport || {}, v = C.victim;
+    root().innerHTML = `<div class="det-cine"><div class="dc-stage" id="dcStage" data-act="cinenext"></div><button class="btn small ghost dc-skip" data-act="cineskip">跳过 ›</button></div>`;
+    const st = () => $('#dcStage');
+    const type = (el, text, step, gap) => { // 打字机 + 键盘声
+      let i = 0; const run = () => { if (!el.isConnected) return; i = Math.min(text.length, i + (step || 1)); el.textContent = text.slice(0, i); if (i % 2 === 0) sfx('tick'); if (i < text.length) later(run, gap || 55); }; run();
+    };
+    const beats = (n, every, from) => { for (let i = 0; i < n; i++) later(() => sfx('heartbeat'), (from || 0) + i * every); };
+    const firstSent = (C.brief || '').split(/(?<=[。！？])/).slice(0, 2).join('').slice(0, 90);
+    const scenes = [
+      // 0 委托
+      [5600, () => {
+        sfx('suspense');
+        st().innerHTML = `<div class="dc-s0"><p class="dc-k">CASE FILE</p><h2>${esc(C.title)}</h2><p class="dc-tag">${esc(C.tagline)}</p><p class="dc-tx" id="dcT0"></p></div>`;
+        later(() => type($('#dcT0'), firstSent, 1, 70), 900); beats(4, 1300, 1200);
+      }],
+      // 1 发现尸体
+      [6800, () => {
+        st().innerHTML = `<div class="dc-s1"><p class="dc-k">现场</p><p class="dc-scene" id="dcSc"></p><div class="dc-body" id="dcBody"><div class="dc-av">${ART.portrait(v.look, { age: v.age || 50, mood: 'shocked' })}</div><h3>死者 · ${esc(v.name)}</h3></div><div class="dc-flash"></div></div>`;
+        later(() => type($('#dcSc'), (R.scene || v.desc || '').slice(0, 60), 1, 60), 300);
+        beats(3, 950, 400);
+        later(() => { sfx('stinger'); sfx('scream'); const s1 = $('.dc-s1'); if (s1) s1.classList.add('boom'); }, 3300);
+      }],
+      // 2 在场的人
+      [1400 + C.suspects.length * 820 + 2200, () => {
+        const list = suspectsOrdered();
+        st().innerHTML = `<div class="dc-s2"><p class="dc-k">在场的人</p><div class="dc-grid">${list.map((x, i) => `<div class="dc-p" style="animation-delay:${(0.5 + i * 0.82).toFixed(2)}s"><div class="dc-pav">${portraitOf(x, null, 'head')}</div><b>${esc(x.name)}</b><small>${esc(x.role)}</small></div>`).join('')}</div><p class="dc-line">他们之中，有一个人在说谎。</p></div>`;
+        list.forEach((x, i) => later(() => { sfx('lit'); if (i % 2 === 0) sfx('heartbeat'); }, 500 + i * 820));
+        later(() => sfx('stinger'), 1400 + list.length * 820 + 200);
+      }],
+      // 3 验尸
+      [7600, () => {
+        const rows = [['死者', v.name], ['死亡时间', R.time], ['死因', R.cause], ['发现地点', R.loc ? ((C.locations.find((l) => l.id === R.loc) || {}).name || '') : '']].filter((r) => r[1]);
+        st().innerHTML = `<div class="dc-s3"><div class="dc-paper"><div class="dc-ph"><span>现场勘验报告</span></div>${rows.map((r, i) => `<div class="dc-pr"><b>${r[0]}</b><span id="dcR${i}"></span></div>`).join('')}<ul class="dc-pn">${(R.notes || []).slice(0, 3).map((n, i) => `<li id="dcN${i}"></li>`).join('')}</ul><i class="dc-stamp">已验尸</i></div><div class="dc-flash w"></div></div>`;
+        sfx('shutter'); later(() => sfx('shutter'), 380);
+        let at = 900;
+        rows.forEach((r, i) => { const t0 = at; later(() => type($('#dcR' + i), String(r[1]), 1, 45), t0); at += Math.min(1200, 200 + String(r[1]).length * 45); });
+        (R.notes || []).slice(0, 3).forEach((n, i) => { const t0 = at; later(() => type($('#dcN' + i), n, 1, 38), t0); at += Math.min(1400, 200 + n.length * 38); });
+        later(() => { const sp = $('.dc-stamp'); if (sp) sp.classList.add('on'); sfx('stamp'); }, Math.min(at + 300, 6600));
+      }]
+    ];
+    cineRun = (i) => {
+      cineAt = i; if (i >= scenes.length) return endCinema();
+      clearTimers(); scenes[i][1](); later(() => cineRun(i + 1), scenes[i][0]);
+    };
+    cineRun(0);
+  }
+  let cineRun = null;
+  function cineNext() { if (cineRun) cineRun(cineAt + 1); }
+  function endCinema() {
+    clearTimers(); try { SFX.suspenseStop(); } catch (e) {}
+    if (!C) return; G.cineDone = true; save(); tab = 'brief'; bstep = 0; renderCase(); window.scrollTo(0, 0); sfx('click');
+  }
+
+  // ---------- 档案：案情 / 人物 / 地图 / 时间线 / 死因，每页一屏、不用上下滑 ----------
+  const BSTEPS = ['案情', '人物', '地图', '时间线', '死因'];
   function viewBrief() {
     bstep = Math.max(0, Math.min(BSTEPS.length - 1, bstep));
-    const dots = `<div class="det-steps">${BSTEPS.map((n, i) => `<button data-bs="${i}" class="${i === bstep ? 'on' : i < bstep ? 'done' : ''}"><i>${i + 1}</i><span>${n}</span></button>`).join('')}</div>`;
-    const body = [briefCase, briefPeople, briefMap, briefReport][bstep]();
-    const last = bstep === BSTEPS.length - 1;
-    const nav = `<div class="det-bnav">${bstep > 0 ? '<button class="btn" data-bs="' + (bstep - 1) + '">上一步</button>' : ''}${last ? '<button class="btn primary det-fx" data-tab="search">开始调查</button>' : '<button class="btn primary det-fx" data-bs="' + (bstep + 1) + '">下一步：' + BSTEPS[bstep + 1] + '</button>'}</div>`;
-    return dots + body + nav;
+    const page = [filePage0, filePage1, filePage2, filePage3, filePage4][bstep]();
+    return `<div class="det-file"><nav class="df-seg">${BSTEPS.map((n, i) => `<button data-bs="${i}" class="${i === bstep ? 'on' : ''}">${n}</button>`).join('')}</nav>
+      <div class="df-page" id="dfPage">${page}</div>
+      <div class="df-foot"><button class="btn ghost" data-act="cinereplay">重播开场</button><button class="btn primary det-fx" data-tab="search">开始调查</button></div></div>`;
   }
-  function briefCase() {
-    return `<div class="det-hero">${ART.sceneFor(C.id, 'cover', C.cover, { title: C.title, text: C.title + C.tagline })}<div class="det-hero-t"><p class="eyebrow">委托</p><h2>${esc(C.title)}</h2></div></div>
-      <div class="card rise" style="animation-delay:.1s"><p class="det-p">${esc(C.brief).replace(/\n/g, '<br>')}</p></div>
-      <div class="card rise" style="animation-delay:.25s"><h4>现场时间线</h4><div class="det-tl">${C.timeline.map((t) => `<div><b>${esc(t.t)}</b><span>${esc(t.text)}</span></div>`).join('')}</div></div>
-      <div class="card rise" style="animation-delay:.4s"><h4>规则</h4><p class="det-p">搜证和提问都有次数限制。反复搜查同一个地点，线索会逐渐深入。把证物拿给嫌疑人看，谎言就会露出破绽。审问要循序渐进，对方松了口才问得出更敏感的话题；留意他们的表情和声音。准备好了就去“指认”，只能指认一次，指认之后案件就结束了。</p></div>`;
+  function filePage0() {
+    return `<div class="df-in"><h3 class="df-t">${esc(C.title)}</h3><p class="df-p">${esc(C.brief).replace(/\n/g, '<br>')}</p>
+      <h4 class="df-h">已知事实</h4><ul class="df-ul">${C.publicFacts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>`;
   }
-  function briefPeople() {
-    const R = C.relations || {};
-    const v = C.victim;
-    const cards = suspectsOrdered().map((s) => `<div class="det-rel"><div class="det-av">${portraitOf(s, null, 'head')}</div>
-      <div><b>${esc(s.name)}</b><small>${esc(s.role)}${s.age ? ' · ' + s.age + ' 岁' : ''}</small><p>${esc(R[s.id] || s.bio || '')}</p></div></div>`).join('');
-    const links = (C.links || []).map((k) => `<li><b>${esc(sus(k.a).name)}</b> <i>⇄</i> <b>${esc(sus(k.b).name)}</b><span>${esc(k.text)}</span></li>`).join('');
-    return `<div class="card det-victim rise"><div class="det-av">${ART.portrait(v.look, { age: v.age || 50 })}</div><div><h4>死者 · ${esc(v.name)}</h4><p class="det-p">${esc(v.desc)}</p></div></div>
-      <h4 class="det-h">在场的人（${C.suspects.length}）</h4><div class="det-rels">${cards}</div>
-      ${links ? `<div class="card rise"><h4>人和人之间</h4><ul class="det-links">${links}</ul></div>` : ''}`;
+  function filePage1() {
+    const R = C.relations || {}, list = suspectsOrdered();
+    if (!fsel || !sus(fsel)) fsel = list[0].id;
+    const cur = sus(fsel);
+    const links = (C.links || []).filter((k) => k.a === fsel || k.b === fsel).map((k) => { const o = sus(k.a === fsel ? k.b : k.a); return `<li><b>${esc(o.name)}</b>：${esc(k.text)}</li>`; }).join('');
+    return `<div class="df-in df-people"><div class="df-grid">${list.map((x) => `<button class="df-pc ${x.id === fsel ? 'on' : ''}" data-fsel="${x.id}"><div class="df-pav">${portraitOf(x, null, 'head')}</div><b>${esc(x.name)}</b><small>${esc(x.role)}</small></button>`).join('')}</div>
+      <div class="df-detail"><div class="df-dh"><b>${esc(cur.name)}</b><span>${esc(cur.role)}${cur.age ? ' · ' + cur.age + ' 岁' : ''}</span></div>
+      <p class="df-p"><em>与死者</em>${esc(R[cur.id] || cur.bio || '')}</p>${links ? `<ul class="df-ul tight">${links}</ul>` : ''}</div></div>`;
   }
-  function briefMap() {
+  function filePage2() {
     const dead = C.deathReport && C.deathReport.loc;
-    const tiles = C.locations.map((l) => {
-      const open = mapOpen === l.id;
-      return `<button class="det-mt ${open ? 'open' : ''} ${l.id === dead ? 'dead' : ''}" data-maploc="${l.id}"><div class="det-mt-art">${ART.sceneFor(C.id, l.id, l.scene, { text: l.name + l.desc })}</div>
-        <b>${esc(l.name)}</b>${l.id === dead ? '<em>发现死者</em>' : ''}${open ? `<p>${esc(l.desc)}</p>` : '<small>点开看看</small>'}</button>`;
-    }).join('');
-    return `<div class="card rise"><h4>案发地点</h4><p class="det-p">这是你能搜查的 ${C.locations.length} 个地方。点一下看介绍；搜证时每个地点可以反复搜，越搜越深。</p></div><div class="det-map">${tiles}</div>`;
+    if (!mapOpen || !C.locations.some((l) => l.id === mapOpen)) mapOpen = C.locations[0].id;
+    const cur = C.locations.find((l) => l.id === mapOpen);
+    return `<div class="df-in df-map"><div class="df-mgrid">${C.locations.map((l) => `<button class="df-mt ${l.id === mapOpen ? 'on' : ''} ${l.id === dead ? 'dead' : ''}" data-maploc="${l.id}"><div class="df-mav">${ART.sceneFor(C.id, l.id, l.scene, { text: l.name + l.desc })}</div><b>${esc(l.name)}</b>${l.id === dead ? '<em>发现死者</em>' : ''}</button>`).join('')}</div>
+      <div class="df-detail"><div class="df-dh"><b>${esc(cur.name)}</b>${cur.id === dead ? '<span class="red">发现死者的地方</span>' : ''}</div><p class="df-p">${esc(cur.desc)}</p></div></div>`;
   }
-  function briefReport() {
+  function filePage3() {
+    return `<div class="df-in"><h4 class="df-h first">现场时间线</h4><div class="df-tl">${C.timeline.map((t) => `<div><b>${esc(t.t)}</b><span>${esc(t.text)}</span></div>`).join('')}</div></div>`;
+  }
+  function filePage4() {
     const d = C.deathReport || {}, v = C.victim;
-    const rows = [['死者', v.name], ['死亡时间', d.time], ['死因', d.cause], ['发现经过', d.scene]].filter((r) => r[1]);
     const where = d.loc ? (C.locations.find((l) => l.id === d.loc) || {}).name : '';
-    return `<div class="det-report rise"><div class="det-rp-h"><span>现场勘验报告</span><i>绝密</i></div>
-      ${rows.map(([k, t]) => `<div class="det-rp-r"><b>${k}</b><span>${esc(t)}</span></div>`).join('')}
-      ${where ? `<div class="det-rp-r"><b>发现地点</b><span>${esc(where)}</span></div>` : ''}
-      ${d.notes && d.notes.length ? `<div class="det-rp-n"><b>勘验记录</b><ul>${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''}</div>
-      <div class="card rise" style="animation-delay:.2s"><h4>已知事实</h4><ul class="det-ul">${C.publicFacts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></div>`;
+    const rows = [['死亡时间', d.time], ['死因', d.cause], ['发现经过', d.scene], ['发现地点', where]].filter((r) => r[1]);
+    return `<div class="df-in"><div class="df-victim"><div class="df-pav big">${ART.portrait(v.look, { age: v.age || 50 })}</div><div><h4 class="df-h first">死者 · ${esc(v.name)}</h4><p class="df-p sm">${esc(v.desc)}</p></div></div>
+      <div class="det-report">${rows.map(([k, t]) => `<div class="det-rp-r"><b>${k}</b><span>${esc(t)}</span></div>`).join('')}${d.notes && d.notes.length ? `<div class="det-rp-n"><b>勘验记录</b><ul>${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''}</div></div>`;
+  }
+  // 让档案页刚好装进一屏：先量剩余高度，内容太多就缩小字号
+  function fitFile() {
+    const root0 = $('.det-file'), pg = $('#dfPage'); if (!root0 || !pg) return;
+    const top = root0.getBoundingClientRect().top + window.scrollY;
+    root0.style.height = Math.max(320, window.innerHeight - top - 42) + 'px';
+    let fs = 15; pg.style.setProperty('--fs', fs + 'px');
+    for (let i = 0; i < 12 && pg.scrollHeight > pg.clientHeight + 1 && fs > 10; i++) { fs -= 0.5; pg.style.setProperty('--fs', fs + 'px'); }
   }
 
   function viewSearch() {
@@ -11514,15 +11684,17 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
     if (e.target.closest('[data-act="introback"]')) return back();
     const ov = e.target.closest('[data-act="skipintro"],[data-act="skipreveal"]');
     if (ov) return ov.dataset.act === 'skipintro' ? endIntro() : endReveal();
+    if (e.target.closest('[data-act="cinenext"]') && !e.target.closest('button')) return cineNext();
     const t = e.target.closest('button'); if (!t) return;
     const d = t.dataset;
     if (d.case) { sfx('click'); return start(d.case); }
     if (d.act === 'home') { sfx('click'); return close(); }
     if (d.act === 'list') { sfx('click'); clearTimers(); C = null; try { FX.ambient('fire'); } catch (x) {} delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
-    if (G.result && (d.bs !== undefined || d.maploc || d.tab || d.search || d.ev || d.sus || d.q || d.conf || d.mark || d.draft)) return; // 指认之后案件结束，不能再回去调查
+    if (G.result && (d.bs !== undefined || d.maploc || d.fsel || d.tab || d.search || d.ev || d.sus || d.q || d.conf || d.mark || d.draft)) return; // 指认之后案件结束，不能再回去调查
     if (d.bs !== undefined) { sfx('tab'); bstep = Number(d.bs); renderCase(); return window.scrollTo(0, 0); }
-    if (d.maploc) { sfx('click'); mapOpen = mapOpen === d.maploc ? null : d.maploc; return renderCase(); }
+    if (d.maploc) { sfx('click'); mapOpen = d.maploc; return renderCase(); }
+    if (d.fsel) { sfx('pick'); fsel = d.fsel; return renderCase(); }
     if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
     if (d.search) {
       const l = C.locations.find((x) => x.id === d.search), got = G.ptr[l.id] || 0;
@@ -11544,6 +11716,8 @@ if (typeof window !== 'undefined') { window.SFX = SFX; document.addEventListener
       if (!confirmSubmit) { confirmSubmit = true; t.textContent = '再点一次确认（提交后不能更改）'; return; }
       confirmSubmit = false; return submit();
     }
+    if (d.act === 'cineskip') return endCinema();
+    if (d.act === 'cinereplay') return startCinema();
     if (d.act === 'again') { const id = C.id; store.set(key(id), null); start(id); }
   });
 
