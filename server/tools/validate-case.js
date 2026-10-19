@@ -60,8 +60,8 @@ function check(c) {
       if (!clues[f.clue]) e(`${s.id} confront 证物不存在 ${f.clue}`); L(f.a, 40, `${s.id}.confront.${f.clue}`);
       if (f.breaks) { const t = topicIds[s.id][f.breaks]; if (!t) e(`${s.id} breaks 话题不存在 ${f.breaks}`); else if (!t.lie) e(`${s.id} breaks 的话题不是 lie ${f.breaks}`); (breaksBy[s.id] = breaksBy[s.id] || []).push(f); }
     }
-    if (!(breaksBy[s.id] || []).length) e(s.id + ' 没有任何 breaks 对质');
-    for (const t of s.topics || []) if (t.lie && !(s.confronts || []).some(f => f.breaks === t.id)) w(`${s.id}.${t.id} 是 lie 但没有对质能揭穿`);
+    if (s.id !== sol.culprit && !(breaksBy[s.id] || []).length) e(s.id + ' 没有任何 breaks 对质');
+    for (const t of s.topics || []) if (s.id !== sol.culprit && t.lie && !(s.confronts || []).some(f => f.breaks === t.id)) w(`${s.id}.${t.id} 是 lie 但没有对质能揭穿`);
   }
   // needs 成环检查（话题依赖图）
   const dep = {}; for (const s of sus) for (const t of s.topics || []) dep[s.id + '.' + t.id] = (t.needs || []).filter(x => x.startsWith('ask:')).map(x => x.slice(4));
@@ -69,8 +69,17 @@ function check(c) {
   Object.keys(dep).forEach(k => dfs(k, []));
   const cu = breaksBy[sol.culprit] || [];
   const locs = new Set(cu.map(f => clueLoc[f.clue]));
-  if (cu.length < 2 || locs.size < 2) e('凶手谎言需被 ≥2 个不同地点的证物揭穿');
-  if (!cu.some(f => f.crack)) e('凶手缺 crack:true 对质');
+  if (cu.length) e('凶手的 confronts 不能有 breaks/crack：凶手永不认罪，只能狡辩（删掉 breaks 与 crack）');
+  const cuC = (S[sol.culprit] && S[sol.culprit].confronts) || [];
+  if (cuC.length < 4) e('凶手 confronts ≥4（每条是狡辩，不是认罪）');
+  const names = (n) => [n, n.length >= 3 ? n.slice(-2) : n.slice(-1)].filter(x => x.length >= 2);
+  const cname = S[sol.culprit] ? names(S[sol.culprit].name) : [];
+  const nameHit = (sol.keyClues || []).filter(k => clues[k] && cname.some(n => (clues[k].title + clues[k].text).includes(n)));
+  if (nameHit.length) e('关键证物不能直接写凶手姓名：' + nameHit.join(','));
+  const lieSus = sus.filter(s => s.id !== sol.culprit && (s.topics || []).some(t => t.lie)).length;
+  if (lieSus < 3) w('至少 3 个无辜者也应有 lie 话题（红鲱鱼）');
+  const stub = sus.filter(s => s.id !== sol.culprit && (s.topics || []).some(t => t.lie && !(s.confronts || []).some(f => f.breaks === t.id))).length;
+  if (stub < 1) e('至少 1 个无辜者的 lie 话题不能被一件证物揭穿（嘴硬的不只有凶手）');
   if (S[sol.culprit] && S[sol.culprit].topics.filter(t => t.lie).length < 2) e('凶手 lie 话题 <2');
   return { E, W };
 }

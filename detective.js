@@ -371,7 +371,7 @@
     let tip = '';
     if (tab === 'brief') tip = '先读完档案（案情、人物、地图、时间线、死因），然后点“开始调查”。';
     else if (tab === 'search') tip = G.searches === 0 ? `第 2 步：点一个地点，再点里面的东西搜证。总共能搜 ${C.budget.search} 次，先去最可疑的地方。` : (G.asks === 0 && found >= 3 ? `已找到 ${found} 条线索。下一步：去“审问”，当面问嫌疑人。` : `已找到 ${found} 条线索，还能搜 ${searchLeft()} 次。线索自动存进“笔记”。`);
-    else if (tab === 'ask') tip = !sel ? '第 3 步：点上面一个人物，开始审问。' : (G.asks === 0 ? '点下面的问题向他提问。注意回答里前后矛盾、含糊其辞的地方。' : '回答有破绽？点“出示证物”拿线索质问他。问得差不多了，就去“指认”。');
+    else if (tab === 'ask') tip = !sel ? '第 3 步：点上面一个人物，开始审问。' : (G.asks === 0 ? '点下面的问题向他提问。注意回答里前后矛盾、含糊其辞的地方。' : '回答有破绽？点“出示证物”质问他——但真凶也会撒谎狡辩，别因为谁嘴硬或谁认了就下结论。线索对得上了，就去“指认”。');
     else if (tab === 'notes') tip = '这里是你找到的线索和标记的嫌疑人。自己对照，找出谁在说谎。';
     else if (tab === 'accuse') tip = '第 4 步：依次选 凶手 → 作案手法 → 动机，最后点“提交指认”。只能指认一次，提交后案件结束。';
     const cur = tab === 'notes' ? -1 : STEPS.findIndex((x) => x[0] === tab);
@@ -406,7 +406,7 @@
       const star = G.mark.includes(s.id);
       return `<button class="det-sus ${sel === s.id ? 'on' : ''}" data-sus="${s.id}"><div class="av">${ART.portrait(s.look, { age: s.age, crop: 'head' })}</div><div class="nm">${esc(s.name)}</div><div class="ch">${esc(s.role)}</div>${star ? '<i class="mk">★</i>' : ''}</button>`;
     }).join('');
-    return `<div class="det-sus-row">${chips}</div>${sel ? panel(sus(sel)) : '<div class="card"><p class="det-p"><b>审问怎么做</b></p><ol class="det-how"><li>点上面的人物头像，选中一个人</li><li>点下面的问题提问，看他怎么回答</li><li>发现矛盾？点“出示证物”质问</li><li>每个人只说自己知道的，也会隐瞒</li></ol></div>'}`;
+    return `<div class="det-sus-row">${chips}</div>${sel ? panel(sus(sel)) : '<div class="card"><p class="det-p"><b>审问怎么做</b></p><ol class="det-how"><li>点上面的人物头像，选中一个人</li><li>点下面的问题提问，看他怎么回答</li><li>发现矛盾？点“出示证物”质问</li><li>人人都可能撒谎，真凶不会轻易认罪；要靠几件证物互相印证</li></ol></div>'}`;
   }
   function panel(s) {
     const cm = clueMap();
@@ -483,7 +483,8 @@
     const f = (s.confronts || []).find((x) => x.clue === cid);
     G.seen[sel] = s.topics.filter((x) => unlocked(s, x)).map((x) => x.id);
     const e = { s: sel, kind: 'c', title: k.title, a: f ? f.a : s.fallback };
-    if (f && f.breaks && !isBroken(sel, f.breaks)) {
+    // 凶手永远不会因为一件证物就认罪：他只会狡辩、转移话题（否则谁一崩溃谁就是凶手）
+    if (f && f.breaks && sel !== C.solution.culprit && !isBroken(sel, f.breaks)) {
       G.broken.push(sel + '.' + f.breaks);
       const t = s.topics.find((x) => x.id === f.breaks);
       e.broke = true; e.truth = t && t.truth; e.crack = !!f.crack;
