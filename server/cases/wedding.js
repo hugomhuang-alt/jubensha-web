@@ -333,6 +333,16 @@ module.exports = {
       '手表停在心率归零的时刻'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '十月十六日，郊外白鹭庄园。明天这里将举办一场婚礼，今夜是彩排。', who: [], fx: ['night', 'zoomin'], snd: 'cricket' },
+    { loc: 'hall', text: '门厅里摆满明天要用的花艺，管家韩伯在门岗登记每一位到场的宾客。', who: ['hanbo', 'zhen'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'guestroom', text: '二楼休息间，礼服挂在衣架上。彩排结束，伴郎把戒指盒交到周明哲手里。', who: ['heming', 'ziheng'], fx: ['warm', 'spot'], snd: 'rustle' },
+    { loc: 'dining', text: '白鹭厅开席，约三十位亲友入座，香槟杯碰出清脆的声响。', who: ['ruoxi', 'xiaotang', 'luye'], fx: ['warm', 'zoomout'], snd: 'clink' },
+    { loc: 'study', text: '20:38，门岗登记本上多了一个没有请柬的名字，周明哲点头放行。', who: ['guyan', 'hanbo'], fx: ['dim', 'spot'], snd: 'paper' },
+    { loc: 'kitchen', text: '21:05，周明哲离席，说去暖房看花。后厨后门外，月季小路通向夜色。', who: ['victim'], fx: ['night', 'panl'], snd: 'footsteps' },
+    { loc: 'garden', text: '21:55，韩伯去关暖房加湿系统，兰花架旁，周明哲倒在地上，铜喷壶沾着血。', who: ['hanbo', 'victim'], fx: ['dim', 'steam', 'shake'], snd: 'gasp', climax: true },
+    { loc: 'hall', text: '22:20，警方封锁庄园。戒指盒敞开着，周家传了三代的钻戒不见了。', who: ['zhen', 'ziheng'], fx: ['police', 'night'], snd: 'siren' }
+  ],
   publicFacts: [
     '死者周明哲是婚礼总策划，也是新郎的兄长，死因是后脑钝器伤，现场有沾血的铜喷壶。',
     '彩排结束后，伴郎把戒指盒交给周明哲保管；现在盒子是空的，戒指不见了。',

@@ -351,6 +351,16 @@ module.exports = {
       '窗锁完好，窗外积雪无脚印'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '午后两点，暴雪封死了通往栖雪山居的最后一段山路。', who: [], fx: ['snow', 'fog', 'zoomin'], snd: 'wind' },
+    { loc: 'hall', text: '大厅的壁炉烧得正旺，旅行博主山屿穿着橙色背心，在房客间谈笑。', who: ['victim'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'kitchen', text: '晚七点，魏姐端出一份单做的饭菜。不久，手机信号断了。', who: ['wei', 'victim'], fx: ['steam', 'warm'], snd: 'clink' },
+    { loc: 'hall', text: '九点，大厅里山屿与一位女房客吵得不可开交，一刻钟后才散。', who: ['victim', 'lin'], fx: ['dim', 'spot'], snd: 'huff' },
+    { loc: 'garden', text: '后院的铜火盆还留着余烬，屋檐下的积雪越压越厚。', who: [], fx: ['night', 'snow', 'zoomout'], snd: 'creak' },
+    { loc: 'room', text: '十点零五分，山屿端着保温杯独自上楼，二〇二的门在身后合上。', who: ['victim'], fx: ['dim', 'night'], snd: 'footsteps' },
+    { loc: 'room', text: '清晨七点二十，周守山与邢大海撞开插死的房门，山屿倒在地毯上。', who: ['victim', 'zhou', 'xing'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'hall', text: '八个人围着壁炉，谁也不敢上楼。警方最快要到明天。', who: ['wei', 'su', 'he'], fx: ['warm', 'zoomout'], snd: 'sigh' }
+  ],
   timeline: [
     { t: '14:00', text: '暴雪封山，所有人被困民宿。' },
     { t: '19:00', text: '晚饭，山屿另有一份魏敏单做的饭菜。此后手机信号中断。' },

@@ -342,6 +342,16 @@ module.exports = {
       '门边的校铃沾有血迹'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '百年校庆夜，老校门张灯结彩，校史馆深处的灯却比往年暗了几分。', who: [], fx: ['night', 'zoomin'], snd: 'bell' },
+    { loc: 'dining', text: '三百多位校友涌进体育馆改成的宴会厅，红毯尽头，校长举杯致意。', who: ['tong'], fx: ['warm', 'spot'], snd: 'chat' },
+    { loc: 'hall', text: '校史馆展厅里老照片与标本静静陈列，今晚展厅的摄像头被暂停了。', who: [], fx: ['dim', 'dust', 'panr'], snd: 'footsteps' },
+    { loc: 'back', text: '19:00，校报记者在后台采访柏老教授，他笑说：19:20 我约了人。', who: ['lan', 'victim'], fx: ['warm', 'panl'], snd: 'paper' },
+    { loc: 'room', text: '20:13，小棠回到口述室门外敲门，里面传来断断续续很轻的说话声。', who: ['lan'], fx: ['night', 'zoomin'], snd: 'knock' },
+    { loc: 'dining', text: '21:00 颁奖时刻，主桌上柏老教授的座位仍然空着，校长眉头渐紧。', who: ['tong'], fx: ['spot', 'zoomout'], snd: 'hmm' },
+    { loc: 'room', text: '21:18，保安推开口述室的门，柏仲谦侧卧桌脚，已没有呼吸。', who: ['niu', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '警灯映红了校史馆的老墙，欢声笑语的校庆夜，从此成了一桩悬案。', who: [], fx: ['police', 'night'], snd: 'siren' }
+  ],
   publicFacts: [
     '柏仲谦，74岁，退休植物学教授，本该 21:00 领奖，一直没出现。',
     '21:18 保安推开口述室的门，发现他已死亡，死因是后脑被黄铜校铃重击。',

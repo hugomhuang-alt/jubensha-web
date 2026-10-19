@@ -317,6 +317,16 @@ module.exports = {
       '下层窖离地六十公分以下几乎无氧'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '云岭酒庄的黄昏，葡萄藤爬满山坡。今晚要开一桶封存二十七年的镇庄老酒。', who: [], fx: ['warm', 'panr'], snd: 'wind' },
+    { loc: 'garden', text: '18:00，露台酒会开始。庄主骆鸿钧举杯迎客，进口商和评分人先后到场。', who: ['luo', 'shang', 'bai'], fx: ['warm', 'spot'], snd: 'chat' },
+    { loc: 'lab', text: '酿酒师阚远山在工作室里摆好三只杯子，女儿阚雨桐来催他准备敬桶。', who: ['kan'], fx: ['dim', 'zoomin'], snd: 'clink' },
+    { loc: 'hall', text: '19:35，四十张椅子坐满，品酒师柏秋实走上小台，主持开桶前的品鉴。', who: ['bai', 'luo'], fx: ['spot', 'dust'], snd: 'chime' },
+    { loc: 'cellar', text: '19:48，阚远山举着烛台独自下窖，替镇庄桶敬酒。帮工蒲小亮远远看见。', who: ['victim', 'pu'], fx: ['dim', 'night', 'zoomin'], snd: 'footsteps' },
+    { loc: 'hall', text: '21:00，开桶时间到了，台下的人一遍遍看表，酿酒师始终没有出现。', who: ['luo', 'kan', 'qi'], fx: ['dim', 'zoomout'], snd: 'toll' },
+    { loc: 'cellar', text: '21:40，消防员入窖，下层镇庄桶旁，阚远山侧卧在地，已经没有呼吸。', who: ['victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'garden', text: '警灯照亮露台，宾客被请留在原地，那桶酒还没有开。', who: ['luo', 'liang', 'qiu'], fx: ['police', 'night'], snd: 'siren' }
+  ],
   timeline: [
     { t: '15:40', text: '10公斤干冰送到，梁瑾签收，放进冷库。' },
     { t: '18:00', text: '露台酒会开始。' },

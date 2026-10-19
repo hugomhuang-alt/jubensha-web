@@ -194,97 +194,79 @@
   function wireFx() { try { root().querySelectorAll('.det-fx').forEach((el) => FX.sparkle(el, 6, { min: 5, max: 8 })); } catch (e) {} }
 
   // ---------- 开场动画：发现尸体 → 在场的人 → 验尸；结束后进“档案” ----------
-  let cineAt = 0, cineRun = null;
-  // ---------- 电影式开场：一幕一幕的画面（淡入、镜头推拉、雾、月光、剪影），字幕取自本案时间线 ----------
-  const SIL = '#04060d', RIM = '#c98a3c';
-  const fmSky = (id, c1, c2) => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>`;
-  const fmMoon = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r * 2.6}" fill="#fff6d0" opacity=".10"/><circle cx="${x}" cy="${y}" r="${r * 1.6}" fill="#fff6d0" opacity=".14"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fdf6d8"/><circle cx="${x - r * .3}" cy="${y - r * .2}" r="${r * .2}" fill="#e6dcb0" opacity=".6"/><circle cx="${x + r * .25}" cy="${y + r * .3}" r="${r * .14}" fill="#e6dcb0" opacity=".5"/>`;
-  const fmStars = (k) => Array.from({ length: k }, (_, i) => `<circle class="fm-st" style="animation-delay:${(i % 7) * .4}s" cx="${(i * 97 + 31) % 390}" cy="${(i * 53 + 11) % 230}" r="${i % 5 === 0 ? 1.5 : 1}" fill="#fff"/>`).join('');
-  const fmFog = () => `<g class="fm-fog"><ellipse cx="80" cy="430" rx="200" ry="26" fill="#9fb2d8" opacity=".13"/><ellipse cx="300" cy="455" rx="220" ry="30" fill="#9fb2d8" opacity=".12"/></g>`;
-  const person = (x, y, sc, fill, extra) => `<g transform="translate(${x} ${y}) scale(${sc})" fill="${fill || SIL}"><circle cx="0" cy="-46" r="9"/><path d="M-13 0 Q-14 -30 0 -34 Q14 -30 13 0Z"/>${extra || ''}</g>`;
-  const FM = {
-    establish: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice">${fmSky('g1', '#01030a', '#22345a')}<rect width="390" height="520" fill="url(#g1)"/>${fmStars(46)}${fmMoon(290, 120, 32)}
-      <g class="fm-cloud"><ellipse cx="90" cy="110" rx="70" ry="9" fill="#2c3e66" opacity=".7"/><ellipse cx="140" cy="100" rx="44" ry="8" fill="#2c3e66" opacity=".7"/></g>
-      <path d="M0 330 Q90 290 190 322 T390 310 V520H0Z" fill="#0b1224"/>
-      <g fill="${SIL}"><path d="M10 380 l18 -120 l18 120z"/><path d="M36 384 l14 -86 l14 86z"/><path d="M330 384 l20 -130 l20 130z"/><path d="M360 388 l12 -70 l12 70z"/></g>
-      <g class="fm-cam-in"><rect x="98" y="300" width="194" height="110" fill="#0e1528"/><polygon points="84,302 195,222 306,302" fill="#090e1d"/><rect x="240" y="228" width="16" height="40" fill="#090e1d"/>
-        <rect class="fm-w" x="116" y="330" width="34" height="26" fill="#f1b955"/><rect class="fm-w" x="170" y="330" width="34" height="26" fill="#f1b955" style="animation-delay:.6s"/><rect class="fm-w" x="224" y="330" width="34" height="26" fill="#f1b955" style="animation-delay:1.1s"/><rect x="170" y="262" width="30" height="24" fill="#f1b955" opacity=".85"/><rect x="212" y="372" width="26" height="38" fill="#05070f"/><path d="M0 410 H390" stroke="#05070f" stroke-width="3"/></g>${fmFog()}</svg>`,
-    arrive: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice">${fmSky('g2', '#050a16', '#141f38')}<rect width="390" height="520" fill="url(#g2)"/>
-      <g class="fm-pan"><rect x="40" y="60" width="310" height="380" fill="#0b1224"/><path d="M150 440 V210 Q195 150 240 210 V440Z" fill="#06080f"/>
-        <path class="fm-spill" d="M150 440 V210 Q195 150 240 210 V440Z" fill="#f4bb5e"/><path class="fm-beam" d="M150 440 L110 520 H280 L240 440Z" fill="#f4bb5e" opacity=".0"/>
-        <rect x="86" y="130" width="6" height="40" fill="#222"/><rect x="74" y="152" width="30" height="40" rx="6" fill="#f6c36a" class="fm-lamp"/><circle cx="89" cy="172" r="46" fill="#f6c36a" opacity=".14" class="fm-lamp"/>
-        ${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="${60 + i * 52}" y="60" width="2" height="380" fill="#10182c"/>`).join('')}
-        <path d="M0 440 H390 V520 H0Z" fill="#070a14"/><path d="M0 456 H390" stroke="#141c30" stroke-width="2"/></g>
-      ${Array.from({ length: Math.min(8, n) }, (_, i) => `<g class="fm-walker" style="--d:${(i * .8).toFixed(1)}s;--y:${462 + (i % 3) * 14}px;--s:${(1.15 + (i % 3) * .12).toFixed(2)}">${person(0, 0, 1, SIL, `<rect x="-3" y="0" width="6" height="22"/>`)}</g>`).join('')}${fmFog()}</svg>`,
-    seated: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#0b0a0e"/><rect y="0" width="390" height="330" fill="#1a1318"/>
-      <g><rect x="130" y="150" width="130" height="170" fill="#0d090b"/><rect x="144" y="170" width="102" height="150" fill="#05030a"/><ellipse class="fm-fire" cx="195" cy="300" rx="44" ry="26" fill="#ff8a2a"/><ellipse class="fm-fire" cx="195" cy="292" rx="26" ry="36" fill="#ffc35a" style="animation-delay:.2s"/><circle class="fm-fire" cx="195" cy="260" r="150" fill="#ff8a2a" opacity=".10" style="animation-delay:.1s"/></g>
-      <rect x="40" y="100" width="46" height="60" fill="#0c0a0f" stroke="#33261a"/><rect x="304" y="96" width="46" height="60" fill="#0c0a0f" stroke="#33261a"/><circle cx="195" cy="110" r="16" fill="#120d0f" stroke="#4a3822"/><path d="M195 110 V100 M195 110 L202 114" stroke="#caa14a" stroke-width="1.5"/>
-      <path d="M0 330 H390 V520 H0Z" fill="#0a0709"/><ellipse cx="195" cy="450" rx="150" ry="22" fill="#120c0d"/><rect x="186" y="418" width="8" height="26" fill="#d9c9a0"/><ellipse class="fm-fire" cx="190" cy="414" rx="4" ry="8" fill="#ffd27a"/>
-      <g class="fm-seatrow">${Array.from({ length: Math.min(8, n) }, (_, i) => { const k = Math.min(8, n), ang = Math.PI * (0.12 + 0.76 * (i / Math.max(1, k - 1))); const x = 195 - Math.cos(ang) * 170, y = 440 + Math.sin(ang) * 46, sc = 0.9 + Math.sin(ang) * 0.35; return `<g class="fm-p" style="animation-delay:${(i * .25).toFixed(2)}s">${person(x, y, sc, '#050307', `<path d="M-13 -34 Q0 -40 13 -34" stroke="${RIM}" stroke-width="1.4" fill="none" opacity=".6"/>`)}</g>`; }).join('')}</g></svg>`,
-    stairs: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#0b0b12"/><rect width="390" height="520" fill="#1a1520" opacity=".8"/>
-      <rect x="40" y="60" width="64" height="86" fill="#0a0a10" stroke="#3a2c1c"/><rect x="290" y="90" width="56" height="74" fill="#0a0a10" stroke="#3a2c1c"/><circle cx="195" cy="64" r="20" fill="#120e12" stroke="#5a4528"/><path d="M195 64 V50 M195 64 L206 70" stroke="#caa14a" stroke-width="2"/>
-      ${Array.from({ length: 9 }, (_, i) => `<polygon points="${20 + i * 38},${470 - i * 38} ${58 + i * 38},${470 - i * 38} ${58 + i * 38},${520} ${20 + i * 38},${520}" fill="${i % 2 ? '#14101a' : '#181320'}" stroke="#05040a"/><rect x="${20 + i * 38}" y="${466 - i * 38}" width="38" height="5" fill="#2a2030"/>`).join('')}
-      <path d="M20 440 L360 100" stroke="#3a2a1a" stroke-width="4"/><path d="M20 440 L360 100" stroke="#caa14a" stroke-width="1" opacity=".4"/>
-      <g class="fm-climb">${person(0, 0, 1.25, SIL, `<rect x="6" y="-30" width="14" height="10" fill="#e8e0c8" transform="rotate(-12)"/>`)}</g>
-      <rect class="fm-lamp" x="250" y="40" width="130" height="260" fill="#f4bb5e" opacity=".07"/></svg>`,
-    corridor: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#08070c"/>
-      <polygon points="0,0 390,0 250,190 140,190" fill="#120f18"/><polygon points="0,520 390,520 250,330 140,330" fill="#0d0a10"/><polygon points="0,0 140,190 140,330 0,520" fill="#171320"/><polygon points="390,0 250,190 250,330 390,520" fill="#171320"/>
-      <rect x="140" y="190" width="110" height="140" fill="#05040a"/>
-      <rect class="fm-end" x="176" y="212" width="38" height="118" fill="#f4bb5e"/><rect x="176" y="212" width="38" height="118" fill="none" stroke="#2a1d10" stroke-width="3"/>
-      <polygon class="fm-endlight" points="176,330 214,330 330,520 60,520" fill="#f4bb5e"/>
-      ${[[40, 210, 70], [30, 150, 100]].map(([x, y, h]) => `<polygon points="${x},${y} ${x + 60},${y + 40} ${x + 60},${y + 40 + h} ${x},${y + h + 60}" fill="#0b0810" stroke="#2a2030"/>`).join('')}
-      <polygon points="352,210 292,250 292,320 352,380" fill="#0b0810" stroke="#2a2030"/>
-      <g class="fm-nanny"><g fill="${SIL}"><circle cx="0" cy="-46" r="9"/><path d="M-14 0 Q-15 -30 0 -34 Q15 -30 14 0 L20 44 H-20Z"/><rect x="8" y="-22" width="34" height="4"/></g><rect x="14" y="-30" width="9" height="8" fill="#e8e0c8"/><path class="fm-steam" d="M18 -34 q-3 -8 0 -14 q3 -6 0 -12" stroke="#e8e0c8" stroke-width="1.5" fill="none"/></g></svg>`,
-    find: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice"><rect width="390" height="520" fill="#08060a"/>
-      <rect x="40" y="60" width="310" height="300" fill="#150f12"/><rect x="40" y="60" width="60" height="300" fill="#0b0809"/><rect x="290" y="60" width="60" height="300" fill="#0b0809"/>
-      ${Array.from({ length: 4 }, (_, i) => `<rect x="${52 + (i % 2) * 238}" y="${80 + Math.floor(i / 2) * 120}" width="34" height="100" fill="#201512" stroke="#3a2a1c"/>`).join('')}
-      <path d="M0 360 H390 V520 H0Z" fill="#0b0709"/><polygon points="120,360 270,360 330,520 60,520" fill="#1a1210"/>
-      <rect x="140" y="300" width="110" height="10" fill="#2a1a12"/><rect x="146" y="310" width="8" height="50" fill="#2a1a12"/><rect x="236" y="310" width="8" height="50" fill="#2a1a12"/><rect class="fm-lamp" x="226" y="270" width="20" height="30" fill="#f4bb5e"/>
-      <g class="fm-body"><ellipse cx="195" cy="440" rx="62" ry="18" fill="#05030a"/><circle cx="148" cy="436" r="11" fill="#05030a"/><path d="M158 430 Q200 420 238 436 L250 450 Q200 462 160 448Z" fill="#05030a"/><ellipse cx="170" cy="452" rx="26" ry="6" fill="#5a0d12" opacity=".7"/></g>
-      <g fill="#e8e0c8" opacity=".8"><rect x="250" y="452" width="16" height="10" transform="rotate(14 258 457)"/><rect x="108" y="468" width="16" height="10" transform="rotate(-20 116 473)"/></g>
-      <g class="fm-door"><polygon points="0,0 60,40 60,420 0,520" fill="#0b0809"/><rect x="0" y="0" width="60" height="520" fill="#05030a" opacity=".5"/></g>
-      <rect class="fm-redflash" width="390" height="520" fill="#d4121a"/></svg>`,
-    police: (n) => `<svg viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice">${fmSky('g7', '#02040c', '#1a2a4c')}<rect width="390" height="520" fill="url(#g7)"/>${fmStars(30)}
-      <g fill="${SIL}"><path d="M0 330 Q60 300 120 326 T250 318 T390 322 V360 H0Z"/><path d="M300 330 l16 -90 l16 90z"/><path d="M30 330 l14 -70 l14 70z"/></g>
-      <rect x="150" y="282" width="90" height="52" fill="#0a1020"/><polygon points="142,284 195,246 248,284" fill="#070c18"/><rect x="170" y="296" width="14" height="12" fill="#f1b955"/><rect x="204" y="296" width="14" height="12" fill="#f1b955"/>
-      <polygon points="160,360 230,360 360,520 30,520" fill="#0a0e1a"/><path d="M195 360 L195 520" stroke="#2a3558" stroke-width="3" stroke-dasharray="14 16"/>
-      <g class="fm-rain">${Array.from({ length: 36 }, (_, i) => `<line x1="${(i * 41) % 390}" y1="${(i * 67) % 520}" x2="${(i * 41) % 390 - 6}" y2="${(i * 67) % 520 + 26}" stroke="#9fb4e0" stroke-width=".8" opacity=".35"/>`).join('')}</g>
-      <g class="fm-pcar"><rect x="-70" y="-30" width="140" height="48" rx="14" fill="#e7eaf2"/><rect x="-52" y="-52" width="104" height="30" rx="10" fill="#c8cfdf"/><rect x="-46" y="-48" width="92" height="22" rx="6" fill="#16213a"/><rect x="-70" y="-6" width="140" height="10" fill="#1a2438"/><circle cx="-44" cy="20" r="14" fill="#05070f"/><circle cx="44" cy="20" r="14" fill="#05070f"/><circle cx="-52" cy="-8" r="8" fill="#fff6c8"/><circle cx="52" cy="-8" r="8" fill="#fff6c8"/><rect class="fm-lr" x="-34" y="-62" width="30" height="10" rx="3"/><rect class="fm-lb" x="4" y="-62" width="30" height="10" rx="3"/></g>
-      <rect class="fm-wash" width="390" height="520"/></svg>`
-  };
+  let cineAt = 0, cineRun = null, cineLast = 0, cineEl = null;
+  // ---------- 开场：和多人剧本杀一样——全屏插画 + 打字机文字，点一下才继续；每个案件用自己的画面和文字 ----------
+  function cineSlides() {
+    const base = (l) => (l === 'cover' ? C.cover : ((C.locations.find((x) => x.id === l) || {}).scene || C.cover));
+    const txt = (l) => (l === 'cover' ? C.title + C.tagline : (() => { const o = C.locations.find((x) => x.id === l) || {}; return (o.name || '') + (o.desc || ''); })());
+    const art = (l) => ART.sceneFor(C.id, l, base(l), { title: C.title, text: txt(l) });
+    let beats = C.cinema;
+    if (!Array.isArray(beats) || !beats.length) { // 兜底：用时间线配本案地点画面
+      const locs = C.locations.map((l) => l.id);
+      beats = (C.timeline || []).map((t, i) => ({ loc: i === 0 ? 'cover' : locs[i % locs.length], text: t.t + ' ' + t.text, who: [], fx: [], climax: i === C.timeline.length - 2 }));
+    }
+    return [{ title: true, art: art('cover'), fx: [] }].concat(beats.map((b) => ({ art: art(b.loc), text: b.text, who: b.who || [], fx: b.fx || [], snd: b.snd, climax: !!b.climax })));
+  }
+  const whoHtml = (ids) => (ids || []).map((id) => {
+    if (id === 'victim') return `<div class="cw dead"><div class="cwa">${ART.portrait(C.victim.look, { age: C.victim.age || 50, crop: 'head' })}</div><small>死者 ${esc(C.victim.name)}</small></div>`;
+    const x = sus(id); return x ? `<div class="cw"><div class="cwa">${portraitOf(x, null, 'head')}</div><small>${esc(x.name)}</small></div>` : '';
+  }).join('');
   function startCinema() {
     clearTimers(); try { SFX.tension(false); } catch (e) {}
+    if (cineEl) cineEl.remove();
+    const slides = cineSlides();
+    const el = document.createElement('div'); el.className = 'ov intro det-cine2'; cineEl = el;
+    el.innerHTML = `<div class="slides"></div><div class="shade"></div><button class="skip">跳过 ▸▸</button>
+      <div class="titlecard" hidden><h1>${esc(C.title)}</h1><p>${esc(C.tagline)}</p></div><div class="whorow"></div>
+      <div class="textbox"><div class="tt"></div><div class="hint"><div class="dots">${slides.map(() => '<i></i>').join('')}</div><span class="next">点击继续 ▸</span></div></div>`;
+    document.body.appendChild(el);
+    sfx('swell'); try { SFX.suspense && SFX.suspense(); } catch (e) {}
+    let idx = -1, tw = null, tms = [];
+    const slidesEl = $('.slides', el), tt = $('.tt', el), title = $('.titlecard', el);
+    const T = (fn, ms) => { const h = setTimeout(fn, ms); tms.push(h); };
+    const finish = () => { tms.forEach(clearTimeout); try { SFX.suspenseStop(); } catch (e) {} el.classList.add('out'); cineEl = null; setTimeout(() => { el.remove(); if (C) startFinale(); }, 400); };
+    el._finish = finish;
+    const go = () => {
+      idx++;
+      if (idx >= slides.length) return finish();
+      const sl = slides[idx];
+      if (idx > 0) sfx('whoosh');
+      const d = document.createElement('div');
+      d.className = 'slide ' + sl.fx.map((f) => 'z-' + f).join(' ');
+      d.innerHTML = `<div class="bgscene">${sl.art}</div>${sl.fx.map((f) => `<i class="fxo f-${f}"></i>`).join('')}`;
+      slidesEl.appendChild(d);
+      const im = $('img', d), show = () => requestAnimationFrame(() => d.classList.add('on'));
+      if (im && im.decode) im.decode().then(show, show); else show();
+      const old = slidesEl.querySelectorAll('.slide'); if (old.length > 1) { const o = old[0]; setTimeout(() => o.remove(), 1000); }
+      el.querySelectorAll('.dots i').forEach((x, k) => x.classList.toggle('on', k <= idx));
+      title.hidden = !sl.title;
+      $('.whorow', el).innerHTML = whoHtml(sl.who);
+      tt.textContent = '';
+      $('.next', el).textContent = idx === slides.length - 1 ? '继续 ▸' : '点击继续 ▸';
+      tw = sl.text ? FX.typewriter(tt, sl.text, 42) : null;
+      if (sl.snd) T(() => sfx(sl.snd), 500);
+      if (sl.fx.includes('police') && !sl.snd) T(() => sfx('siren'), 500);
+      if (sl.climax) { T(() => { sfx('shock'); T(() => sfx('gasp'), 220); d.classList.add('boom'); }, 900); }
+    };
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.skip')) return finish();
+      if (tw && !tw.done()) return tw.skip();
+      go();
+    });
+    go();
+  }
+  // ---------- 开场之后：八人合影（点击继续）→ 验尸报告（点“开始调查”） ----------
+  function startFinale() {
+    clearTimers(); try { SFX.tension(false); } catch (e) {}
     const R = C.deathReport || {}, v = C.victim, list = suspectsOrdered();
-    root().innerHTML = `<div class="det-cine"><div class="dc-stage" id="dcStage" data-act="cinenext"></div><div class="fm-bar t"></div><div class="fm-bar b"></div><div class="fm-grain"></div><div class="fm-vig"></div><button class="btn small ghost dc-skip" data-act="cineskip">跳过 ›</button></div>`;
+    root().innerHTML = `<div class="det-cine"><div class="dc-stage" id="dcStage" data-act="cinenext"></div><button class="btn small ghost dc-skip" data-act="cineskip">跳过 ›</button></div>`;
     const st = () => $('#dcStage');
     const type = (el, text, step, gap) => { let i = 0; const run = () => { if (!el || !el.isConnected) return; i = Math.min(text.length, i + (step || 1)); el.textContent = text.slice(0, i); if (i % 2 === 0) sfx('tick'); if (i < text.length) later(run, gap || 55); }; run(); };
-    const beats = (k, every, from) => { for (let i = 0; i < k; i++) later(() => sfx('heartbeat'), (from || 0) + i * every); };
-    const tl = (C.timeline || []).slice(0, 8), N = tl.length;
     const scenes = [];
-    const film = (kind, tm, text, snd) => { // 一幕：黑场淡入 → 镜头缓动 → 字幕
-      st().innerHTML = `<div class="fm fm-${kind}"><div class="fm-view">${FM[kind](list.length)}</div><div class="cs-cap"><b>${esc(tm)}</b><p id="csX"></p></div></div>`;
-      later(() => type($('#csX'), text, 1, 55), 700); snd && snd();
-    };
-    scenes.push([5600, () => { sfx('suspense'); st().innerHTML = `<div class="fm fm-establish"><div class="fm-view">${FM.establish(list.length)}</div><div class="fm-title"><p class="dc-k">CASE FILE</p><h2>${esc(C.title)}</h2><p>${esc(C.tagline)}</p></div></div>`; later(() => sfx('owl'), 1500); later(() => sfx('cricket'), 600); }]);
-    tl.forEach((e, i) => {
-      const state = i === N - 1 ? 'police' : i === N - 2 ? 'find' : i < Math.ceil((N - 2) / 2) ? 'gather' : 'act';
-      const kind = state === 'police' ? 'police' : state === 'find' ? 'find' : state === 'gather' ? (i % 2 === 0 ? 'arrive' : 'seated') : (i % 2 === 0 ? 'stairs' : 'corridor');
-      const dur = Math.max(4200, 2200 + e.text.length * 60);
-      scenes.push([dur, () => film(kind, e.t, e.text, () => {
-        if (kind === 'arrive') { sfx('footsteps'); later(() => sfx('knock'), 2200); later(() => sfx('bell'), 2900); }
-        if (kind === 'seated') { sfx('chat'); later(() => sfx('clink'), 1200); later(() => sfx('chat'), 2600); }
-        if (kind === 'stairs') { sfx('footsteps'); later(() => sfx('creak'), 1500); later(() => sfx('footsteps'), 2400); }
-        if (kind === 'corridor') { sfx('footsteps'); later(() => sfx('clink'), 1400); later(() => sfx('footsteps'), 2400); }
-        if (kind === 'find') { beats(3, 800, 200); later(() => sfx('creak'), 1400); later(() => { sfx('stinger'); sfx('scream'); const c = $('.fm'); if (c) c.classList.add('boom'); }, 2600); }
-        if (kind === 'police') { sfx('siren'); later(() => sfx('whoosh'), 400); }
-      })]);
-    });
-    // —— 人物：八个人一个画面 ——
-    scenes.push([7600, () => {
-      st().innerHTML = `<div class="dc-all"><p class="dc-k">在场的人</p><div class="dc-ag">${list.map((x, i) => `<div class="dc-ap" style="animation-delay:${(0.3 + i * 0.45).toFixed(2)}s"><div class="dc-apav">${portraitOf(x, null, 'head')}</div><b>${esc(x.name)}</b><small>${esc(x.role)}</small></div>`).join('')}</div><p class="dc-line" style="animation-delay:${(0.5 + list.length * 0.45).toFixed(2)}s">他们之中，有一个人在说谎。</p></div>`;
+    scenes.push([0, () => {
+      st().innerHTML = `<div class="dc-all"><p class="dc-k">在场的人</p><div class="dc-ag">${list.map((x, i) => `<div class="dc-ap" style="animation-delay:${(0.3 + i * 0.45).toFixed(2)}s"><div class="dc-apav">${portraitOf(x, null, 'head')}</div><b>${esc(x.name)}</b><small>${esc(x.role)}</small></div>`).join('')}</div><p class="dc-line" style="animation-delay:${(0.5 + list.length * 0.45).toFixed(2)}s">他们之中，有一个人在说谎。</p><p class="dc-tap" style="animation-delay:${(1.5 + list.length * 0.45).toFixed(2)}s">点击继续 ▸</p></div>`;
       list.forEach((x, i) => later(() => sfx('lit'), 300 + i * 450)); later(() => sfx('stinger'), 500 + list.length * 450);
     }]);
-    // —— 验尸：播完停住，等玩家自己点“开始调查” ——
     scenes.push([0, () => {
       const rows = [['死者', v.name], ['死亡时间', R.time], ['死因', R.cause], ['发现地点', R.loc ? ((C.locations.find((l) => l.id === R.loc) || {}).name || '') : '']].filter((r) => r[1]);
       st().innerHTML = `<div class="dc-s3"><div class="dc-paper"><div class="dc-ph"><span>现场勘验报告</span></div>${rows.map((r, i) => `<div class="dc-pr"><b>${r[0]}</b><span id="dcR${i}"></span></div>`).join('')}<ul class="dc-pn">${(R.notes || []).slice(0, 3).map((n, i) => `<li id="dcN${i}"></li>`).join('')}</ul><i class="dc-stamp">已验尸</i></div><div class="dc-flash w"></div><button class="btn primary dc-go" data-act="cineskip">开始调查 ›</button></div>`;
@@ -296,18 +278,13 @@
       later(() => { const sp = $('.dc-stamp'); if (sp) sp.classList.add('on'); sfx('stamp'); }, at + 300);
       later(() => { const g = $('.dc-go'); if (g) g.classList.add('on'); }, at + 900);
     }]);
-    cineRun = (i) => {
-      if (i >= scenes.length) return;
-      cineAt = i; clearTimers(); scenes[i][1]();
-      if (scenes[i][0] > 0) later(() => cineRun(i + 1), scenes[i][0]);
-    };
-    cineRun(0);
+    cineRun = (i) => { if (i >= scenes.length) return; cineAt = i; clearTimers(); scenes[i][1](); };
     cineLast = scenes.length - 1;
+    cineRun(0);
   }
-  let cineLast = 0;
   function cineNext() { if (cineRun && cineAt < cineLast) cineRun(cineAt + 1); }
   function endCinema() {
-    clearTimers(); try { SFX.suspenseStop(); } catch (e) {}
+    clearTimers(); if (cineEl) { cineEl.remove(); cineEl = null; } try { SFX.suspenseStop(); } catch (e) {}
     if (!C) return; G.cineDone = true; save(); tab = 'brief'; bstep = 0; renderCase(); window.scrollTo(0, 0); sfx('click');
   }
 
@@ -606,6 +583,7 @@
   // 返回键：reveal → 跳过；案件内 → 案件列表；案件列表 → 首页（多人模式入口）
   function back() {
     if (root().hidden) return false;
+    if (cineEl && cineEl._finish) { cineEl._finish(); return true; }
     if ($('.det-reveal')) { endReveal(); return true; }
     if (C) {
       clearTimers(); C = null; delete document.body.dataset.tone;

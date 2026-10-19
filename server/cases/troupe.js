@@ -301,6 +301,16 @@ module.exports = {
       '脸上底妆只涂了半边'
     ]
   },
+  cinema: [
+    { loc:'cover', text:'雨夜，纺机剧场的霓虹还亮着。暮光剧社的最后一场《雨夜归人》，演完就解散。', who:[], fx:['rain','night','zoomin'], snd:'wind' },
+    { loc:'hall', text:'前厅的海报被雨气打湿，观众陆续入座，谁都知道这是暮光的告别演出。', who:[], fx:['warm','panr'], snd:'chat' },
+    { loc:'stage', text:'中场过后，下半场在雨声布景里开场。控台前，灯光师陈野的手指落在推子上。', who:['chen'], fx:['spot','zoomout'], snd:'piano' },
+    { loc:'back', text:'化妆间里，团长方知远对着一圈灯泡念完旁白，那是他最后被人听见的声音。', who:['victim'], fx:['warm','dim'], snd:'lamp' },
+    { loc:'stage', text:'21:12，整座剧场忽然断电。台上漆黑一片，唐婉清提起电池提灯，把戏接着演下去。', who:['tang'], fx:['dim','spot','night'], snd:'static' },
+    { loc:'dining', text:'灯光恢复。乔小满按场表去敲化妆间的门，门上挂着“勿扰”牌，没人应答。', who:['qiao'], fx:['warm','zoomin'], snd:'knock' },
+    { loc:'back', text:'21:25，乔小满与老舞美贺长根推开门，方知远伏在化妆台前，已没有了呼吸。', who:['qiao','he','victim'], fx:['dim','shake','flash'], snd:'gasp', climax:true },
+    { loc:'hall', text:'警灯映在剧场玻璃门上，观众被留在原位，所有人都在等一个天亮前的答案。', who:[], fx:['police','night'], snd:'siren' }
+  ],
   timeline: [
     { t: '19:30', text: '《雨夜归人》开演。' },
     { t: '20:55', text: '下半场开场，方知远在化妆间候场。' },

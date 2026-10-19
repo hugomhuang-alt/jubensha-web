@@ -53,6 +53,16 @@ const BASE = {
       '舌下有白色残渣'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '冬至夜，水头村。山洪涨满溪沟，邝氏宗祠的灯笼在雨里一盏盏亮起。', who: [], fx: ['rain', 'night', 'zoomin'], snd: 'wind' },
+    { loc: 'kitchen', text: '后厨灶火正旺，阮志刚滤酒灌壶，红泥酒坛的封条上签着“秉德”二字。', who: ['ruan'], fx: ['warm', 'steam'], snd: 'pour' },
+    { loc: 'gate', text: '门房里，麦焕守了四十一年祠门，翻开钥匙簿，看族人一个个进来。', who: ['mai', 'fang'], fx: ['dim', 'panr'], snd: 'keys' },
+    { loc: 'robing', text: '十八点十分，七十四岁的族长独自走进东厢，斋戒沐手，药盒随身。', who: ['victim'], fx: ['warm', 'spot'], snd: 'creak' },
+    { loc: 'altar', text: '二十点四十，初献。族老斟酒，族长举杯沾唇，满堂族人屏息肃立。', who: ['victim', 'bing'], fx: ['warm', 'zoomin'], snd: 'bell' },
+    { loc: 'altar', text: '二十点五十八分，族长按住胸口，倒在供桌旁。慧芳扑上去，手忙脚乱地喂药。', who: ['victim', 'fang'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'gate', text: '120说山洪冲断了桥，警察最快二十三点三十分到。祠门，子时前不开。', who: ['yao'], fx: ['storm', 'night'], snd: 'thunder' },
+    { loc: 'cover', text: '二十一点五十分，你踏进追远堂。八个人围着遗体，没有一个人先开口。', who: ['hui', 'ke', 'yuan'], fx: ['rain', 'dim', 'zoomout'], snd: 'footsteps' }
+  ],
   timeline: [
     { t: '18:10', text: '麦伯把酒壶送上供桌；族长入更衣间斋戒沐手。' },
     { t: '20:40', text: '初献：族长举杯沾唇，酒由族老斟。' },

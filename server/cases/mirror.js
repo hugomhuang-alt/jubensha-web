@@ -298,6 +298,15 @@ module.exports = {
       '四周没有凶器，粉面上只有一串脚印'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '一九二七年十一月五日，暴雪封山，霍恩庄园的窗灯在白茫茫的夜里孤零零亮着。', who: [], fx: ['snow', 'night', 'zoomin'], snd: 'wind' },
+    { loc: 'dining', text: '假面夜的宾客被困在餐厅，夜宵没人动，银烛台映着八张各怀心事的脸。', who: ['elena', 'konrad', 'levi'], fx: ['warm', 'snow'], snd: 'clink' },
+    { loc: 'atelier', text: '工坊的绿罩灯下，金面具一只只擦亮，今夜要戴上它们的人不止一个。', who: ['liese'], fx: ['dim', 'spot'], snd: 'rustle' },
+    { loc: 'garden', text: '积雪没过脚踝，花园角门外的小路被大雪抹平，桥也封了。', who: [], fx: ['snow', 'night', 'panl'], snd: 'snowcrunch' },
+    { loc: 'hall', text: '二十三点，三个金面黑披风的人走进镜厅。一分钟后，两人退出，大门合上。', who: ['kohler', 'lucien'], fx: ['dim', 'spot'], snd: 'footsteps' },
+    { loc: 'hall', text: '二十三点四十分，管家推开舞厅大门。男爵仰卧在滑石粉铺成的雪地中央。', who: ['victim', 'kohler'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'study', text: '电话线在二十三点五十八分中断，书房壁炉余温未散，庄园与外界彻底隔绝。', who: ['braun'], fx: ['night', 'zoomout'], snd: 'static' }
+  ],
   timeline: [
     { t: '22:50', text: '男爵、管家、画家在前厅戴上金面具。' },
     { t: '23:00', text: '三个金面黑披风的人走进舞厅，23:01 两人退出。' },

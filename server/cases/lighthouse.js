@@ -347,6 +347,16 @@ module.exports = {
       '黄铜摇柄落在尸体旁，沾着血和灰发'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '台风压境的鹭屿，灯塔的光束劈开雨幕，一条木栈道连着对岸。', who: [], fx: ['storm', 'rain', 'night'], snd: 'wind' },
+    { loc: 'lounge', text: '“鹭栖”民宿的大堂灯火通明，海事局的人上岛复核十一年前的旧案。', who: ['gan', 'qi', 'jian'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'arch', text: '纪念馆里，“三代守塔人”的展板在灯下泛着光，台风夜灯灭九十分钟的往事写在上面。', who: ['cui', 'liang'], fx: ['dim', 'dust'], snd: 'paper' },
+    { loc: 'lamp', text: '灯室里，守塔人闻庭舟咳着点亮透镜，十一年来，他每晚十点打三下平安灯。', who: ['victim'], fx: ['spot', 'zoomin'], snd: 'lamp' },
+    { loc: 'gate', text: '二十一点十分，增水吞没了栈道，六根水位桩只剩桩顶露在黑水外，岛成了孤岛。', who: [], fx: ['sea', 'rain', 'zoomout'], snd: 'gull' },
+    { loc: 'gate', text: '二十一点五十二，塔顶的灯光闪了几下，比往常早，岸边的人纷纷抬头。', who: ['ying', 'yu'], fx: ['night', 'fog', 'panl'], snd: 'wind' },
+    { loc: 'lamp', text: '二十三点四十，调查员与讲解员推开灯室的门，守塔人倒在透镜脚下，外廊门从里面插着销。', who: ['victim', 'gan', 'liang'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '风雨未停，岛上与外界隔绝，除死者外还有八个人，没有人能离开。', who: [], fx: ['storm', 'rain', 'zoomout'], snd: 'thunder' }
+  ],
   publicFacts: [
     '闻庭舟，51岁，十一年来每晚十点整用遮光帘打三下“平安灯”，只有他自己动手。',
     '他死在灯室，头部遭黄铜摇柄重击，外廊门从里面插着销。',

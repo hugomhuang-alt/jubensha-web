@@ -335,6 +335,16 @@ module.exports = {
       '室内温度计显示33度，尸体体表却发凉'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '十二月七日夜，K2146次从北陵驶出，雪线压低，车灯劈开漫长的黑。', who: [], fx: ['snow', 'night', 'panl'], snd: 'wind' },
+    { loc: 'dining', text: '6车餐车里碗碟轻响，列车长贺怀山巡过，旅客们各自低头吃着热汤面。', who: ['he', 'sheng'], fx: ['warm', 'steam'], snd: 'clink' },
+    { loc: 'guest', text: '8车软卧走廊安静，乘务员宋小河提着热水壶，停在03号包厢门前。', who: ['song'], fx: ['dim', 'zoomin'], snd: 'footsteps' },
+    { loc: 'engine', text: '柳河堡站，除雪车挡道，停车从两分钟延到十一分钟，站台灯在雪里发黄。', who: ['lin', 'bian'], fx: ['snow', 'night', 'steam'], snd: 'bell' },
+    { loc: 'hall', text: '22:41，列车在鹰嘴岭被积雪截停，车厢内外，再没有人能上下车。', who: ['yue', 'he'], fx: ['night', 'zoomout'], snd: 'howl' },
+    { loc: 'guest', text: '23:35，03号手机响了一晚无人接，乘警下令，宋小河用备用钥匙开了门。', who: ['yue', 'song'], fx: ['dim', 'spot'], snd: 'keys' },
+    { loc: 'cabin', text: '窗帘拉死，热得像蒸笼，尹正衡侧卧下铺，后脑血迹已经发黑。', who: ['victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '乘警封锁全车，救援最早凌晨四点到，漫长的雪夜，车上的人谁也走不了。', who: ['yue', 'xu'], fx: ['snow', 'night', 'zoomout'], snd: 'howl' }
+  ],
   publicFacts: [
     'K2146次12月7日19:40从北陵发车。8车软卧，6车餐车，1车行李车，9车为列车长办公室。',
     '尹正衡住8车03号，买下全部四个铺位，死于后脑钝器重击。门自动落锁，列车长和乘务员各有一把备用钥匙。',

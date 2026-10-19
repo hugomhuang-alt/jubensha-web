@@ -87,6 +87,16 @@ const BASE = {
     loc: 'vault',
     notes: ['身上无外伤，西装整齐', '指甲发紫，右手握着一把小钥匙', '身下压着一个黑色文件夹']
   },
+  cinema: [
+    { loc:'cover', text:'周六傍晚，临澜商业银行老城支行灯火未熄，全行为周一的总行审计加班。', who:[], fx:['night','zoomin'], snd:'wind' },
+    { loc:'audit', text:'审计桑知白在工作间摊开账册，周五预审的库存差异还没人说得清。', who:['sang'], fx:['warm','panr'], snd:'paper' },
+    { loc:'hall', text:'17:41押运车抵达后场，柜员埋头点钞，直到17:58才停下。', who:['li'], fx:['dust','panl'], snd:'rattle' },
+    { loc:'vault', text:'库门闭合，殷鹤年与戚韵各转一把钥匙，时间锁定到周日14:00。', who:['yin','qi'], fx:['spot','zoomin'], snd:'keys' },
+    { loc:'monitor', text:'夜里网络割接，机房指示灯闪到21:30，整座大楼安静得像空壳。', who:['xi'], fx:['night','dim'], snd:'static' },
+    { loc:'hall', text:'周日13:55，行长秘书管若兰从老家赶回，众人守在紧闭的库门外。', who:['guan','yin'], fx:['dim','zoomout'], snd:'footsteps' },
+    { loc:'vault', text:'14:00库门敞开，行长柯正庭侧卧在17号箱前，已无呼吸。', who:['victim','yin','qi'], fx:['dim','shake','flash'], snd:'gasp', climax:true },
+    { loc:'cover', text:'15:10你抵达老城支行，走廊里坐着八个人，警方还要两小时才到。', who:[], fx:['night','zoomout'], snd:'hmm' }
+  ],
   publicFacts: [
     '金库周六18:00封库，须殷鹤年（A钥）、戚韵（B钥）双钥同开合，并设时间锁至周日14:00。紧急解锁最快周一。',
     '时间锁周三由柯正庭、殷鹤年设定，防盘库前有人接触库存。',

@@ -346,6 +346,15 @@ module.exports = {
       '池水43度，尸体泡在热水里'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '半山腰的听雪汤屋，百年灯笼在夜色里亮着，山路正被大雪一点点封住。', who: [], fx: ['snow', 'night', 'zoomin'], snd: 'wind' },
+    { loc: 'lounge', text: '茶室炭炉暖着，围棋盘还摊在地台上。五位住客，各自守着一杯热茶。', who: ['fei', 'lu', 'cen'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'office', text: '账房台灯亮到很晚，老板娘桑瑶卿收完账，对领班说十一点泡收工汤。', who: ['victim', 'ran'], fx: ['warm', 'spot'], snd: 'paper' },
+    { loc: 'boiler', text: '杂役袁大有在锅炉房的黑板上记下：二十一点五十，开始下雪。', who: ['yuan'], fx: ['dim', 'steam'], snd: 'rattle' },
+    { loc: 'hut', text: '回廊的灯笼映着雪，更衣屋里的储物柜整齐排开，锁控器静静待命。', who: ['yu', 'luo'], fx: ['night', 'panl'], snd: 'creak' },
+    { loc: 'pool', text: '二十三点五十分，领班来收灯，露天汤池白雾翻滚，水面上漂着一个人。', who: ['victim', 'ran'], fx: ['steam', 'dim', 'shake'], snd: 'gasp', climax: true },
+    { loc: 'kitchen', text: '零点三十分，山下来电：警车上不来。前刑警的你，要替他们守住这一池雪。', who: ['gu', 'fei'], fx: ['dim', 'zoomout'], snd: 'static' }
+  ],
   timeline: [
     { t: '21:10', text: '桑瑶卿对冉素珍说，十一点前后去泡收工汤。此后没人公开承认见过她。' },
     { t: '21:50', text: '开始下雪。' },

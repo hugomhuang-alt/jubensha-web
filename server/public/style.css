@@ -1179,3 +1179,29 @@ html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, h
 .det-tut { position: fixed; inset: 0; z-index: 70; background: #000b; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .dt-card { width: 100%; max-width: 380px; background: #151c30; border: 1px solid var(--line); border-radius: 16px; padding: 20px; } .dt-card h3 { margin: 0 0 10px; font-family: var(--serif); letter-spacing: .15em; }
 .dt-card ol { margin: 0 0 16px; padding-left: 22px; } .dt-card li { margin-bottom: 10px; line-height: 1.6; } .dt-card li b { display: block; color: #e8c76a; } .dt-card li span { color: #cfd6e6; font-size: 14px; }
+
+/* ===== 案件开场（沿用多人剧本杀的全屏图文方式）+ 氛围特效 ===== */
+.det-cine2 .whorow { position: absolute; z-index: 6; left: 16px; right: 16px; bottom: 214px; display: flex; gap: 10px; pointer-events: none; }
+.cw { display: flex; flex-direction: column; align-items: center; gap: 2px; animation: dcPop .7s ease both; } .cw small { font-size: 11px; color: #e8ecf5; text-shadow: 0 1px 4px #000; }
+.cwa { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; border: 2px solid #ffffff55; background: #10172a; } .cwa svg { width: 100%; height: 100%; } .cw.dead .cwa { filter: grayscale(.9); border-color: #c4151c; }
+.det-cine2 .slide .fxo { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.f-rain { background: repeating-linear-gradient(105deg, transparent 0 14px, rgba(190, 210, 255, .22) 14px 15px); background-size: 120px 120px; animation: fxRain .45s linear infinite; } @keyframes fxRain { to { background-position: -40px 120px; } }
+.f-storm { background: #fff; opacity: 0; animation: fxStorm 6s infinite; } @keyframes fxStorm { 0%, 88%, 94%, 100% { opacity: 0; } 90% { opacity: .75; } 92% { opacity: .1; } 93% { opacity: .5; } }
+.f-fog { background: radial-gradient(ellipse at 20% 80%, rgba(200, 215, 240, .35), transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(200, 215, 240, .3), transparent 55%); animation: fxDrift 12s ease-in-out infinite alternate; } @keyframes fxDrift { to { transform: translateX(30px) scale(1.06); } }
+.f-snow { background-image: radial-gradient(#fff 1.4px, transparent 1.6px), radial-gradient(#fff 1px, transparent 1.2px); background-size: 70px 90px, 43px 61px; opacity: .7; animation: fxSnow 6s linear infinite; } @keyframes fxSnow { to { background-position: -20px 90px, 15px 61px; } }
+.f-night { background: rgba(8, 18, 60, .45); mix-blend-mode: multiply; }
+.f-dim { background: rgba(0, 0, 0, .55); animation: fxDim 1.6s ease both; } @keyframes fxDim { from { opacity: 0; } to { opacity: 1; } }
+.f-warm { background: radial-gradient(ellipse at 50% 60%, rgba(255, 170, 70, .32), transparent 70%); mix-blend-mode: screen; animation: fxFlick .22s steps(2) infinite alternate; } @keyframes fxFlick { from { opacity: .75; } to { opacity: 1; } }
+.f-spot { background: radial-gradient(ellipse at 50% 45%, transparent 18%, rgba(0, 0, 0, .8) 70%); }
+.f-flash { background: #d4121a; opacity: 0; animation: fxFlash 1.4s ease-out 1s; } @keyframes fxFlash { 0% { opacity: .8; } 100% { opacity: 0; } }
+.f-police { mix-blend-mode: screen; animation: fxPol .6s steps(1) infinite alternate; } @keyframes fxPol { from { background: rgba(255, 40, 40, .28); } to { background: rgba(40, 90, 255, .28); } }
+.f-steam { background: radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, .4), transparent 60%); animation: fxSteam 5s ease-in-out infinite alternate; } @keyframes fxSteam { to { transform: translateY(-30px); opacity: .6; } }
+.f-dust { background-image: radial-gradient(rgba(255, 235, 190, .8) 1px, transparent 1.4px); background-size: 55px 70px; opacity: .5; animation: fxSnow 14s linear infinite; }
+.f-sea { background: linear-gradient(180deg, transparent 60%, rgba(120, 170, 220, .22)); animation: fxSea 4s ease-in-out infinite alternate; } @keyframes fxSea { to { transform: translateY(8px); } }
+.f-shake { }
+.z-shake .bgscene, .slide.boom .bgscene { animation: dcShake .7s, kenburns 16s ease-out both !important; }
+.slide.boom::after { content: ""; position: absolute; inset: 0; background: #c4151c; opacity: 0; z-index: 3; pointer-events: none; animation: dcRed 1.2s ease-out; }
+.z-zoomout .bgscene .scene { animation: kbOut 16s ease-out both !important; } @keyframes kbOut { from { transform: scale(1.22); } to { transform: scale(1.02); } }
+.z-panl .bgscene .scene { animation: kbL 16s ease-out both !important; } @keyframes kbL { from { transform: scale(1.14) translateX(18px); } to { transform: scale(1.14) translateX(-18px); } }
+.z-panr .bgscene .scene { animation: kbR 16s ease-out both !important; } @keyframes kbR { from { transform: scale(1.14) translateX(-18px); } to { transform: scale(1.14) translateX(18px); } }
+.dc-tap { margin-top: 18px; color: #9aa6bb; font-size: 13px; opacity: 0; animation: dcIn 1s ease forwards, csTw 2s ease-in-out 2s infinite; }

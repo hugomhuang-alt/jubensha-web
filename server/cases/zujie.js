@@ -352,6 +352,16 @@ module.exports = {
       '法式窗虚掩，窗外露台湿漉漉'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '一九三七年八月底，上海法租界。闸北的炮声隔着夜雨，一阵阵滚过来。', who: [], fx: ['rain', 'night', 'zoomin'], snd: 'thunder' },
+    { loc: 'hall', text: '泰和洋行买办顾鸿章的公馆灯火通明，欢送酒会上，钢琴声和留声机缠在一起。', who: ['lin', 'bai'], fx: ['warm', 'panr'], snd: 'piano' },
+    { loc: 'hall', text: '英国大班、日本记者、来历不明的女学生，同在一个客厅里举杯，谁也不谈窗外的战事。', who: ['hark', 'shi', 'lin'], fx: ['warm', 'zoomout'], snd: 'chat' },
+    { loc: 'acct', text: '账房檀香未散。钱仲平说，九点四十一分，他和大班在书房门外听见顾老爷排练致词。', who: ['qian', 'hark'], fx: ['dim', 'spot'], snd: 'paper' },
+    { loc: 'garden', text: '夜里下过雨，露台泥地潮软，墙角铁桶里还有焚烧落叶的余烬。', who: [], fx: ['rain', 'night', 'dust'], snd: 'drip' },
+    { loc: 'attic', text: '三楼阁楼的小窗透出灯光，据说有人在那里发电报。十点，大门落了锁。', who: ['ming'], fx: ['night', 'dim'], snd: 'static' },
+    { loc: 'study', text: '二十二点十分，管家周福用钥匙打开反锁的书房门。顾鸿章仰卧在书桌后，窗闩抬起。', who: ['zhou', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '二十二点十五分，公馆报案。二十来位宾客被扣在原地，钢琴早已没人弹了。', who: ['shen'], fx: ['police', 'night', 'rain'], snd: 'siren' }
+  ],
   timeline: [
     { t: '19:30', text: '晚宴开席，二十几位宾客入座。' },
     { t: '20:40', text: '宾客移至大客厅，林素秋弹钢琴，白露放留声机。' },

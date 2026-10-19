@@ -357,6 +357,16 @@ module.exports = {
       '右手指甲缝里有异物'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '十月十五日夜，怀德图书馆百年馆庆，灯火通明。', who: [], fx: ['night', 'zoomin'], snd: 'bell' },
+    { loc: 'hall', text: '19:30，酒会开场。四十位来宾在一楼大厅举杯，满桌白百合。', who: ['kang'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'study', text: '古籍部主任方敬之没有下楼，三楼办公室的灯一直亮着。', who: ['victim'], fx: ['dim', 'dust'], snd: 'paper' },
+    { loc: 'lib', text: '19:48，他刷卡走进善本室，身后的门自动落了锁。', who: ['victim'], fx: ['spot', 'dim'], snd: 'keys' },
+    { loc: 'hall', text: '20:00，各阅览室闭馆，乐队接着奏，酒会还在继续。', who: ['wen', 'kang'], fx: ['warm', 'panl'], snd: 'piano' },
+    { loc: 'garden', text: '后院没有路灯，铁皮焚烧桶立在花坛边，落叶压了一地。', who: [], fx: ['night', 'fog'], snd: 'wind' },
+    { loc: 'lib', text: '22:03，馆员贺德昌刷卡推门，方敬之倒在长桌旁，镇尺沾着血。', who: ['he', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'hall', text: '22:10，校保卫处报警。酒会残局未收，八个人被留在楼里。', who: ['geng'], fx: ['police', 'night'], snd: 'siren' }
+  ],
   publicFacts: [
     '方敬之当晚在三楼善本室加班，没参加一楼酒会。',
     '善本室门自动落锁，外面进入要刷卡，里面有出门按钮。',

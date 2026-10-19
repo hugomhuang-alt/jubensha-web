@@ -85,6 +85,16 @@ const BASE = {
       '外套是干的，圆顶地上有水光'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '栖云岭，海拔一千八百米。白色圆顶在云层之上亮着最后一盏灯。', who: [], fx: ['night', 'zoomin'], snd: 'wind' },
+    { loc: 'chalet', text: '资助人钟鸣鹤请你上山，核查望远镜的采购款。落地窗正对着圆顶。', who: ['zhong'], fx: ['warm', 'panr'], snd: 'chime' },
+    { loc: 'canteen', text: '晚饭十九点三十分，食堂灶台冒着热气。台长岑望川带上保温杯，转身出了门。', who: ['victim', 'sheng', 'xia'], fx: ['warm', 'steam'], snd: 'clink' },
+    { loc: 'ctrl', text: '控制室的白板上，贴着电工阚大海下午写的高度轴检修单。', who: ['kan'], fx: ['dim', 'zoomin'], snd: 'typewriter' },
+    { loc: 'dome', text: '二十二点十九分，门禁记录：“岑”刷卡进入圆顶。钢栓随后从里面插上。', who: [], fx: ['night', 'spot'], snd: 'keys' },
+    { loc: 'cover', text: '零点二十分，暴雨与雷电压境。一点四十分，山路塌方，电话时断时续。', who: [], fx: ['rain', 'storm', 'night'], snd: 'thunder' },
+    { loc: 'dome', text: '两点十四分，阚大海撬开门栓。台长坐在折叠椅里，左额塌陷，望远镜低垂。', who: ['victim', 'kan', 'ruan'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'office', text: '八个人被暴雨困在山上，警察天亮后才能到。办公室的台灯，还亮着。', who: ['fei', 'jian'], fx: ['rain', 'dim', 'zoomout'], snd: 'drip' }
+  ],
   timeline: [
     { t: '17:40', text: '电工阚大海修高度轴限位开关，检修单贴在控制室白板上。' },
     { t: '19:30', text: '晚饭。饭后各自散去，台长带着保温杯去圆顶。' },

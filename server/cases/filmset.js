@@ -304,6 +304,16 @@ module.exports = {
       '血已半凝，皮夹腕表都在'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '云岭影视城，《凤阙行》杀青夜，红灯笼在大雨里亮成一片。', who: [], fx: ['rain', 'night', 'zoomin'], snd: 'wind' },
+    { loc: 'ban', text: '“醉仙楼”里开了席，四十来人举杯，导演邢广川的酒话一桌接一桌。', who: ['xing'], fx: ['warm', 'panr'], snd: 'clink' },
+    { loc: 'gate', text: '门岗亭外雨越下越大，男主角周衍的保姆车驶向机场，尾灯消失在山路尽头。', who: [], fx: ['rain', 'storm', 'night'], snd: 'thunder' },
+    { loc: 'mon', text: '监视器棚里，新租的花絮机红灯亮着，叠字跳到了21:31。', who: [], fx: ['dim', 'spot'], snd: 'beep' },
+    { loc: 'wh', text: '21:12，武指谭铁山刷卡走进B库，樟木与桐油味里，刀枪剑戟静静立在铁架上。', who: ['victim'], fx: ['dim', 'dust', 'zoomin'], snd: 'creak' },
+    { loc: 'ban', text: '21:45，压轴的刀剑表演该开场了，台上空着，谭铁山迟迟没有现身。', who: ['xing', 'mei'], fx: ['spot', 'zoomout'], snd: 'hmm' },
+    { loc: 'wh', text: '22:18，道具师谷春来推开B库的门，谭铁山俯卧在货架间，一旁滚着染血的铁镇纸。', who: ['gu', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'gate', text: '22:25，山路被大雨冲断，基地封闭，警方最快要到凌晨才能赶到。', who: ['xing'], fx: ['rain', 'police', 'night'], snd: 'static' }
+  ],
   timeline: [
     { t: '19:30', text: '杀青宴开席，导演邢广川到场。' },
     { t: '21:12', text: '谭铁山刷卡进入B库正门。' },

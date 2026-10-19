@@ -344,6 +344,16 @@ module.exports = {
       '衣着完整，随身物品仍在身上'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '台风“云岚”压境，沪南生命科学研究所的窗口在雨幕里一格格亮着。', who: [], fx: ['rain', 'storm', 'night'], snd: 'thunder' },
+    { loc: 'hall', text: '门厅里，保安孙国栋给华澜生物的方知行登记。明天十点，几千万的专利许可就要签字。', who: ['sun', 'fang'], fx: ['warm', 'zoomin'], snd: 'paper' },
+    { loc: 'study', text: '三楼办公室，周廷远的桌上堆满打印稿。图3 的数据偏差刚被人质疑。', who: ['victim'], fx: ['dim', 'spot'], snd: 'typewriter' },
+    { loc: 'lab', text: '21:46，周廷远的工牌刷开样本间走廊门，冷柜的嗡鸣在尽头低低作响。', who: ['victim'], fx: ['night', 'panr'], snd: 'beep' },
+    { loc: 'garden', text: '22:13，风把树枝抽得乱舞，全楼骤然断电，后院发电机房亮起一盏应急灯。', who: [], fx: ['storm', 'rain', 'dim'], snd: 'wind' },
+    { loc: 'lab', text: '23:02，来电后，孙国栋在冷间门外发现周廷远倒在地上，已无呼吸。', who: ['sun', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'clinic', text: '临时急救室里，法医记下后脑的挫裂创。低温让死亡时间难以估算。', who: ['victim'], fx: ['dim', 'zoomout'], snd: 'rustle' },
+    { loc: 'hall', text: '23:15 报警。八个人被留在应急灯下的楼里，窗外风雨未停。', who: ['qi', 'fang', 'jiang'], fx: ['police', 'rain'], snd: 'siren' }
+  ],
   publicFacts: [
     '22:13 至 23:00 全楼停电。UPS 和发电机只保 -80℃ 冷冻柜、应急灯、门禁；楼内照明和 -20℃ 冷间压缩机不在其内。',
     '周廷远 23:02 被保安孙国栋发现倒在冷间门外，后脑受钝击，警方暂无法给出死亡时间。',

@@ -361,6 +361,15 @@ return {
       '沾血的青铜镇纸滚落在地毯上'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '暴雨封山的夜里，云轩拍卖行二十八层灯火通明，《霁雪寒林图》即将开拍。', who: [], fx: ['rain', 'storm', 'night'], snd: 'thunder' },
+    { loc: 'loc_bar', text: '十九点三十分，预展酒会开场，香槟塔映着窗外的雨幕，宾客低声谈着估价八千八百万的名画。', who: ['qian', 'he'], fx: ['warm', 'panr'], snd: 'clink' },
+    { loc: 'loc_lab', text: '二十点二十八分，首席拍卖师谷鸣远刷卡走进鉴定室，身后的门自动落锁。', who: ['victim'], fx: ['dim', 'zoomin'], snd: 'keys' },
+    { loc: 'loc_mon', text: '二十一点十分，一记落雷，东走廊3号摄像头离线。保安队长彭大海盯着满墙屏幕。', who: ['peng'], fx: ['storm', 'night', 'spot'], snd: 'static' },
+    { loc: 'loc_vip', text: '倒计时屏一格格跳动。二十二点三十分，压轴拍品即将登场，拍卖师却迟迟没有出现。', who: ['ke', 'su'], fx: ['warm', 'zoomout'], snd: 'chime' },
+    { loc: 'loc_lab', text: '二十二点三十八分，主卡打开鉴定室。谷鸣远倒在书桌与灯台之间，名画完好无损。', who: ['victim', 'peng'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '山路冲断，电梯停运。警方两小时后才能赶到，二十八层的人，一个也没离开过。', who: [], fx: ['rain', 'fog', 'night'], snd: 'wind' }
+  ],
   timeline: [
     { t: '19:30', text: '预展酒会开始' },
     { t: '20:28', text: '门禁：谷鸣远刷卡进入鉴定室，此后无刷卡记录' },

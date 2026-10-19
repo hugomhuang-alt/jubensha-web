@@ -53,6 +53,16 @@ const BASE = {
       '包间空调开到17度，尸温难以判断死亡时间'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '珊瑚角岛的夜里涨潮，堤道被海水吞没，海湾酒店五楼亮着灯。', who: [], fx: ['night', 'sea', 'zoomin'], snd: 'wind' },
+    { loc: 'hall', text: '绿呢桌旁筹码轻响，不挂招牌的牌室“栖鸦会”夜夜有人输光。', who: ['lan', 'adi'], fx: ['warm', 'dim', 'panr'], snd: 'clink' },
+    { loc: 'room', text: '22:10，地产商钟万山在雪松厅买入一百枚十万码筹码，荷官开牌。', who: ['victim', 'shan'], fx: ['spot', 'warm'], snd: 'pour' },
+    { loc: 'cage', text: '出纳窗口的厚玻璃后，保险柜锁着，一叠会员借据等着天亮收账。', who: ['qi'], fx: ['dim', 'panl'], snd: 'keys' },
+    { loc: 'cctv', text: '走廊监控一格格闪过，保镖巴图被解雇，独自走向停车场。', who: ['batu'], fx: ['night', 'dust'], snd: 'static' },
+    { loc: 'room', text: '03:19，巴图推开雪松厅的门，百家乐桌上，牌只发到一半。', who: ['victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'office', text: '厉蓝转着戒指，望向被涨潮隔断的海面：警长最早六点才到。', who: ['lan', 'batu'], fx: ['dim', 'storm', 'zoomout'], snd: 'thunder' },
+    { loc: 'cover', text: '四点四十分，你踏进牌室，岛上没有一个人离开过酒店。', who: [], fx: ['fog', 'night', 'zoomin'], snd: 'footsteps' }
+  ],
   timeline: [
     { t: '22:10', text: '钟万山在出纳处买入100枚10万码筹码，封条完整。' },
     { t: '01:35', text: '监控拍到荷官单青禾按轮休离开雪松厅，钟万山仍坐在桌边。' },

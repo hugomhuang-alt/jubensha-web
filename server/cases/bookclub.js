@@ -309,6 +309,16 @@ module.exports = {
       '桌上两叠打字稿，中间桌面空着'
     ]
   },
+  cinema: [
+    { loc:'cover', text:'周六夜里，老洋房二楼亮着一盏台灯。一楼客厅的读书会，照例在七点半开场。', who:[], fx:['night','zoomin'], snd:'owl' },
+    { loc:'hall', text:'玄关的门铃屏幕接连亮起：柏、骆、耿、庞、邢，客人带着礼盒与公文包依次进门。', who:['bai','luo','pang'], fx:['warm','panr'], snd:'bell' },
+    { loc:'living', text:'壁炉边架起一部录像的手机，韦桐主持，长桌八个座位，书墙围着满屋的旧纸香。', who:['wei','xu'], fx:['warm','dust'], snd:'chat' },
+    { loc:'living', text:'二十点五十分，名作家晏清如宣布：她要写回忆录，第二章写的是一个人。', who:['bai','luo','geng'], fx:['spot','zoomin'], snd:'hmm' },
+    { loc:'kitchen', text:'厨房里灶上温着酒酿，保姆纪桂芳切着水果。二十一点零三分，晏清如上楼取稿子。', who:['ji'], fx:['steam','warm'], snd:'pour' },
+    { loc:'living', text:'二十一点二十八分，灯光调暗，韦桐开始朗读，满屋的人闭上了眼睛。', who:['wei','pang'], fx:['dim','spot'], snd:'piano' },
+    { loc:'study', text:'二十一点四十五分，纪桂芳端茶推开书房门，晏清如倒在书桌与书架之间，已无气息。', who:['victim','ji'], fx:['dim','shake','flash'], snd:'gasp', climax:true },
+    { loc:'hall', text:'二十一点五十分，韦桐在门口报了警。这栋老房子里，没有一个人可以离开。', who:['wei','xing'], fx:['police','night'], snd:'siren' }
+  ],
   timeline: [
     { t: '19:30', text: '读书会开始，韦桐主持，壁炉边立着一部手机。' },
     { t: '20:50', text: '晏清如宣布要写回忆录。' },

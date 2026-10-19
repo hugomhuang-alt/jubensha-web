@@ -33,6 +33,7 @@ function check(c) {
     if (dr.loc != null && !(c.locations || []).some((l) => l.id === dr.loc)) e('deathReport.loc 必须是地点 id 或省略');
     if (!Array.isArray(dr.notes) || dr.notes.length < 2 || dr.notes.length > 4 || dr.notes.some((n) => typeof n !== 'string' || n.length < 6 || n.length > 40)) e('deathReport.notes 需 2–4 条，每条 6–40 字');
   }
+  for (const m of require('./check-cinema').checkCinema(c)) e('cinema：' + m);
   const sol = c.solution || {};
   if (!S[sol.culprit]) e('culprit 不存在');
   for (const k of ['method', 'motive']) { const m = sol[k]; if (!m || !m.options || m.options.length !== 4 || !(m[k] !== 0) && false) {} if (!m || !m.options || m.options.length !== 4 || !(m.correct >= 0 && m.correct <= 3)) e('solution.' + k + ' 不合法'); }

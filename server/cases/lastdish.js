@@ -294,6 +294,16 @@ module.exports = {
       '剩余菜品已封存待检'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '金匙奖决赛夜，澜庭酒店灯火通明，桂花与酒酿的甜香飘出宴会厅。', who: [], fx: ['night', 'zoomin', 'warm'], snd: 'bell' },
+    { loc: 'hall', text: '门厅签到桌前，评委、赞助商与博主陆续入场，地面留下几行湿脚印。', who: ['ji', 'fang', 'jian'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'dining', text: '18:30晚宴开席，主评宋怀瑾落座主桌，照例先挖苦了老对手蒋德厚。', who: ['victim', 'jiang'], fx: ['spot', 'warm'], snd: 'clink' },
+    { loc: 'kitchen', text: '19:40后厨巡礼，韩大勇守着灶台，掀开盅盖，桂花酒酿的蒸汽扑面而来。', who: ['han'], fx: ['steam', 'zoomin'], snd: 'pour' },
+    { loc: 'dining', text: '20:05终局菜上桌，宋怀瑾执起金匙，在满堂注视下舀起第一口。', who: ['victim'], fx: ['spot', 'zoomin', 'dust'], snd: 'chime' },
+    { loc: 'dining', text: '20:12，宋怀瑾忽然捂住喉咙倒地，嘴唇迅速肿起，满桌惊呼。', who: ['victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'hall', text: '保健员20:14赶到，却没带肾上腺素；门厅里人声嘈杂，急促地拨着120。', who: ['qin'], fx: ['dim', 'panl'], snd: 'static' },
+    { loc: 'cover', text: '20:58宣布不治。21:30，你踏进封锁的澜庭酒店，甜香未散，金匙静静躺在桌上。', who: [], fx: ['police', 'night', 'zoomout'], snd: 'siren' }
+  ],
   timeline: [
     { t: '18:30', text: '晚宴开席，评委与来宾入席。' },
     { t: '19:40', text: '后厨巡礼开始，持续约十五分钟。' },

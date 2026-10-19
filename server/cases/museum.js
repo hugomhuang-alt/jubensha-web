@@ -386,6 +386,16 @@ module.exports = {
       '倒地处没有明显拖拽痕迹'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '十月，雨下了一整天。《吴越遗珍》明早九点剪彩，博物馆的灯亮到深夜。', who: [], fx: ['rain', 'night', 'zoomin'], snd: 'wind' },
+    { loc: 'hall', text: '展厅里，战国云纹错银铜壶静立柜中，保额八千万，公估报告一出，保险才算生效。', who: ['jian', 'feng'], fx: ['spot', 'dim'], snd: 'chime' },
+    { loc: 'office', text: '馆长屠启贤在办公室里踱步，明天的剪彩，容不得半点差错。', who: ['tu'], fx: ['warm', 'panl'], snd: 'footsteps' },
+    { loc: 'lab', text: '傍晚六点零二分，辛怀远刷卡进修复室，要做开幕前的最后一遍保养。', who: ['victim'], fx: ['warm', 'zoomin'], snd: 'lamp' },
+    { loc: 'sec', text: '监控室的屏幕一格格闪烁，雨声压过了整座大楼的动静，修复室正门只留下两条刷卡记录。', who: ['mou'], fx: ['night', 'dust'], snd: 'beep' },
+    { loc: 'lab', text: '二十二点零四分，保洁员葛桂香刷卡进门，辛怀远倒在工作台与档案柜之间。', who: ['ge', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'office', text: '二十二点四十分，馆长把手电塞进你手里：“你先看，别声张。”', who: ['tu'], fx: ['dim', 'spot'], snd: 'keys' },
+    { loc: 'cover', text: '大雨封住了博物馆，所有人都还在楼里。', who: [], fx: ['rain', 'storm', 'zoomout'], snd: 'thunder' }
+  ],
   timeline: [
     { t: '18:02', text: '辛怀远刷卡进入修复室，留下做开幕前的最后一遍保养。' },
     { t: '20:10', text: '云壶展柜开启，20:17关闭（双卡记录）。' },

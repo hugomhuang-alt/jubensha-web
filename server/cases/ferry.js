@@ -298,6 +298,15 @@ module.exports = {
       '床头小桌上的姜茶已经凉透'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '夜里九点四十，“海燕号”驶离码头，浓雾吞没了灯塔。', who: [], fx: ['fog', 'night', 'sea'], snd: 'foghorn' },
+    { loc: 'deck', text: '右舷甲板湿滑，救生艇悬在头顶，十个人的最后一班夜渡。', who: [], fx: ['fog', 'panl'], snd: 'hullcreak' },
+    { loc: 'dining', text: '休息厅里，货主代表与乘客共进夜宵，舷窗外一片白。', who: ['victim', 'wang', 'gu'], fx: ['warm', 'zoomin'], snd: 'clink' },
+    { loc: 'hall', text: '驾驶台玻璃外白茫茫一片，雾笛每两分钟低鸣一次。', who: [], fx: ['fog', 'dim', 'zoomout'], snd: 'foghorn' },
+    { loc: 'cabin', text: '二十三点四十八分，保险代理人推开3号舱门，货箱托架空了。', who: ['gu', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'hall', text: '船长下令封锁全船，雷达上只有这一艘船，天亮前无人能离开。', who: ['zhuang'], fx: ['night', 'spot'], snd: 'hmm' },
+    { loc: 'cover', text: '距靠岸还有四个多小时，雾笛仍在海上回响，调查开始了。', who: [], fx: ['fog', 'sea', 'zoomout'], snd: 'foghorn' }
+  ],
   timeline: [
     { t: '21:40', text: '“海燕号”离港，起雾，雾笛开始每两分钟鸣一次。' },
     { t: '22:50', text: '夜宵结束，方启明回3号舱（多人看见）。' },

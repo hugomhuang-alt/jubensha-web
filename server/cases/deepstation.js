@@ -102,6 +102,15 @@ const BASE = {
       '舱内加热，尸体降温很慢，难定精确时间'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '四十一米深的海底，渊一号亮着灯。通讯断了十一天，水面再无回音。', who: [], fx: ['sea', 'night', 'zoomin'], snd: 'sonar' },
+    { loc: 'mess', text: '餐厅里热气腾腾。厨师每晚给首席科学家送去的那壶热茶，从没断过。', who: ['victim', 'he'], fx: ['warm', 'steam'], snd: 'clink' },
+    { loc: 'comm', text: '通讯工程师说，光缆是被渔船拖网挂断的。站里只剩罐头和沉默。', who: ['shao'], fx: ['dim', 'dust', 'panr'], snd: 'static' },
+    { loc: 'ctrl', text: '控制室的钥匙盒里挂着站长的主钥匙，四位密码，知道的人寥寥无几。', who: ['yue'], fx: ['dim', 'spot'], snd: 'keys' },
+    { loc: 'lock', text: '屠鹤年照例夜里进气密舱采样，内侧电动锁止，外人进不去。', who: ['victim'], fx: ['night', 'zoomin'], snd: 'hullcreak' },
+    { loc: 'lock', text: '06:40，站长与医生解锁气密舱。屠鹤年侧倒在采样台边，唇指发紫。', who: ['victim', 'yue', 'lan'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '07:50，检查钟穿过黑水停靠舱门外。你只有九个小时。', who: [], fx: ['sea', 'zoomout'], snd: 'motorhum' }
+  ],
   timeline: [
     { t: '00:02', text: '气密舱控制器：转入采样模式，内侧锁止，卡号屠鹤年。' },
     { t: '02:18', text: '控制器：惰化冲洗启动22分钟，来源控制室终端，授权站长主钥匙。' },

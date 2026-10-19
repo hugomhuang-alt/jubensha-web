@@ -311,6 +311,16 @@ module.exports = {
       '门自内锁，钥匙在桌面，窗闩着'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '一九八七年九月，台风压向青崖山，松岚疗养院的灯光在雨幕里忽明忽暗。', who: [], fx: ['storm', 'rain', 'night'], snd: 'thunder' },
+    { loc: 'yard', text: '傍晚十九点十分，山路塌方，疗养院成了孤岛；四十分钟后，电话线也被风刮断。', who: ['wei'], fx: ['rain', 'panl'], snd: 'wind' },
+    { loc: 'study', text: '院长顾清源曾来信说药房账目蹊跷，约你面谈，他只说明早再谈。', who: ['yan'], fx: ['warm', 'zoomin'], snd: 'paper' },
+    { loc: 'pharm', text: '药房的管制药品柜锁着，账本摊在台上，谁都说那些数字没有问题。', who: ['song', 'xue'], fx: ['dim', 'spot'], snd: 'keys' },
+    { loc: 'ward', text: '病人梁秋白缩在病室窗边，低声说，他看见白衣无面人提着灯。', who: ['liang'], fx: ['night', 'dust'], snd: 'creak' },
+    { loc: 'study', text: '二十二点半，全院停电，走廊只剩马灯和手电，院长室的门悄然合上。', who: ['wei'], fx: ['dim', 'night', 'zoomout'], snd: 'lamp' },
+    { loc: 'study', text: '零点五十五分，门被劈开，院长伏在桌前，右臂还插着空注射器。', who: ['victim', 'yan', 'wei'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '风雨未歇，电话不通，警察天亮才到，你只有这一夜。', who: [], fx: ['storm', 'rain', 'zoomout'], snd: 'howl' }
+  ],
   publicFacts: [
     '松岚疗养院在青崖山腰，设三十四张床位；19:10山路塌方，19:40电话线被风刮断，警方明晨才到。',
     '顾清源患晚期胰腺癌，只有严仲谦、薛玉芬、宋鹤龄知情，他每晚自行注射吗啡止痛。',

@@ -346,6 +346,16 @@ module.exports = {
       '案头铜镇尺带血和白发，与伤口吻合'
     ]
   },
+  cinema: [
+    { loc:'cover', text:'一九九八年十月，省城老街，夜雨初歇，聚珍斋的招牌在路灯下泛着旧漆的光。', who:[], fx:['night','fog','zoomin'], snd:'owl' },
+    { loc:'hall', text:'梅瓶立在正中展柜里，宣德青花云龙纹，是聚珍斋三代人守着的镇店之宝。', who:[], fx:['warm','spot'], snd:'chime' },
+    { loc:'study', text:'后堂太师椅上，老掌柜谷鸿年常在这间后堂会客看货，听收音机里的评书。', who:['victim'], fx:['warm','dust'], snd:'vinyl' },
+    { loc:'hall', text:'十九点三十分打烊，学徒方小满锁上前门，掌柜独自留在后堂。', who:['fang'], fx:['night','panl'], snd:'keys' },
+    { loc:'library', text:'账房里樟脑味弥漫，老账簿间的老书桌上摊着稿纸和一只铁盒。', who:[], fx:['dim','dust','zoomin'], snd:'paper' },
+    { loc:'study', text:'二十二点十分，小满按约回店，后堂的收音机仍在大声响着，谷鸿年倒在太师椅旁。', who:['victim','fang'], fx:['dim','shake','flash'], snd:'gasp', climax:true },
+    { loc:'hall', text:'展柜铜锁完好，梅瓶纹丝未动。没人抢，也没人偷，小满颤抖着拨通了报警电话。', who:['fang'], fx:['spot','zoomout'], snd:'beep' },
+    { loc:'cover', text:'警灯映红老街的湿石板，街坊探头张望，匿名条子上只有一行字：聚珍斋有事瞒着。', who:[], fx:['police','night','rain'], snd:'siren' }
+  ],
   timeline: [
     { t: '19:30', text: '聚珍斋打烊，小满锁前门，谷留在后堂。' },
     { t: '21:10', text: '谷的腕表停在这个时刻，表蒙碎裂。' },

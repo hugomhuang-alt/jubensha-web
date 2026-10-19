@@ -313,6 +313,16 @@ module.exports = {
       '急雨干扰了判断，死亡时间只能划大范围'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '城南老街，半盏春歇业十四个月，今夜红灯笼重新挂上了老门脸。', who: [], fx: ['night', 'warm', 'zoomin'], snd: 'firework' },
+    { loc: 'hall', text: '六十多位街坊挤满前厅，四十年的老茶客肖仲谦照旧坐在一号位。', who: ['xiao'], fx: ['warm', 'dust'], snd: 'chat' },
+    { loc: 'hall', text: '十九点，掌柜席怀山致辞，敬上头道茶，满堂宾客都看见了他。', who: ['victim'], fx: ['spot', 'zoomin'], snd: 'clink' },
+    { loc: 'guestroom', text: '十九点二十，席怀山回后院，吩咐“二十一点三十分前勿扰”；说书先生谭九龄上楼候场。', who: ['victim', 'tan'], fx: ['dim', 'panl'], snd: 'creak' },
+    { loc: 'hall', text: '十九点五十八分急雨落下，二十点，谭九龄登台，醒木一响，满堂叫好。', who: ['tan'], fx: ['rain', 'warm', 'panr'], snd: 'thunder' },
+    { loc: 'garden', text: '二十一点零五分，前厅第三次听到后院传来骂声，满堂哄笑，此后再无声息。', who: [], fx: ['night', 'rain', 'zoomout'], snd: 'drip' },
+    { loc: 'garden', text: '二十一点三十二分，阿禾推开后院门，掌柜席怀山面朝下趴在青石板上，没了气息。', who: ['liu', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '二十一点四十分，你封锁后院和各个出口，前厅的笑语戛然而止。', who: ['zhong'], fx: ['police', 'night'], snd: 'siren' }
+  ],
   timeline: [
     { t: '18:00', text: '开门迎客，阿禾十八点三十分给后院的八哥罩上黑布。' },
     { t: '19:00', text: '开张仪式，席怀山致辞、敬头道茶，满堂都看见了他。' },

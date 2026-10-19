@@ -28,6 +28,16 @@ const BASE = {
     '二十年前同一晚，管家周妈的儿子周辉在这个码头溺亡，当时定为意外。',
     '台风封山，警方凌晨一点半到。别墅里所有人都还在。'
   ],
+  cinema: [
+    { loc: 'cover', text: '台风将至，海边别墅“听潮居”亮着灯。林家双胞胎姐妹，今天满四十岁。', who: [], fx: ['storm', 'night', 'zoomin'], snd: 'wind' },
+    { loc: 'hall', text: '十九点三十分，红裙与蓝裙两姐妹同时亮相，宾客一一迎进门厅。', who: ['qiu', 'xie'], fx: ['warm', 'panr'], snd: 'chat' },
+    { loc: 'dining', text: '宴会厅里，宾客举杯祝酒。家庭医生宋怀仁在场，约二十一点四十分悄然离席。', who: ['song', 'liu', 'liang'], fx: ['warm', 'zoomout'], snd: 'clink' },
+    { loc: 'study', text: '父亲的书房里，信托文件摊在桌上：零点起，三亿信托归“长女知夏”。', who: ['liang'], fx: ['dim', 'spot'], snd: 'paper' },
+    { loc: 'cellar', text: '窗外风雨越来越大，酒窖的灯忽明忽暗，没有人留意谁走了、谁回来了。', who: ['cheng', 'zhou'], fx: ['night', 'dim', 'rain'], snd: 'drip' },
+    { loc: 'garden', text: '二十二点五十八分，苏念在码头发现水中有人，高声呼救。', who: ['su'], fx: ['storm', 'rain', 'sea'], snd: 'splash' },
+    { loc: 'garden', text: '浮起一具蓝裙女尸。红裙女子冲来哭喊：“死的是姐姐，我是知秋！”', who: ['victim', 'qiu'], fx: ['rain', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'hall', text: '台风封山，警察一点半才到。你二十三点五十分赶到，只有这一夜。', who: ['liang'], fx: ['night', 'rain', 'police'], snd: 'siren' }
+  ],
   timeline: [
     { t: '19:30', text: '晚宴开始，红、蓝两名姐妹同时亮相。' },
     { t: '21:30', text: '宾客举杯祝酒，宋医生在场，约21:40离席。' },

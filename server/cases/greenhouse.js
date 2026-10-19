@@ -317,6 +317,16 @@ module.exports = {
       '右手仍握着授粉用的毛笔'
     ]
   },
+  cinema: [
+    { loc: 'cover', text: '10月11日，归棠园玻璃花房。整座园子都在等一朵巨魔芋开花。', who: [], fx: ['fog', 'night', 'zoomin'], snd: 'cricket' },
+    { loc: 'cottage', text: '后院小屋的黑板上，老园丁岑守拙写下：花开夜，通宵。', who: ['victim'], fx: ['warm', 'dust'], snd: 'paper' },
+    { loc: 'tropic', text: '17:40，暗红的佛焰苞缓缓展开，腐肉般的气味涌满湿热的花房。', who: ['sang', 'lihe'], fx: ['steam', 'spot', 'panr'], snd: 'chime' },
+    { loc: 'kitchen', text: '20:15，三瓶开幕酒递到十四位宾客手里，只有岑守拙没有取杯。', who: ['wu', 'victim'], fx: ['warm', 'panl'], snd: 'clink' },
+    { loc: 'tropic', text: '21:20，宾客转去餐厅吃宵夜，老人独自留在花盆旁，等授粉的时辰。', who: ['victim'], fx: ['night', 'dim', 'zoomout'], snd: 'drip' },
+    { loc: 'tropic', text: '23:58，延时摄影的最后一帧里，他仍坐在矮凳上。', who: ['victim'], fx: ['dim', 'night', 'zoomin'], snd: 'static' },
+    { loc: 'tropic', text: '清晨6:20，实习生栗禾发现他靠在花盆边，手里还握着毛笔。', who: ['lihe', 'victim'], fx: ['dim', 'shake', 'flash'], snd: 'gasp', climax: true },
+    { loc: 'cover', text: '警车驶进归棠园，法医说，他死于强心苷类物质引发的心律失常。', who: [], fx: ['police', 'fog'], snd: 'siren' }
+  ],
   timeline: [
     { t: '14:00', text: '岑守拙在繁育间走廊与沈知微谈了十几分钟。' },
     { t: '17:40', text: '巨魔芋开始展开，宾客陆续入场。' },
