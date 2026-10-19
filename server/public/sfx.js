@@ -463,7 +463,7 @@ const SFX = (() => {
     clearInterval(a.iv);
   }
   // 环境床：rain 雨 / fire 火 / snow 雪风 / sea 海浪 / wind 夜风 / hum 室内低鸣 / deep 深水或矿井的低频
-  const BED = { rain: [5200, 0.1], fire: [260, 0.05], snow: [520, 0.07], sea: [700, 0.09], wind: [620, 0.06], hum: [240, 0.035], deep: [150, 0.07] };
+  const BED = { rain: [5200, 0.1], fire: [200, 0.035], snow: [520, 0.07], sea: [700, 0.09], wind: [620, 0.06], hum: [240, 0.035], deep: [150, 0.07] };
   function ambStart(kind) {
     kind = kind || null;
     if (kind === ambKind) return;
@@ -481,7 +481,7 @@ const SFX = (() => {
       amb.iv = setInterval(() => {
         if (!ac || muted || document.hidden || ac.state !== 'running') return;
         const t = ac.currentTime + 0.02;
-        if (kind === 'fire' && Math.random() < 0.7) noise(t, 0.03 + Math.random() * 0.05, { f: 1800 + Math.random() * 3000, q: 1, gain: 0.05 + Math.random() * 0.06, bus: musicBus });
+        if (kind === 'fire' && Math.random() < 0.05) noise(t, 0.05 + Math.random() * 0.06, { f: 900 + Math.random() * 900, q: 0.7, gain: 0.02 + Math.random() * 0.02, bus: musicBus });
         if (kind === 'snow' || kind === 'wind') { f.frequency.setTargetAtTime(380 + Math.random() * 520, t, 1.5); g.gain.setTargetAtTime(bed[1] * (0.5 + Math.random() * 0.9), t, 1.5); }
         if (kind === 'rain') g.gain.setTargetAtTime(0.08 + Math.random() * 0.04, t, 0.8);
         if (kind === 'sea') { f.frequency.setTargetAtTime(300 + Math.random() * 700, t, 2.2); g.gain.setTargetAtTime(0.03 + Math.random() * 0.09, t, 2.2); }

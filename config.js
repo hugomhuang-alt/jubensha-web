@@ -1,2 +1,2 @@
 window.__SERVER = "https://jubensha-server-yy5d.onrender.com";
-window.__BUILD = "10190118";
+window.__BUILD = "10190122";
