@@ -76,3 +76,10 @@
 .ww-ovs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; } .ww-ov { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: rgba(23, 32, 51, .8); border: 1px solid var(--line); } .ww-ov.bad { border-color: rgba(230, 110, 110, .5); } .ww-ov.dead span { text-decoration: line-through; opacity: .7; } .ww-ov span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ww-ov em { font-style: normal; font-size: 12px; }
 .ww-over-act { display: grid; gap: 8px; }
 @media (max-width: 380px) { .ww-pl { grid-template-columns: repeat(3, 1fr); } .ww-tg { grid-template-columns: 1fr; } }
+
+/* 语音条 */
+.ww-vs { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 12px 6px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(10, 14, 26, .85); font-size: 13px; }
+.ww-vs[hidden] { display: none; }
+.ww-vs .vs-t { flex: 1; color: var(--muted); } .ww-vs .vs-t.live { color: #7be0a1; }
+.ww-vs .btn { width: auto; min-height: 34px; padding: 0 12px; }
+.ww-p.speaking { box-shadow: 0 0 0 2px #7be0a1, 0 0 12px #7be0a1aa; }

@@ -386,7 +386,26 @@ const SFX = (() => {
   api2voice();
 
   // ---------- 背景音乐 ----------
+  // 大厅/选游戏的新背景曲：柔和钢琴琶音 + 暖垫音（Am7 – Fmaj7 – Cmaj7 – G6），慢速、轻微摇摆
+  const LOFI = [[57, 60, 64, 67], [53, 57, 60, 64], [48, 55, 60, 64], [55, 59, 62, 66]];
+  const BEAT = 0.83;
+  function playBarLofi(t) {
+    const ch = LOFI[bar % LOFI.length], tr = seed % 3, B = (m) => hz(m + tr);
+    ch.forEach((m, i) => tone(B(m), t, BEAT * 8 + 1.2, { type: 'sine', gain: 0.045, attack: 1.1, bus: musicBus, lp: 1100, det: i * 3 - 4 }));
+    tone(B(ch[0] - 12), t, BEAT * 4, { type: 'triangle', gain: 0.1, attack: 0.05, bus: musicBus, lp: 500 });
+    tone(B(ch[0] - 12), t + BEAT * 4, BEAT * 3.6, { type: 'triangle', gain: 0.08, attack: 0.05, bus: musicBus, lp: 500 });
+    const pat = [0, 2, 1, 3, 2, 1, 3, 2];
+    for (let i = 0; i < 8; i++) {
+      if (rnd() < 0.2) continue;
+      const at = t + i * BEAT + (i % 2 ? 0.07 : 0), m = ch[pat[i]] + 12;
+      tone(B(m), at, 1.5, { type: 'triangle', gain: 0.06 + rnd() * 0.025, attack: 0.008, bus: musicBus, lp: 2400 });
+      tone(B(m + 12), at, 0.5, { type: 'sine', gain: 0.012, attack: 0.005, bus: musicBus });
+    }
+    if (rnd() < 0.4) tone(B(ch[Math.floor(rnd() * 4)] + 24), t + BEAT * (2 + Math.floor(rnd() * 5)), 2.4, { type: 'sine', gain: 0.03, attack: 0.01, bus: musicBus });
+    bar++;
+  }
   function playBar(t) {
+    if (mode === 'menu') return playBarLofi(t);
     const prog = PROG[bar % PROG.length]; const len = barLen();
     const base = root + (mode === 'menu' ? 0 : 0);
     // 铺底和弦
@@ -414,7 +433,7 @@ const SFX = (() => {
     }
     bar++;
   }
-  const barLen = () => (mode === 'menu' ? 6.5 : 5.2);
+  const barLen = () => (mode === 'menu' ? BEAT * 8 : 5.2);
   function sched() {
     if (!ac || muted || !mode || document.hidden) return;
     if (ac.state === 'suspended') return;

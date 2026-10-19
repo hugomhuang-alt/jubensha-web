@@ -94,7 +94,7 @@ module.exports = function createWW(h) {
       deck: deckInfo(Math.max(6, Math.min(12, room.phase === 'lobby' ? room.cap : room.players.length))),
       players: room.players.map((p) => ({
         id: p.id, name: p.name, seat: p.seat, alive: p.alive, connected: p.connected || p.bot, bot: p.bot, left: p.left,
-        voted: room.phase === 'vote' ? p.vote !== undefined : false,
+        voted: room.phase === 'vote' ? p.vote !== undefined : false, voice: !!(room.voice && room.voice.has(p.id)),
         role: over || (me && p.id === me.id) ? p.role : (wolfView && isWolf(p) ? p.role : null)
       })),
       log: pub(room), chat: room.chat.filter((c) => c.ch === 'all' || over || (c.ch === 'wolf' && wolfView) || (c.ch === 'dead' && me && !me.alive)).slice(-120),
@@ -126,6 +126,11 @@ module.exports = function createWW(h) {
     else if (room.phase === 'vote') { P.kind = me.alive ? 'vote' : 'watch'; P.cand = room.voteInfo.cand; P.mine = me.vote; P.pk = !!room.voteInfo.pk; }
     if (P.kind) st.prompt = P;
     return st;
+  }
+  // ---------- 语音（WebRTC 信令转发；音频点对点，不经过服务器） ----------
+  function dropVoice(room, pid) {
+    if (!room.voice || !room.voice.delete(pid)) return;
+    for (const p of room.players) if (p.id !== pid && p.connected && !p.bot) send(p.ws, { type: 'ww-voice-left', id: pid });
   }
   function pushState(room) {
     room.touched = now();
@@ -491,7 +496,19 @@ module.exports = function createWW(h) {
         if (!isHost || room.phase !== 'over') return;
         resetToLobby(room); return pushState(room);
       }
+      case 'ww-voice-join': {
+        room.voice = room.voice || new Set();
+        const existing = [...room.voice].filter((id) => id !== me.id && byId(room, id) && byId(room, id).connected);
+        room.voice.add(me.id); send(ws, { type: 'ww-voice-peers', peers: existing }); return pushState(room);
+      }
+      case 'ww-voice-leave': { dropVoice(room, me.id); return pushState(room); }
+      case 'ww-signal': {
+        const to = byId(room, msg.to);
+        if (to && to.connected && !to.bot && room.voice && room.voice.has(me.id)) send(to.ws, { type: 'ww-signal', from: me.id, data: msg.data });
+        return;
+      }
       case 'ww-leave': {
+        dropVoice(room, me.id);
         ws.wctx = null;
         if (room.phase === 'lobby' || room.phase === 'over') {
           const i = room.players.indexOf(me); if (i >= 0) room.players.splice(i, 1);
@@ -587,7 +604,7 @@ module.exports = function createWW(h) {
     const ctx = ws.wctx; if (!ctx) return;
     const { room, player } = ctx;
     if (player.ws !== ws) return;
-    player.connected = false;
+    player.connected = false; dropVoice(room, player.id);
     if (room.phase === 'lobby' || room.phase === 'over') {
       // 大厅里掉线：保留座位，回来可以接着用
     }

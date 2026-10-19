@@ -41,10 +41,10 @@ const WWG = (() => {
     resuming = true; send({ type: 'ww-rejoin', code: s.code, token: s.token }); return true;
   }
   function leaveRoom() {
-    send({ type: 'ww-leave' }); clearSes(); W = null; wid = null; mode = ''; stopTick();
+    endVoice(); send({ type: 'ww-leave' }); clearSes(); W = null; wid = null; mode = ''; stopTick();
     document.body.dataset.ww = '';
   }
-  function exitToHub() { stopPoll(); stopTick(); $w('#ww').hidden = true; showHub(); }
+  function exitToHub() { endVoice(); stopPoll(); stopTick(); $w('#ww').hidden = true; showHub(); }
   function back() {
     const o = $w('#wwOv'); if (o) { o.remove(); return true; }
     if (!visible()) return false;
@@ -132,6 +132,55 @@ const WWG = (() => {
       : '<p class="empty">暂时没有在等人的房间。<br>去“创建房间”开一个吧！</p>';
   }
 
+  // ---------------- 语音（和剧本杀共用 app.js 里的 WebRTC；这里只管“谁能说、谁能听”） ----------
+  // 规则：大厅/结束自由说；黑夜只有存活的狼人互相说话、互相听见；白天只有当前发言人开麦；遗言/开枪只有当事人；投票和天亮静音。
+  function myWolves() { return (W && W.you && W.you.wolves) || []; }
+  function wwMic() {
+    if (!W) return false;
+    const y = W.you, k = W.prompt && W.prompt.kind;
+    switch (W.phase) {
+      case 'lobby': case 'over': return true;
+      case 'night': return !!(y && y.alive && myWolves().length);
+      case 'speech': return k === 'speech';
+      case 'last': return k === 'last';
+      case 'shot': return k === 'shot';
+      default: return false;
+    }
+  }
+  function wwHear(id) {
+    if (!W || W.phase !== 'night') return true;
+    const w = myWolves(); return w.length > 0 && w.includes(id) && w.includes(wid);
+  }
+  function gateText() {
+    if (voice.muted) return '你已静音';
+    if (wwMic()) return '麦克风已打开，大家能听到你';
+    if (W.phase === 'night') return '黑夜：只有狼人能说话';
+    if (W.phase === 'speech') { const sp = bySeat(W.prompt && W.prompt.speaker); return sp ? `已静音：轮到 ${sp.seat}号 ${sp.name} 发言` : '已静音'; }
+    return '这个阶段先安静';
+  }
+  function vbar() {
+    let el = $w('#wwVs');
+    if (!el) { el = document.createElement('div'); el.id = 'wwVs'; el.className = 'ww-vs'; const hd = $w('#ww header.ww-top'); hd.insertAdjacentElement('afterend', el); el.onclick = onVoiceClick; }
+    return el;
+  }
+  function renderVoice() {
+    const el = vbar();
+    if (!W) { el.hidden = true; return; }
+    el.hidden = false;
+    const n = W.players.filter((p) => p.voice).length;
+    const html = !voice.on
+      ? `<span class="vs-t">${n ? `${n} 人在语音中` : '语音聊天'}</span><button class="btn small" data-v="on">🎙 加入语音</button>`
+      : `<span class="vs-t ${wwMic() ? 'live' : ''}">${esc(gateText())}</span><button class="btn small ${voice.muted ? '' : 'ghost'}" data-v="mute">${voice.muted ? '取消静音' : '静音'}</button><button class="btn small ghost" data-v="off">退出</button>`;
+    if (el._h !== html) { el._h = html; el.innerHTML = html; }
+  }
+  function onVoiceClick(e) {
+    const b = e.target.closest('button'); if (!b) return;
+    const v = b.dataset.v;
+    if (v === 'on') voiceOn(); else if (v === 'off') voiceOff(); else if (v === 'mute') { voice.muted = !voice.muted; voiceApplyGate(); }
+  }
+  const VHOOK = { ns: 'ww-', mic: wwMic, hear: wwHear, me: () => wid, ui: renderVoice, speaking: (pid, on) => { const c = document.querySelector(`.ww-p[data-pid="${pid}"]`); if (c) c.classList.toggle('speaking', !!on); } };
+  function endVoice() { try { if (voice.on) voiceOff(); voiceHost(null); const el = $w('#wwVs'); if (el) el.hidden = true; } catch (e) {} }
+
   // ---------------- 计时 ----------------
   function stopTick() { clearInterval(tick); tick = null; }
   function startTick() {
@@ -171,6 +220,8 @@ const WWG = (() => {
     const prevPhase = W && W.phase;
     sounds(m);
     W = m;
+    if (first) voiceHost(VHOOK);
+    if (voice.on) voiceApplyGate(); else renderVoice();
     if (resuming) {
       resuming = false;
       if (m.phase === 'over') { toast('上一局已经结束，回到游戏选择'); leaveRoom(); if (visible() || true) { $w('#ww').hidden = true; showHub(); } return; }
@@ -332,7 +383,7 @@ const WWG = (() => {
     const speaker = W.prompt && W.prompt.speaker;
     const h = W.players.map((p) => {
       const known = p.role ? `<em>${EMO[p.role]}</em>` : '';
-      return `<div class="ww-p ${p.alive ? '' : 'dead'} ${p.id === wid ? 'me' : ''} ${p.id === speaker ? 'talk' : ''} ${p.connected ? '' : 'off'}">${seatTag(p)}<span class="n">${esc(p.name)}</span>${known}${p.voted ? '<i class="vt">✓</i>' : ''}${!p.alive ? '<i class="skull">💀</i>' : ''}</div>`;
+      return `<div data-pid="${p.id}" class="ww-p ${p.alive ? '' : 'dead'} ${p.id === wid ? 'me' : ''} ${p.id === speaker ? 'talk' : ''} ${p.connected ? '' : 'off'}">${seatTag(p)}<span class="n">${esc(p.name)}</span>${known}${p.voted ? '<i class="vt">✓</i>' : ''}${!p.alive ? '<i class="skull">💀</i>' : ''}</div>`;
     }).join('');
     setH('#wwPl', h);
   }
@@ -375,7 +426,10 @@ const WWG = (() => {
   function onMsg(m) {
     switch (m.type) {
       case 'ww-rooms': rooms = m.rooms || []; renderRooms(); break;
-      case 'ww-joined': wid = m.id; saveSes({ code: m.code, token: m.token }); break;
+      case 'ww-joined': wid = m.id; saveSes({ code: m.code, token: m.token }); if (voice.on) send({ type: 'ww-voice-join' }); break;
+      case 'ww-voice-peers': (m.peers || []).forEach((id) => voiceCall(id)); break;
+      case 'ww-voice-left': voiceClosePeer(m.id); break;
+      case 'ww-signal': voiceSignal(m.from, m.data); break;
       case 'ww-state': onState(m); break;
       case 'ww-need-password': askPassword(m.code); break;
       case 'ww-rejoin-failed':

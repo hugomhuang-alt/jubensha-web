@@ -1262,6 +1262,13 @@ html[data-q="low"] .btn.primary::after, html[data-q="low"] .door.gold::before, h
 .ww-over-act { display: grid; gap: 8px; }
 @media (max-width: 380px) { .ww-pl { grid-template-columns: repeat(3, 1fr); } .ww-tg { grid-template-columns: 1fr; } }
 
+/* 语音条 */
+.ww-vs { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 12px 6px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(10, 14, 26, .85); font-size: 13px; }
+.ww-vs[hidden] { display: none; }
+.ww-vs .vs-t { flex: 1; color: var(--muted); } .ww-vs .vs-t.live { color: #7be0a1; }
+.ww-vs .btn { width: auto; min-height: 34px; padding: 0 12px; }
+.ww-p.speaking { box-shadow: 0 0 0 2px #7be0a1, 0 0 12px #7be0a1aa; }
+
 
 :root { color-scheme: dark; }
 #voiceBar, .or, .join-row, #wwSeg, #wwJoinP, #wwCreP .uf, #hubAcct, #hub .net, .ww-top .net, #wwCreP .fine { display: none !important; }
@@ -8213,7 +8220,7 @@ module.exports = function createWW(h) {
       deck: deckInfo(Math.max(6, Math.min(12, room.phase === 'lobby' ? room.cap : room.players.length))),
       players: room.players.map((p) => ({
         id: p.id, name: p.name, seat: p.seat, alive: p.alive, connected: p.connected || p.bot, bot: p.bot, left: p.left,
-        voted: room.phase === 'vote' ? p.vote !== undefined : false,
+        voted: room.phase === 'vote' ? p.vote !== undefined : false, voice: !!(room.voice && room.voice.has(p.id)),
         role: over || (me && p.id === me.id) ? p.role : (wolfView && isWolf(p) ? p.role : null)
       })),
       log: pub(room), chat: room.chat.filter((c) => c.ch === 'all' || over || (c.ch === 'wolf' && wolfView) || (c.ch === 'dead' && me && !me.alive)).slice(-120),
@@ -8245,6 +8252,11 @@ module.exports = function createWW(h) {
     else if (room.phase === 'vote') { P.kind = me.alive ? 'vote' : 'watch'; P.cand = room.voteInfo.cand; P.mine = me.vote; P.pk = !!room.voteInfo.pk; }
     if (P.kind) st.prompt = P;
     return st;
+  }
+  // ---------- 语音（WebRTC 信令转发；音频点对点，不经过服务器） ----------
+  function dropVoice(room, pid) {
+    if (!room.voice || !room.voice.delete(pid)) return;
+    for (const p of room.players) if (p.id !== pid && p.connected && !p.bot) send(p.ws, { type: 'ww-voice-left', id: pid });
   }
   function pushState(room) {
     room.touched = now();
@@ -8610,7 +8622,19 @@ module.exports = function createWW(h) {
         if (!isHost || room.phase !== 'over') return;
         resetToLobby(room); return pushState(room);
       }
+      case 'ww-voice-join': {
+        room.voice = room.voice || new Set();
+        const existing = [...room.voice].filter((id) => id !== me.id && byId(room, id) && byId(room, id).connected);
+        room.voice.add(me.id); send(ws, { type: 'ww-voice-peers', peers: existing }); return pushState(room);
+      }
+      case 'ww-voice-leave': { dropVoice(room, me.id); return pushState(room); }
+      case 'ww-signal': {
+        const to = byId(room, msg.to);
+        if (to && to.connected && !to.bot && room.voice && room.voice.has(me.id)) send(to.ws, { type: 'ww-signal', from: me.id, data: msg.data });
+        return;
+      }
       case 'ww-leave': {
+        dropVoice(room, me.id);
         ws.wctx = null;
         if (room.phase === 'lobby' || room.phase === 'over') {
           const i = room.players.indexOf(me); if (i >= 0) room.players.splice(i, 1);
@@ -8706,7 +8730,7 @@ module.exports = function createWW(h) {
     const ctx = ws.wctx; if (!ctx) return;
     const { room, player } = ctx;
     if (player.ws !== ws) return;
-    player.connected = false;
+    player.connected = false; dropVoice(room, player.id);
     if (room.phase === 'lobby' || room.phase === 'over') {
       // 大厅里掉线：保留座位，回来可以接着用
     }
@@ -11211,7 +11235,26 @@ const SFX = (() => {
   api2voice();
 
   // ---------- 背景音乐 ----------
+  // 大厅/选游戏的新背景曲：柔和钢琴琶音 + 暖垫音（Am7 – Fmaj7 – Cmaj7 – G6），慢速、轻微摇摆
+  const LOFI = [[57, 60, 64, 67], [53, 57, 60, 64], [48, 55, 60, 64], [55, 59, 62, 66]];
+  const BEAT = 0.83;
+  function playBarLofi(t) {
+    const ch = LOFI[bar % LOFI.length], tr = seed % 3, B = (m) => hz(m + tr);
+    ch.forEach((m, i) => tone(B(m), t, BEAT * 8 + 1.2, { type: 'sine', gain: 0.045, attack: 1.1, bus: musicBus, lp: 1100, det: i * 3 - 4 }));
+    tone(B(ch[0] - 12), t, BEAT * 4, { type: 'triangle', gain: 0.1, attack: 0.05, bus: musicBus, lp: 500 });
+    tone(B(ch[0] - 12), t + BEAT * 4, BEAT * 3.6, { type: 'triangle', gain: 0.08, attack: 0.05, bus: musicBus, lp: 500 });
+    const pat = [0, 2, 1, 3, 2, 1, 3, 2];
+    for (let i = 0; i < 8; i++) {
+      if (rnd() < 0.2) continue;
+      const at = t + i * BEAT + (i % 2 ? 0.07 : 0), m = ch[pat[i]] + 12;
+      tone(B(m), at, 1.5, { type: 'triangle', gain: 0.06 + rnd() * 0.025, attack: 0.008, bus: musicBus, lp: 2400 });
+      tone(B(m + 12), at, 0.5, { type: 'sine', gain: 0.012, attack: 0.005, bus: musicBus });
+    }
+    if (rnd() < 0.4) tone(B(ch[Math.floor(rnd() * 4)] + 24), t + BEAT * (2 + Math.floor(rnd() * 5)), 2.4, { type: 'sine', gain: 0.03, attack: 0.01, bus: musicBus });
+    bar++;
+  }
   function playBar(t) {
+    if (mode === 'menu') return playBarLofi(t);
     const prog = PROG[bar % PROG.length]; const len = barLen();
     const base = root + (mode === 'menu' ? 0 : 0);
     // 铺底和弦
@@ -11239,7 +11282,7 @@ const SFX = (() => {
     }
     bar++;
   }
-  const barLen = () => (mode === 'menu' ? 6.5 : 5.2);
+  const barLen = () => (mode === 'menu' ? BEAT * 8 : 5.2);
   function sched() {
     if (!ac || muted || !mode || document.hidden) return;
     if (ac.state === 'suspended') return;
@@ -11978,10 +12021,10 @@ const WWG = (() => {
     resuming = true; send({ type: 'ww-rejoin', code: s.code, token: s.token }); return true;
   }
   function leaveRoom() {
-    send({ type: 'ww-leave' }); clearSes(); W = null; wid = null; mode = ''; stopTick();
+    endVoice(); send({ type: 'ww-leave' }); clearSes(); W = null; wid = null; mode = ''; stopTick();
     document.body.dataset.ww = '';
   }
-  function exitToHub() { stopPoll(); stopTick(); $w('#ww').hidden = true; showHub(); }
+  function exitToHub() { endVoice(); stopPoll(); stopTick(); $w('#ww').hidden = true; showHub(); }
   function back() {
     const o = $w('#wwOv'); if (o) { o.remove(); return true; }
     if (!visible()) return false;
@@ -12069,6 +12112,55 @@ const WWG = (() => {
       : '<p class="empty">暂时没有在等人的房间。<br>去“创建房间”开一个吧！</p>';
   }
 
+  // ---------------- 语音（和剧本杀共用 app.js 里的 WebRTC；这里只管“谁能说、谁能听”） ----------
+  // 规则：大厅/结束自由说；黑夜只有存活的狼人互相说话、互相听见；白天只有当前发言人开麦；遗言/开枪只有当事人；投票和天亮静音。
+  function myWolves() { return (W && W.you && W.you.wolves) || []; }
+  function wwMic() {
+    if (!W) return false;
+    const y = W.you, k = W.prompt && W.prompt.kind;
+    switch (W.phase) {
+      case 'lobby': case 'over': return true;
+      case 'night': return !!(y && y.alive && myWolves().length);
+      case 'speech': return k === 'speech';
+      case 'last': return k === 'last';
+      case 'shot': return k === 'shot';
+      default: return false;
+    }
+  }
+  function wwHear(id) {
+    if (!W || W.phase !== 'night') return true;
+    const w = myWolves(); return w.length > 0 && w.includes(id) && w.includes(wid);
+  }
+  function gateText() {
+    if (voice.muted) return '你已静音';
+    if (wwMic()) return '麦克风已打开，大家能听到你';
+    if (W.phase === 'night') return '黑夜：只有狼人能说话';
+    if (W.phase === 'speech') { const sp = bySeat(W.prompt && W.prompt.speaker); return sp ? `已静音：轮到 ${sp.seat}号 ${sp.name} 发言` : '已静音'; }
+    return '这个阶段先安静';
+  }
+  function vbar() {
+    let el = $w('#wwVs');
+    if (!el) { el = document.createElement('div'); el.id = 'wwVs'; el.className = 'ww-vs'; const hd = $w('#ww header.ww-top'); hd.insertAdjacentElement('afterend', el); el.onclick = onVoiceClick; }
+    return el;
+  }
+  function renderVoice() {
+    const el = vbar();
+    if (!W) { el.hidden = true; return; }
+    el.hidden = false;
+    const n = W.players.filter((p) => p.voice).length;
+    const html = !voice.on
+      ? `<span class="vs-t">${n ? `${n} 人在语音中` : '语音聊天'}</span><button class="btn small" data-v="on">🎙 加入语音</button>`
+      : `<span class="vs-t ${wwMic() ? 'live' : ''}">${esc(gateText())}</span><button class="btn small ${voice.muted ? '' : 'ghost'}" data-v="mute">${voice.muted ? '取消静音' : '静音'}</button><button class="btn small ghost" data-v="off">退出</button>`;
+    if (el._h !== html) { el._h = html; el.innerHTML = html; }
+  }
+  function onVoiceClick(e) {
+    const b = e.target.closest('button'); if (!b) return;
+    const v = b.dataset.v;
+    if (v === 'on') voiceOn(); else if (v === 'off') voiceOff(); else if (v === 'mute') { voice.muted = !voice.muted; voiceApplyGate(); }
+  }
+  const VHOOK = { ns: 'ww-', mic: wwMic, hear: wwHear, me: () => wid, ui: renderVoice, speaking: (pid, on) => { const c = document.querySelector(`.ww-p[data-pid="${pid}"]`); if (c) c.classList.toggle('speaking', !!on); } };
+  function endVoice() { try { if (voice.on) voiceOff(); voiceHost(null); const el = $w('#wwVs'); if (el) el.hidden = true; } catch (e) {} }
+
   // ---------------- 计时 ----------------
   function stopTick() { clearInterval(tick); tick = null; }
   function startTick() {
@@ -12108,6 +12200,8 @@ const WWG = (() => {
     const prevPhase = W && W.phase;
     sounds(m);
     W = m;
+    if (first) voiceHost(VHOOK);
+    if (voice.on) voiceApplyGate(); else renderVoice();
     if (resuming) {
       resuming = false;
       if (m.phase === 'over') { toast('上一局已经结束，回到游戏选择'); leaveRoom(); if (visible() || true) { $w('#ww').hidden = true; showHub(); } return; }
@@ -12269,7 +12363,7 @@ const WWG = (() => {
     const speaker = W.prompt && W.prompt.speaker;
     const h = W.players.map((p) => {
       const known = p.role ? `<em>${EMO[p.role]}</em>` : '';
-      return `<div class="ww-p ${p.alive ? '' : 'dead'} ${p.id === wid ? 'me' : ''} ${p.id === speaker ? 'talk' : ''} ${p.connected ? '' : 'off'}">${seatTag(p)}<span class="n">${esc(p.name)}</span>${known}${p.voted ? '<i class="vt">✓</i>' : ''}${!p.alive ? '<i class="skull">💀</i>' : ''}</div>`;
+      return `<div data-pid="${p.id}" class="ww-p ${p.alive ? '' : 'dead'} ${p.id === wid ? 'me' : ''} ${p.id === speaker ? 'talk' : ''} ${p.connected ? '' : 'off'}">${seatTag(p)}<span class="n">${esc(p.name)}</span>${known}${p.voted ? '<i class="vt">✓</i>' : ''}${!p.alive ? '<i class="skull">💀</i>' : ''}</div>`;
     }).join('');
     setH('#wwPl', h);
   }
@@ -12312,7 +12406,10 @@ const WWG = (() => {
   function onMsg(m) {
     switch (m.type) {
       case 'ww-rooms': rooms = m.rooms || []; renderRooms(); break;
-      case 'ww-joined': wid = m.id; saveSes({ code: m.code, token: m.token }); break;
+      case 'ww-joined': wid = m.id; saveSes({ code: m.code, token: m.token }); if (voice.on) send({ type: 'ww-voice-join' }); break;
+      case 'ww-voice-peers': (m.peers || []).forEach((id) => voiceCall(id)); break;
+      case 'ww-voice-left': voiceClosePeer(m.id); break;
+      case 'ww-signal': voiceSignal(m.from, m.data); break;
       case 'ww-state': onState(m); break;
       case 'ww-need-password': askPassword(m.code); break;
       case 'ww-rejoin-failed':
@@ -13018,7 +13115,9 @@ setInterval(() => {
 // ================= 语音（WebRTC 网状） =================
 const voice = { stream: null, on: false, muted: false, pcs: new Map(), pending: new Map(), analysers: new Map() };
 let audioCtx = null;
-
+let VH = null; // 语音宿主钩子：狼人杀等其它游戏接入同一套 WebRTC（ns 信令前缀 / mic() 是否允许开麦 / hear(id) 是否听某人 / me() 自己的 id / ui() 刷新界面 / speaking(id,on)）
+function voiceHost(h) { VH = h; }
+function voiceUi() { if (VH) VH.ui(); else renderVoiceBar(); }
 async function voiceOn() {
   if (voice.on) return;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -13032,19 +13131,19 @@ async function voiceOn() {
   voice.on = true;
   voice.muted = false;
   watchLevel('me', voice.stream);
-  send({ type: 'voice-join' });
+  send({ type: (VH ? VH.ns : '') + 'voice-join' });
   voiceApplyGate();
-  renderVoiceBar();
+  voiceUi();
 }
 
 function voiceOff() {
   if (!voice.on) return;
-  send({ type: 'voice-leave' });
+  send({ type: (VH ? VH.ns : '') + 'voice-leave' });
   voiceTeardownPeers();
   if (voice.stream) voice.stream.getTracks().forEach((t) => t.stop());
   voice.stream = null;
   voice.on = false;
-  renderVoiceBar();
+  voiceUi();
 }
 
 function voiceTeardownPeers() {
@@ -13067,7 +13166,7 @@ function voiceClosePeer(id) {
 function voiceMakePC(id) {
   const pc = new RTCPeerConnection({ iceServers: ICE });
   voice.stream.getTracks().forEach((t) => pc.addTrack(t, voice.stream));
-  pc.onicecandidate = (e) => { if (e.candidate) send({ type: 'signal', to: id, data: { candidate: e.candidate } }); };
+  pc.onicecandidate = (e) => { if (e.candidate) send({ type: (VH ? VH.ns : '') + 'signal', to: id, data: { candidate: e.candidate } }); };
   pc.ontrack = (e) => {
     let a = document.querySelector(`audio[data-peer="${id}"]`);
     if (!a) {
@@ -13078,6 +13177,7 @@ function voiceMakePC(id) {
       document.body.appendChild(a);
     }
     a.srcObject = e.streams[0];
+    if (VH) a.muted = !VH.hear(id);
     a.play().catch(() => {});
     watchLevel(id, e.streams[0]);
   };
@@ -13094,7 +13194,7 @@ async function voiceCall(id) {
   const pc = voiceMakePC(id);
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  send({ type: 'signal', to: id, data: { sdp: pc.localDescription } });
+  send({ type: (VH ? VH.ns : '') + 'signal', to: id, data: { sdp: pc.localDescription } });
 }
 
 async function voiceSignal(from, data) {
@@ -13109,7 +13209,7 @@ async function voiceSignal(from, data) {
         await flushPending(from, pc);
         const ans = await pc.createAnswer();
         await pc.setLocalDescription(ans);
-        send({ type: 'signal', to: from, data: { sdp: pc.localDescription } });
+        send({ type: (VH ? VH.ns : '') + 'signal', to: from, data: { sdp: pc.localDescription } });
       } else if (pc) {
         await pc.setRemoteDescription(data.sdp);
         await flushPending(from, pc);
@@ -13130,11 +13230,13 @@ async function flushPending(id, pc) {
 // 轮流发言阶段：只有当前发言人的麦克风是开的
 function micAllowed() {
   if (!voice.on || voice.muted) return false;
+  if (VH) return VH.mic();
   if (S && S.phase === 'turns') return S.speakerId === myId;
   return true;
 }
 function voiceApplyGate() {
   if (voice.stream) voice.stream.getAudioTracks().forEach((t) => (t.enabled = micAllowed()));
+  if (VH) { document.querySelectorAll('audio[data-peer]').forEach((a) => { a.muted = !VH.hear(a.dataset.peer); }); VH.ui(); return; }
   renderVoiceBar();
 }
 
@@ -13149,14 +13251,15 @@ function watchLevel(key, stream) {
   } catch {}
 }
 setInterval(() => {
-  if (!S) return;
+  if (!S && !VH) return;
   const buf = new Uint8Array(256);
   voice.analysers.forEach((an, key) => {
     an.getByteTimeDomainData(buf);
     let peak = 0;
     for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
-    const pid = key === 'me' ? myId : key;
-    const speaking = peak > 14 && (key !== 'me' || micAllowed());
+    const pid = key === 'me' ? (VH ? VH.me() : myId) : key;
+    const speaking = peak > 14 && (key !== 'me' || micAllowed()) && (key === 'me' || !VH || VH.hear(key));
+    if (VH) { VH.speaking(pid, speaking); return; }
     const chip = document.querySelector(`.chip[data-pid="${pid}"]`);
     if (chip) chip.classList.toggle('speaking', speaking);
   });

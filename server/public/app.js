@@ -684,7 +684,9 @@ setInterval(() => {
 // ================= 语音（WebRTC 网状） =================
 const voice = { stream: null, on: false, muted: false, pcs: new Map(), pending: new Map(), analysers: new Map() };
 let audioCtx = null;
-
+let VH = null; // 语音宿主钩子：狼人杀等其它游戏接入同一套 WebRTC（ns 信令前缀 / mic() 是否允许开麦 / hear(id) 是否听某人 / me() 自己的 id / ui() 刷新界面 / speaking(id,on)）
+function voiceHost(h) { VH = h; }
+function voiceUi() { if (VH) VH.ui(); else renderVoiceBar(); }
 async function voiceOn() {
   if (voice.on) return;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -698,19 +700,19 @@ async function voiceOn() {
   voice.on = true;
   voice.muted = false;
   watchLevel('me', voice.stream);
-  send({ type: 'voice-join' });
+  send({ type: (VH ? VH.ns : '') + 'voice-join' });
   voiceApplyGate();
-  renderVoiceBar();
+  voiceUi();
 }
 
 function voiceOff() {
   if (!voice.on) return;
-  send({ type: 'voice-leave' });
+  send({ type: (VH ? VH.ns : '') + 'voice-leave' });
   voiceTeardownPeers();
   if (voice.stream) voice.stream.getTracks().forEach((t) => t.stop());
   voice.stream = null;
   voice.on = false;
-  renderVoiceBar();
+  voiceUi();
 }
 
 function voiceTeardownPeers() {
@@ -733,7 +735,7 @@ function voiceClosePeer(id) {
 function voiceMakePC(id) {
   const pc = new RTCPeerConnection({ iceServers: ICE });
   voice.stream.getTracks().forEach((t) => pc.addTrack(t, voice.stream));
-  pc.onicecandidate = (e) => { if (e.candidate) send({ type: 'signal', to: id, data: { candidate: e.candidate } }); };
+  pc.onicecandidate = (e) => { if (e.candidate) send({ type: (VH ? VH.ns : '') + 'signal', to: id, data: { candidate: e.candidate } }); };
   pc.ontrack = (e) => {
     let a = document.querySelector(`audio[data-peer="${id}"]`);
     if (!a) {
@@ -744,6 +746,7 @@ function voiceMakePC(id) {
       document.body.appendChild(a);
     }
     a.srcObject = e.streams[0];
+    if (VH) a.muted = !VH.hear(id);
     a.play().catch(() => {});
     watchLevel(id, e.streams[0]);
   };
@@ -760,7 +763,7 @@ async function voiceCall(id) {
   const pc = voiceMakePC(id);
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  send({ type: 'signal', to: id, data: { sdp: pc.localDescription } });
+  send({ type: (VH ? VH.ns : '') + 'signal', to: id, data: { sdp: pc.localDescription } });
 }
 
 async function voiceSignal(from, data) {
@@ -775,7 +778,7 @@ async function voiceSignal(from, data) {
         await flushPending(from, pc);
         const ans = await pc.createAnswer();
         await pc.setLocalDescription(ans);
-        send({ type: 'signal', to: from, data: { sdp: pc.localDescription } });
+        send({ type: (VH ? VH.ns : '') + 'signal', to: from, data: { sdp: pc.localDescription } });
       } else if (pc) {
         await pc.setRemoteDescription(data.sdp);
         await flushPending(from, pc);
@@ -796,11 +799,13 @@ async function flushPending(id, pc) {
 // 轮流发言阶段：只有当前发言人的麦克风是开的
 function micAllowed() {
   if (!voice.on || voice.muted) return false;
+  if (VH) return VH.mic();
   if (S && S.phase === 'turns') return S.speakerId === myId;
   return true;
 }
 function voiceApplyGate() {
   if (voice.stream) voice.stream.getAudioTracks().forEach((t) => (t.enabled = micAllowed()));
+  if (VH) { document.querySelectorAll('audio[data-peer]').forEach((a) => { a.muted = !VH.hear(a.dataset.peer); }); VH.ui(); return; }
   renderVoiceBar();
 }
 
@@ -815,14 +820,15 @@ function watchLevel(key, stream) {
   } catch {}
 }
 setInterval(() => {
-  if (!S) return;
+  if (!S && !VH) return;
   const buf = new Uint8Array(256);
   voice.analysers.forEach((an, key) => {
     an.getByteTimeDomainData(buf);
     let peak = 0;
     for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
-    const pid = key === 'me' ? myId : key;
-    const speaking = peak > 14 && (key !== 'me' || micAllowed());
+    const pid = key === 'me' ? (VH ? VH.me() : myId) : key;
+    const speaking = peak > 14 && (key !== 'me' || micAllowed()) && (key === 'me' || !VH || VH.hear(key));
+    if (VH) { VH.speaking(pid, speaking); return; }
     const chip = document.querySelector(`.chip[data-pid="${pid}"]`);
     if (chip) chip.classList.toggle('speaking', speaking);
   });
