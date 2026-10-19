@@ -481,7 +481,7 @@ const SFX = (() => {
       amb.iv = setInterval(() => {
         if (!ac || muted || document.hidden || ac.state !== 'running') return;
         const t = ac.currentTime + 0.02;
-        if (kind === 'fire' && Math.random() < 0.05) noise(t, 0.05 + Math.random() * 0.06, { f: 900 + Math.random() * 900, q: 0.7, gain: 0.02 + Math.random() * 0.02, bus: musicBus });
+        if (false) noise(t, 0.05 + Math.random() * 0.06, { f: 900 + Math.random() * 900, q: 0.7, gain: 0.02 + Math.random() * 0.02, bus: musicBus });
         if (kind === 'snow' || kind === 'wind') { f.frequency.setTargetAtTime(380 + Math.random() * 520, t, 1.5); g.gain.setTargetAtTime(bed[1] * (0.5 + Math.random() * 0.9), t, 1.5); }
         if (kind === 'rain') g.gain.setTargetAtTime(0.08 + Math.random() * 0.04, t, 0.8);
         if (kind === 'sea') { f.frequency.setTargetAtTime(300 + Math.random() * 700, t, 2.2); g.gain.setTargetAtTime(0.03 + Math.random() * 0.09, t, 2.2); }
