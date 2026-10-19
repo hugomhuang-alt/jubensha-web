@@ -105,7 +105,7 @@
     delete document.body.dataset.tone;
     C = null; clearTimers(); renderList();
     try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
-    window.scrollTo(0, 0);
+    toTop();
   }
   function close() {
     root().hidden = true; C = null; clearTimers();
@@ -115,12 +115,36 @@
   }
 
   function stars(n) { return '★'.repeat(n) + '<i>' + '★'.repeat(5 - n) + '</i>'; }
+  // ---------- 案件库：筛选 / 今日推荐 / 战绩（参考百变大侦探的剧本库） ----------
+  let lf = 'all', ld = 0;
+  const GENRE = { cold: '冷峻悬疑', dark: '暗黑惊悚', warm: '温情推理', red: '血色复仇', gold: '黄金年代', sea: '海上谜案', night: '夜色谜局', none: '本格推理' };
+  const genreOf = (c) => GENRE[c.tone] || '本格推理';
+  const minutesOf = (c) => Math.max(20, Math.round((c.budget.search + c.budget.ask) * 1.3 / 5) * 5);
+  const stateOf = (c) => { const g = store.get(key(c.id)); return g && g.result ? 'done' : g && (g.searches || g.asks) ? 'going' : 'new'; };
+  const diffBand = (c) => (c.difficulty <= 2 ? 1 : c.difficulty === 3 ? 2 : 3);
+  function dailyPick(list) {
+    const d = new Date(), seed = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
+    const pool = list.filter((c) => stateOf(c) !== 'done'); const from = pool.length ? pool : list;
+    return from[seed % from.length];
+  }
+  function statsOf(list) {
+    let done = 0, s = 0, win = 0;
+    list.forEach((c) => { const g = store.get(key(c.id)); if (g && g.result) { done++; if (g.result.grade === 'S') s++; if (g.result.okC) win++; } });
+    return { done, s, win, n: list.length };
+  }
   function renderList() {
-    const list = cases();
+    const all = cases(), st = statsOf(all), dp = dailyPick(all);
+    const list = all.filter((c) => (lf === 'all' || stateOf(c) === lf) && (!ld || diffBand(c) === ld));
+    const chip = (k, v, n, cur) => `<button class="det-chip ${cur === v ? 'on' : ''}" data-${k}="${v}">${n}</button>`;
+    const dpS = stateOf(dp);
     root().innerHTML = `
       <div class="det-wrap">
         <div class="det-top"><button class="btn small ghost" data-act="home">‹ 返回</button><div class="det-title">单人侦探</div>${muteBtn()}</div>
-        <p class="det-lead">你是被请来的侦探。搜证、审问、对质，最后指认凶手。不需要朋友，也不需要开麦。</p>
+        <div class="det-stats"><div><b>${st.done}</b><span>已结案</span></div><div><b>${st.win}</b><span>破案</span></div><div><b>${st.s}</b><span>S 评级</span></div><div><b>${st.n - st.done}</b><span>待侦破</span></div></div>
+        <button class="det-daily" data-case="${esc(dp.id)}"><div class="dd-art">${ART.sceneFor(dp.id, 'cover', dp.cover, { title: dp.title, text: dp.title + dp.tagline })}</div>
+          <div class="dd-in"><em>今日推荐</em><b>${esc(dp.title)}</b><small>${esc(dp.tagline)}</small><span>${genreOf(dp)} · 约 ${minutesOf(dp)} 分钟 · ${dpS === 'going' ? '继续侦破' : '开始侦破'} ▸</span></div></button>
+        <div class="det-filters"><div>${chip('lf', 'all', '全部', lf)}${chip('lf', 'new', '未玩', lf)}${chip('lf', 'going', '进行中', lf)}${chip('lf', 'done', '已结案', lf)}</div>
+          <div>${chip('ld', 0, '不限难度', ld)}${chip('ld', 1, '入门', ld)}${chip('ld', 2, '进阶', ld)}${chip('ld', 3, '烧脑', ld)}</div></div>
         <div class="det-list">${list.map((c) => {
           const g = store.get(key(c.id)); const r = g && g.result;
           const badge = r ? `<span class="det-badge g-${r.grade}">${r.grade}</span>` : g && (g.searches || g.asks) ? '<span class="det-badge go">进行中</span>' : '';
@@ -128,8 +152,8 @@
             <div class="sc-art">${ART.sceneFor(c.id, 'cover', c.cover, { title: c.title, text: c.title + c.tagline })}</div>
             <div class="sc-info"><div class="sc-name">${esc(c.title)} ${badge}</div>
             <div class="sc-tag">${esc(c.tagline)}</div>
-            <div class="sc-meta">难度 <span class="stars">${stars(c.difficulty)}</span> · 搜证 ${c.budget.search} 次 · 提问 ${c.budget.ask} 次</div></div></button>`;
-        }).join('') || '<p class="det-lead">还没有案件。</p>'}</div>
+            <div class="sc-meta"><i class="gn">${genreOf(c)}</i><i>单人</i><i>约 ${minutesOf(c)} 分钟</i><span class="stars">${stars(c.difficulty)}</span></div></div></button>`;
+        }).join('') || '<p class="det-lead">没有符合条件的案件，换个筛选看看。</p>'}</div>
       </div>`;
   }
 
@@ -142,7 +166,7 @@
     document.body.dataset.tone = C.tone || 'none';
     try { FX.ambient(FX.caseAmb(C.id) || 'dust'); } catch (e) {}
     try { SFX.music('case', C.id, C.tone); SFX.tension(false); SFX.theme(C.id); } catch (e) {}
-    window.scrollTo(0, 0);
+    toTop();
     if (!G.result && !G.searches && !G.asks && !G.introDone) return showIntro();
     renderCase();
   }
@@ -166,13 +190,15 @@
   }
   function endIntro() {
     clearTimers(); if (!C) return;
-    G.introDone = true; save(); window.scrollTo(0, 0); sfx('click');
+    G.introDone = true; save(); toTop(); sfx('click');
     if (!G.cineDone && C.deathReport) return startCinema();
     renderCase();
   }
 
   // ---------- 主界面 ----------
   const TABS = [['brief', '档案'], ['search', '搜证'], ['ask', '审问'], ['notes', '笔记'], ['accuse', '指认']];
+  let topAt = 0;
+  function toTop() { topAt = Date.now(); window.scrollTo(0, 0); }
   function renderCase() {
     const keepY = window.scrollY; // 重绘后保持滚动位置，连续提问不用再往下拖
     confirmSubmit = false;
@@ -187,7 +213,7 @@
         <div class="det-body">${body}</div>
       </div>`;
     wireFx();
-    if (keepY) { const back = () => window.scrollTo(0, keepY); back(); try { requestAnimationFrame(back); } catch (e) {} setTimeout(back, 30); }
+    if (keepY) { const back = () => { if (Date.now() - topAt > 400) window.scrollTo(0, keepY); }; back(); try { requestAnimationFrame(back); } catch (e) {} setTimeout(back, 30); }
     if (tab === 'brief') { fitFile(); try { requestAnimationFrame(fitFile); } catch (e) {} }
     try { SFX.tension((tab === 'ask' && !!sel) || (tab === 'accuse' && !G.result)); } catch (e) {}
   }
@@ -285,7 +311,7 @@
   function cineNext() { if (cineRun && cineAt < cineLast) cineRun(cineAt + 1); }
   function endCinema() {
     clearTimers(); if (cineEl) { cineEl.remove(); cineEl = null; } try { SFX.suspenseStop(); } catch (e) {}
-    if (!C) return; G.cineDone = true; save(); tab = 'brief'; bstep = 0; renderCase(); window.scrollTo(0, 0); sfx('click');
+    if (!C) return; G.cineDone = true; save(); tab = 'brief'; bstep = 0; renderCase(); toTop(); sfx('click');
   }
 
   // ---------- 档案：案情 / 人物 / 地图 / 时间线 / 死因，每页一屏、不用上下滑 ----------
@@ -519,20 +545,30 @@
   function endReveal() {
     clearTimers(); const ov = $('.det-reveal'); if (ov) ov.remove();
     if (!C || !G.result) return;
-    renderCase(); window.scrollTo(0, 0);
+    renderCase(); toTop();
     if (G.result.okC) { sfx('win'); try { const b = FX.burst(root(), 'gold'); setTimeout(() => b.remove(), 4500); } catch (e) {} }
+  }
+  function nextCase() {
+    const all = cases(); const i = all.findIndex((c) => c.id === C.id);
+    const rest = all.slice(i + 1).concat(all.slice(0, i)).filter((c) => stateOf(c) !== 'done');
+    return rest[0] || null;
+  }
+  function shareText(r) {
+    return `我在「剧本杀 · 单人侦探」侦破了《${C.title}》：评级 ${r.grade}（${r.score} 分），${r.okC ? '抓到了真凶' : '可惜抓错了人'}，关键证物 ${r.keys}/${r.total}，搜证 ${r.searches} 次、提问 ${r.asks} 次。你能比我更快吗？`;
   }
   function resultView(r) {
     const sol = C.solution, cu = sus(sol.culprit), cm = clueMap();
     const mk = (b, t) => `<li class="${b ? 'ok' : 'no'}">${b ? '✓' : '✗'} ${t}</li>`;
     return `<div class="det-result ${r.okC ? 'win' : 'lose'}">
       <div class="det-grade g-${r.grade}">${r.grade}</div>
+      <div class="det-starsrow">${[0, 1, 2].map((i) => `<i class="${i < ({ S: 3, A: 2, B: 1, C: 0 }[r.grade] || 0) ? 'on' : ''}">★</i>`).join('')}<span>${r.score} 分</span></div>
       <h3>${r.okC ? '案件告破' : '抓错了人'}</h3>
       <ul class="det-ul">${mk(r.okC, `凶手：${esc(cu.name)}`)}${mk(r.okM, `手法：${esc(sol.method.options[sol.method.correct])}`)}${mk(r.okV, `动机：${esc(sol.motive.options[sol.motive.correct])}`)}
       <li class="${r.keys === r.total ? 'ok' : 'no'}">关键证物 ${r.keys} / ${r.total}　用掉搜证 ${r.searches}、提问 ${r.asks}</li></ul></div>
       <div class="card"><h4>完整真相</h4>${sol.truth.map((p) => `<p class="det-p">${esc(p)}</p>`).join('')}</div>
       <div class="card"><h4>关键证物</h4><ul class="det-ul">${sol.keyClues.map((id) => `<li class="${hasClue(id) ? 'ok' : 'no'}">${hasClue(id) ? '✓' : '✗ 错过'} ${esc(cm[id].title)}（${esc(cm[id].locName)}）</li>`).join('')}</ul></div>
-      <div class="det-actions"><button class="btn" data-act="again">重新调查此案</button><button class="btn ghost" data-act="list">换一个案件</button></div>`;
+      ${nextCase() ? `<button class="det-next" data-case="${esc(nextCase().id)}"><em>下一案</em><b>${esc(nextCase().title)}</b><small>${esc(nextCase().tagline)}</small></button>` : ''}
+      <div class="det-actions"><button class="btn primary" data-act="share">分享战绩</button><button class="btn" data-act="again">重新调查此案</button><button class="btn ghost" data-act="list">换一个案件</button></div>`;
   }
 
   // ---------- 事件 ----------
@@ -544,24 +580,26 @@
     if (e.target.closest('[data-act="cinenext"]') && !e.target.closest('button')) return cineNext();
     const t = e.target.closest('button'); if (!t) return;
     const d = t.dataset;
+    if (d.lf !== undefined) { sfx('tab'); lf = d.lf; return renderList(); }
+    if (d.ld !== undefined) { sfx('tab'); ld = Number(d.ld); return renderList(); }
     if (d.case) { sfx('click'); return start(d.case); }
     if (d.act === 'home') { sfx('click'); return close(); }
     if (d.act === 'list') { sfx('click'); clearTimers(); C = null; try { FX.ambient('fire'); } catch (x) {} delete document.body.dataset.tone; try { SFX.music('menu', 'menu'); SFX.tension(false); } catch (x) {} return renderList(); }
     if (!C) return;
     if (G.result && (d.bs !== undefined || d.maploc || d.fsel || d.tab || d.search || d.ev || d.sus || d.q || d.conf || d.mark || d.draft)) return; // 指认之后案件结束，不能再回去调查
-    if (d.bs !== undefined) { sfx('tab'); bstep = Number(d.bs); renderCase(); return window.scrollTo(0, 0); }
+    if (d.bs !== undefined) { sfx('tab'); bstep = Number(d.bs); renderCase(); return toTop(); }
     if (d.maploc) { sfx('click'); mapOpen = d.maploc; return renderCase(); }
     if (d.fsel) { sfx('pick'); fsel = d.fsel; return renderCase(); }
     if (d.tab === 'search' && tab === 'brief' && !G.tutDone) { sfx('click'); G.tutDone = true; save(); tab = 'search'; renderCase(); return showTut(); }
-    if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return window.scrollTo(0, 0); }
+    if (d.tab) { sfx('tab'); tab = d.tab; pickClue = false; renderCase(); return toTop(); }
     if (d.search) {
       const l = C.locations.find((x) => x.id === d.search), got = G.ptr[l.id] || 0;
       if (got >= l.clues.length) return;
       if (searchLeft() <= 0) return toast('搜证次数用完了。');
       const k = l.clues[got]; G.ptr[l.id] = got + 1; G.searches++; if (!hasClue(k.id)) G.found.push(k.id);
-      lastClue = k.id; save(); renderCase(); sfx('search'); later(() => sfx('clue'), 420); return window.scrollTo(0, 0);
+      lastClue = k.id; save(); renderCase(); sfx('search'); later(() => sfx('clue'), 420); return toTop();
     }
-    if (d.ev) { lastClue = d.ev; renderCase(); return window.scrollTo(0, 0); }
+    if (d.ev) { lastClue = d.ev; renderCase(); return toTop(); }
     if (d.sus) { sfx('pick'); try { SFX.motif(d.sus); } catch (x) {} sel = d.sus; pickClue = false; renderCase(); return scrollLog(); }
     if (d.q) return ask(sel, d.q);
     if (d.act === 'pick') { pickClue = !pickClue; renderCase(); return; }
@@ -574,7 +612,13 @@
       if (!confirmSubmit) { confirmSubmit = true; t.textContent = '再点一次确认（提交后不能更改）'; return; }
       confirmSubmit = false; return submit();
     }
-    if (d.act === 'tutok') { const o = $('.det-tut'); if (o) o.remove(); sfx('click'); return window.scrollTo(0, 0); }
+    if (d.act === 'tutok') { const o = $('.det-tut'); if (o) o.remove(); sfx('click'); return toTop(); }
+    if (d.act === 'share' && G.result) {
+      const t = shareText(G.result);
+      try { if (navigator.share) { navigator.share({ title: C.title, text: t }).catch(() => {}); return; } } catch (x) {}
+      try { navigator.clipboard.writeText(t).then(() => toast('战绩已复制，可以粘贴给朋友'), () => toast(t)); } catch (x) { toast(t); }
+      return;
+    }
     if (d.act === 'cineskip') return endCinema();
     if (d.act === 'cinereplay') return startCinema();
     if (d.act === 'again') { const id = C.id; store.set(key(id), null); start(id); }
@@ -588,7 +632,7 @@
     if (C) {
       clearTimers(); C = null; delete document.body.dataset.tone;
       try { FX.ambient('fire'); SFX.music('menu', 'menu'); SFX.tension(false); } catch (e) {}
-      renderList(); window.scrollTo(0, 0); return true;
+      renderList(); toTop(); return true;
     }
     close(); return true;
   }
